@@ -46,6 +46,9 @@
 %% please give \usepackage{epsfig}
 \usepackage{subfig}
 
+%tables
+\usepackage{booktabs}
+
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -72,6 +75,7 @@
 \newcommand{\dd}{\; \mathrm{d}}
 \newcommand{\R}{\mathbf{R}}
 \newcommand{\bx}{\vc{x}}
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
 
 \begin{document}
 
@@ -666,9 +670,62 @@ For linear elements and 1D case, we get
 \end{align*}
 
 And thus,
-\[
+\begin{equation} \label{eqn:log_h1_estimate}
   \|\log x - u_h\|_{H^1(r,r+h)} \approx h^{3/2} r^{-2} 12^{-1/2}.
-\]
+\end{equation}
+
+We confirm the validity of the estimate \eqref{eqn:log_h1_estimate} in 2D case by a numerical test.
+The ratio 
+\begin{equation} \label{eqn:log_h1_estimate_ratio}
+\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+\end{equation}
+is computed on every element $T$ of the mesh using a $5\times5$ Gaussian quadrature, with $h$ being the 
+element diameter and $r$ being the distance between the element center and the origin. The results on five
+refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
+%
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{14}{8}$    & 0.7 & 5.3   \\
+$\rfrac{14}{16}$   & 1.0 & 17.4  \\
+$\rfrac{14}{32}$   & 1.5 & 51.8  \\
+$\rfrac{14}{64}$   & 2.1 & 150   \\
+$\rfrac{14}{128}$  & 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
+values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
+%
+We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is close to 1.0 which means we
+have a good upper estimate. In the first row, the element size ($h>1.0$) breaks the assumptions under which the 
+estimate was derived. Further we can see in the \fig{fig:log_estimate_a} the error over the elements. We can 
+compare it with the \fig{fig:log_estimate_b} and see that the ratio is smallest where the error is largest 
+(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
+better approximated by the linear functions in the diagonal directions than in the axes directions.
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
+  \hspace{0pt}
+  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
+  \caption[Log error estimate.]
+  {Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  in the center where the $\log$ singularity is situated and where the function is cut off.
+  }
+  \label{fig:log_estimate}
+\end{figure}
+
 
 Let us consider a 2D domain. The $H^1$ error on elements in distance $r$ is same as in the 1D case up to a constant close to 1 
 (potrebuje numericke overeni). Thus error on the band at distance $r$ is proportional to 
