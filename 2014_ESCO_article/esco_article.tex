@@ -813,6 +813,11 @@ Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ should be
   R = \frac{h^{3/2}}{4\epsilon}
 \]
 
+\section{Condition number}
+Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
+for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
+SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
+
 
 \section{Results}
 \label{sec:results}
