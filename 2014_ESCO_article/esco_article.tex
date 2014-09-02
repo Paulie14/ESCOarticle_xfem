@@ -46,6 +46,9 @@
 %% please give \usepackage{epsfig}
 \usepackage{subfig}
 
+%tables
+\usepackage{booktabs}
+
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -72,6 +75,7 @@
 \newcommand{\dd}{\; \mathrm{d}}
 \newcommand{\R}{\mathbf{R}}
 \newcommand{\bx}{\vc{x}}
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
 
 \begin{document}
 
@@ -120,7 +124,7 @@
 In this work we demonstrate usage of Partition of Unity (PU) methods to improve approximation of singularities 
 in the solution of the Poisson equation. Our model describes a steady flow of water in a system of aquifers
 which consist of porous media. The aquifers are perforated by wells and boreholes which are often represented
-as point sources considering their small diameter in comparision with the vast size of the aquifer. This 
+as point sources considering their small diameter in comparison with the vast size of the aquifer. This 
 brings singularities into the solution. The extended and stable generalized finite element method 
 (XFEM and SGFEM) were implemented to solve the problem and a proper adaptive integration strategy was 
 developed to gain optimal convergence rates.
@@ -157,16 +161,16 @@ of degrees of freedom.
 
 In this work we use PU (Partition of Unity) methods to overcome these problems and demonstrate it on a steady 
 %quasi-three-dimensional model of multi-aquifer system 
-two-dimensinal aquifer model containing hydro-geological wells which cause singularities in solution. 
-We follow the work \cite{gracie} and \cite{craig} who have already used the XFEM (eXtended FEM) on a~similar 
-model. However, we focus mainly on the study of the PU methods. In particular, we use the XFEM and its 
-corrected version (including ramp function and shift), e.g.~\cite{cxfem}, 
-and the SGFEM, \cite{sgfem} and \cite{sgfem2013}. We are able to measure the convergence of pressure in $L^2$ 
-norm over the aquifer domain and we compare the used methods. We also investigate the error of the
-adaptive integration on the enriched elements and introcude improvement. In addition, we suggest better choice
-of enrichment area based on a tolerance criterion.
+two-dimensional aquifer model containing hydro-geological wells which cause singularities in solution. 
+We follow the work \cite{gracie,craig} of Gracie and Craig who have already used the XFEM (eXtended FEM) 
+on a~similar model. However, we focus mainly on the study of the PU methods. In particular, we use the XFEM 
+and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{cxfem}, 
+and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{sgfem,sgfem2013}. We measure 
+the convergence of pressure head in $L^2$ norm over the aquifer domain and we compare the used methods. 
+We also investigate the error of the adaptive integration on the enriched elements and introduce improvement. 
+In addition, we suggest better choice of enrichment area based on a tolerance criterion.
 
-The implementation was done in C++ language using the Deal II library~\citep{deal}, the finite element library.
+The implementation was done in C++ language using the Deal II library~\cite{deal}, the finite element library.
 which does not support any enrichment techniques at the moment.
 
 We describe the model in the beginning of the article, set the problem and go through the
@@ -180,7 +184,7 @@ at the end.
 We consider a steady flow in a system of aquifers (2D layers of given thickness) which are separated by 
 impermeable layers (aquitards). The aquifers are connected by wells which act as sources
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
-condition of the aquifers which can be of Dirichlet type or be homogenous of Neumann type.
+condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
 
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
@@ -201,7 +205,7 @@ h^m|_{\Gamma^m_D} &=& h^m_D, \\
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmisivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
 $h^m\, [\textrm{m}]$ the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ source density,
-$\vc{n}$ unit normal vector on the boudnary and
+$\vc{n}$ unit normal vector on the boundary and
 $q^m_w = Q^m_w/|\partial B^m_w|$ is the density of the flow from the well to the aquifer over the well boundary 
 $\partial B^m_w$. Equation \eqref{eqn:poisson} is derived from the Darcy law and the continuity equation 
 for incompressible fluid.
@@ -275,15 +279,22 @@ We can now introduce the weak solution $u$ and test functions $v$
    v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M+1}_W)\in V_0.
 \end{eqnarray}
 
-To obtain the weak form we apply the standard Galerkin method on \eqref{eqn:poisson} and \eqref{eqn:well_balance}, 
-we further substract the second equation from the first one, use \eqref{eqn:average} and get for $m=1,\ldots,M$
+To obtain the weak form we apply the standard Galerkin method. We multiply the equations \eqref{eqn:poisson} 
+by test functions $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
+\begin{equation} \label{eqn:weak_form1}
+  \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+  + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
+  = \int \limits_{\Omega^m} f^m\varphi^m% - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
+\end{equation}
+We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
+and use \eqref{eqn:average} which results in
 \begin{multline} \label{eqn:weak_form}
   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
         + \sum \limits_{w\in \mathcal{W}} \sigma^m_w\left( \avg{h^m}-H^m_w\right)
           \left(\avg{\varphi^m}-\Phi^m_w\right) + \\
           + \sum\limits_{w\in\mathcal{W}} \Big[
           c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
-  =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx.
+  =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
 \end{multline}
 
 
@@ -387,7 +398,7 @@ where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
 %TODO: define test functions, refer to the weak form
 
 \subsubsection{Corrected XFEM}
-The corrected XFEM \citep{cxfem} deals with the convergence problem on blending elements and 
+The corrected XFEM \cite{cxfem} deals with the convergence problem on blending elements and 
 introduces the \textbf{ramp function}
 %\begin{equation} \label{eqn:ramp_function}
 \begin{eqnarray} \label{eqn:ramp_function}
@@ -427,13 +438,13 @@ For the purpose of this article, let's call the XFEM with ramp function \textbf{
 version \textbf{XFEM-s}, as we shall reference to them later.
 
 \subsubsection{SGFEM}
-Finally we present the \textbf{SGFEM}, according to \cite{sgfem2013}. The enrichment function is defined
-as the substraction of the global enrichment function and its interpolation 
+Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
+as the subtraction of the global enrichment function and its interpolation 
 \begin{equation} \label{eqn:sgfem_enrich}
     L_{\alpha w} = \left[s_w(\bx) - \pi_\tau (s_w)(\bx)\right],
     \quad \textrm{ on } \tau,\; \alpha\in\mathcal{I}^e, w\in\mathcal{W}.
 \end{equation} 
-where the interpolantion $\pi_\tau$ is built using the finite element shape functions
+where the interpolation $\pi_\tau$ is built using the finite element shape functions
 associated with nodes $\mathcal{I}(\tau)$ of the element $\tau$
 \begin{equation} \label{eqn:sgfem_interpolation}
     \pi_\tau (s_w)(\bx) = \sum\limits_{\beta\in\mathcal{I}(\tau)} s_w(\bx_\beta) N_\beta(\bx).
@@ -517,20 +528,20 @@ There are two aspects which the integration must handle properly:
 %TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist
 One of the approaches to improve integration is local element refinement. We remind that the refinement only enables
 placing more quadrature points in the element and does not bring any more degrees of freedom in the 
-system. We will discuss the criterions for adaptive refinement, suggest improvement and compare our solution
+system. We will discuss the criteria for adaptive refinement, suggest improvement and compare our solution
 with the original one in this subsection. We will refer also some of the convergence results which will be 
 shown later in \ref{sec:results}.
 
 \subsection{Adaptive refinement of an element}
 \label{sec:refinement_element}
 
-\cite{gracie} used a criterion for adaptive refinement according to which only the subelements 
+Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
 that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
 well only in some special cases when the well is at the node of an element or near the center of an element. 
 The problem comes when the well is placed near the edge or node of an element. In that case there can be
-large difference in the size of neighbouring subelements as you can see in \fig{fig:adapt_ref_a}. Although
+large difference in the size of neighboring subelements as you can see in \fig{fig:adapt_ref_a}. Although
 the integrand is computed precisely enough on the element with the well inside, the quadrature points on the
-neighbouring elements (where the pressure head gradient can be still large) are placed very sparsely 
+neighboring elements (where the pressure head gradient can be still large) are placed very sparsely 
 and the integration error is large.
 
 \begin{figure}[!htb]
@@ -541,8 +552,8 @@ and the integration error is large.
   \hspace{0pt}
   \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_new.pdf} }
-  \caption[Adaptive refinement comparision]
-  {Comparision of the original and improved refinement techniques.
+  \caption[Adaptive refinement comparison]
+  {Comparison of the original and improved refinement techniques.
    Black lines denote enriched element edges, red lines denote adaptive refinement (subelement edges) and the well
    edge is blue.
   }
@@ -576,8 +587,8 @@ the original version shows out large error that is concentrated on the closest n
   \hspace{0pt}
   \subfloat[improved refinement]{\label{fig:adapt_ref_norm_b} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_new.pdf} }
-  \caption[Adaptive refinement comparision]
-  {Comparision of elementwise error in $L_2$ norm using different refinement techniques.
+  \caption[Adaptive refinement comparison]
+  {Comparison of element-wise error in $L_2$ norm using different refinement techniques.
   }
   \label{fig:adapt_refinement_norm}
 \end{figure}
@@ -609,7 +620,7 @@ is similar, around 1.5. The gain from using higher order quadratures is not wort
 of the order 4 the error is not much smaller than the error of the quadrature of the order 3. 
 
 Finally the highest level of refinement is chosen to be 10 and the quadrature order to be 3. The number of
-the quadrature points generated by the process desribed above in \ref{sec:refinement_element} is then similar 
+the quadrature points generated by the process described above in \ref{sec:refinement_element} is then similar 
 both in the original (14793) and improved version (14819).
 
 \begin{figure}[!htb]
@@ -734,19 +745,72 @@ For linear elements and 1D case, we get
 \end{align*}
 
 And thus,
-\[
+\begin{equation} \label{eqn:log_h1_estimate}
   \|\log x - u_h\|_{H^1(r,r+h)} \approx h^{3/2} r^{-2} 12^{-1/2}.
-\]
+\end{equation}
+
+We confirm the validity of the estimate \eqref{eqn:log_h1_estimate} in 2D case by a numerical test.
+The ratio 
+\begin{equation} \label{eqn:log_h1_estimate_ratio}
+\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+\end{equation}
+is computed on every element $T$ of the mesh using a $5\times5$ Gaussian quadrature, with $h$ being the 
+element diameter and $r$ being the distance between the element center and the origin. The results on five
+refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
+%
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{14}{8}$    & 0.7 & 5.3   \\
+$\rfrac{14}{16}$   & 1.0 & 17.4  \\
+$\rfrac{14}{32}$   & 1.5 & 51.8  \\
+$\rfrac{14}{64}$   & 2.1 & 150   \\
+$\rfrac{14}{128}$  & 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
+values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
+%
+We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is close to 1.0 which means we
+have a good upper estimate. In the first row, the element size ($h>1.0$) breaks the assumptions under which the 
+estimate was derived. Further we can see in the \fig{fig:log_estimate_a} the error over the elements. We can 
+compare it with the \fig{fig:log_estimate_b} and see that the ratio is smallest where the error is largest 
+(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
+better approximated by the linear functions in the diagonal directions than in the axes directions.
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
+  \hspace{0pt}
+  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
+  \caption[Log error estimate.]
+  {Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  in the center where the $\log$ singularity is situated and where the function is cut off.
+  }
+  \label{fig:log_estimate}
+\end{figure}
+
 
 Let us consider a 2D domain. The $H^1$ error on elements in distance $r$ is same as in the 1D case up to a constant close to 1 
 (potrebuje numericke overeni). Thus error on the band at distance $r$ is proportional to 
 \[
  \|\log \vc x - u_h\|^2_{H^1(\Omega^P)} \approx \int_R^{diam \Omega} 2\pi r \frac{h^3}{12 r^4} \d r \le \frac{2\pi h^3}{12} 
-\frac{2}{R^2} \approx \frac{h^3}{R^2}.
+\frac{1}{2R^2} \approx \frac{h^3}{4R^2}.
 \]
 Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ should be
 \[
-  R = \frac{h^{3/2}}{\epsilon}
+  R = \frac{h^{3/2}}{4\epsilon}
 \]
 
 
