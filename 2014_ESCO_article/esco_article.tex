@@ -633,6 +633,81 @@ both in the original (14793) and improved version (14819).
 % 
 % * problem is that we do not represent the well edge and mainly its surrounding well enough
 
+
+
+\section{Appriori adaptive quadrature}
+
+Let us assume just one well of radius $R$ situated at origin. Worst term to integrate is
+\begin{equation}
+    \label{eq:term-of-interest}
+    f(r)=(\nabla \log r )^2 \approx r^{-2}
+\end{equation}
+
+independently of the particular variant of the XFEM method. Consider a square $S$ with side $h$ and 
+let us denote $r_{min}$ and $r_{max}$ the minimum and maximum distance to the origin respectively.
+We shall estimate error of the 2D tensor product Guass quadrature rule of order $n$ on the square $S$  
+by the error of 1D quadrature of the same order on $(r_{min}, r_{min}+h)$:
+\[
+  E^n(S) \le h E^n((r_{min}, r_{min}+h))
+\]
+this is conservative estimate, which is natural for elements near main $x$ and $y$ axis, where the error is maximal.
+
+To guarantee prescribed tolerance $\epsilon$, want to control the error density:
+\begin{equation}
+    \label{eq:error-density}
+     E^n(S) h^{-2} \le h^{-1} E^n((r_{min}, r_{min}+h)) \le \epsilon. 
+\end{equation}
+
+Formula for the error of 1D Gauss quadrature of order $n$ ($n$ quadrature points). Quadrature error for $\int_r^{r+h} f$ is 
+\[
+  E_n = \frac{h^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
+\]
+for some $\xi_n \in (r, r+h)$. 
+For the term of interest, i.e. \eqref{eq:term-of-interest}, we have 
+\[
+  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}
+\]
+then the convergence criterium folowing from \eqref{eq:error-density} reads:
+\[
+  h^{-1}E_n = \alpha_n \left( \frac{h}{r_{min}} \right)^{2n} \frac{1}{r_{min}^2} \le \epsilon, 
+  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2
+\]
+
+Derived criterium holds only on squares, where integrated function is smooth.
+This is not the case for squares intersecting the boundary of well, $r_{min} \le R \le r_{max}$, where we integrate 
+discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
+\[
+  \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
+\]
+where $S'$ is square with side $H=h/R$ and $\vc {r'} = \vc{r}/R$. Empiricaly determined error of the midpoint rule for later 
+integral is
+\[
+    E(H) = c_e H^{p_e}, \quad \text{with } c_e=0.08,\ p_e=1.5.
+\]
+This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
+\[
+   h\le h_b(\epsilon) = \Big(\frac{\epsilon R^{p_e}}{c_e}\Big)^{\frac{1}{p_e+2}}. 
+\]
+TODO: modify test of integration on unit disk for the function $1/r^2$.
+
+
+Based on presented analysis, we propose following rules for adaptive quadrature:
+\begin{enumerate}
+ \item If $r_{max} < R$ the sqare quadrature is zero.
+ \item If $r_{min} < R < r_{max}$. For $h \ge h_b(\epsilon)$ subdivide the square, else use lowest order quadrature for 
+original function (i.e. $f(r)=0$ for $r\le R$).
+ \item If $r_{min} > R$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
+ \[
+    \frac{\alpha_n h^{2n}}{r_{min}^{2n+2}} \le \epsilon,
+ \]
+ use at least same order as necessary for FEM.
+\end{enumerate}
+
+TODO:
+We should estimate true error numericaly using one more subdivision and compare it to prescribed tolerance, we should be safely 
+below, without increasing the number of evaluation comapred to current implementation.
+
+
 \section{Estimate the enrichment radius}
 The enrichment is done in order to diminish approximation error of the precise solution of the problem, i.e.
 $\tilde e_h = \min\limits_{u_h \in V_h} \| u - u_h \|_{V}$. Let us consider a well at origin, the radius $R$ of the 
