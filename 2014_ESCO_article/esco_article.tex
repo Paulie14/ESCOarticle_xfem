@@ -646,24 +646,24 @@ both in the original (14793) and improved version (14819).
 
 
 
-\section{Appriori adaptive quadrature}
+\section{A priori adaptive quadrature}
 
-Let us assume just one well of radius $R$ situated at origin. Worst term to integrate is
+Let us assume just one well of radius $R$ situated at the origin. The worst term to integrate is
 \begin{equation}
     \label{eq:term-of-interest}
     f(r)=(\nabla \log r )^2 \approx r^{-2}
 \end{equation}
-
-independently of the particular variant of the XFEM method. Consider a square $S$ with side $h$ and 
+%
+independently of the particular variant of the PUM method. Consider a~square $S$ with a~side $h$ and 
 let us denote $r_{min}$ and $r_{max}$ the minimum and maximum distance to the origin respectively.
-We shall estimate error of the 2D tensor product Guass quadrature rule of order $n$ on the square $S$  
+We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ on the square $S$  
 by the error of 1D quadrature of the same order on $(r_{min}, r_{min}+h)$:
 \[
-  E^n(S) \le h E^n((r_{min}, r_{min}+h))
+  E^n(S) \le h E^n((r_{min}, r_{min}+h)).
 \]
-this is conservative estimate, which is natural for elements near main $x$ and $y$ axis, where the error is maximal.
+This is a conservative estimate, which is natural for elements near the main $x$ and $y$ axis, where the error is maximal.
 
-To guarantee prescribed tolerance $\epsilon$, want to control the error density:
+To guarantee prescribed tolerance $\epsilon$, we want to control the error density
 \begin{equation}
     \label{eq:error-density}
      E^n(S) h^{-2} \le h^{-1} E^n((r_{min}, r_{min}+h)) \le \epsilon. 
@@ -676,16 +676,16 @@ Formula for the error of 1D Gauss quadrature of order $n$ ($n$ quadrature points
 for some $\xi_n \in (r, r+h)$. 
 For the term of interest, i.e. \eqref{eq:term-of-interest}, we have 
 \[
-  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}
+  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)},
 \]
-then the convergence criterium folowing from \eqref{eq:error-density} reads:
+then the convergence criterion following from \eqref{eq:error-density} reads:
 \[
   h^{-1}E_n = \alpha_n \left( \frac{h}{r_{min}} \right)^{2n} \frac{1}{r_{min}^2} \le \epsilon, 
   \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2
 \]
 
-Derived criterium holds only on squares, where integrated function is smooth.
-This is not the case for squares intersecting the boundary of well, $r_{min} \le R \le r_{max}$, where we integrate 
+Derived criterion holds only on squares, where the integrated function is smooth.
+This is not the case for squares intersecting the boundary of the well, $r_{min} \le R \le r_{max}$, where we integrate 
 discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
 \[
   \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
@@ -702,16 +702,16 @@ This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
 TODO: modify test of integration on unit disk for the function $1/r^2$.
 
 
-Based on presented analysis, we propose following rules for adaptive quadrature:
+Based on the presented analysis above, we propose following rules for adaptive quadrature:
 \begin{enumerate}
- \item If $r_{max} < R$ the sqare quadrature is zero.
+ \item If $r_{max} < R$ the square quadrature is zero.
  \item If $r_{min} < R < r_{max}$. For $h \ge h_b(\epsilon)$ subdivide the square, else use lowest order quadrature for 
 original function (i.e. $f(r)=0$ for $r\le R$).
  \item If $r_{min} > R$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
  \[
     \frac{\alpha_n h^{2n}}{r_{min}^{2n+2}} \le \epsilon,
  \]
- use at least same order as necessary for FEM.
+ use at least the same order as necessary for FEM.
 \end{enumerate}
 
 TODO:
