@@ -53,6 +53,8 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{esint}
+
+
 %% The amsthm package provides extended theorem environments
 %% \usepackage{amsthm}
 
@@ -60,6 +62,10 @@
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
 %% \usepackage{lineno}
+
+% just for our notes
+\usepackage[usenames,dvipsnames]{color}   %colors
+
 
 \journal{Applied Mathematics and Computation}
 
@@ -72,10 +78,16 @@
 \def\abs#1{\left|#1\right|}
 \def\avg#1{\langle#1\rangle}
 \def\d{\mathrm{d}}
+\def\norm#1{\| #1 \|}
+\def\abs#1{| #1 |}
 \newcommand{\dd}{\; \mathrm{d}}
 \newcommand{\R}{\mathbf{R}}
 \newcommand{\bx}{\vc{x}}
 \newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+
+\newcommand{\noteJB}[1]{{\color{Blue} \textbf{JB: } \textit{#1}}}
+\newcommand{\notePE}[1]{{\color{Orange} \textbf{PE: } \textit{#1}}}
+
 
 \begin{document}
 
@@ -194,6 +206,11 @@ We then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior bounda
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
 
+\noteJB{define aquifers with their $z$-coordinate, $z_m$
+define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le r_W\}$.
+An finally $B_W^m = B_W \cap \Theta^m$.}
+
+
 The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
 boundary conditions
 \begin{eqnarray} \label{eqn:poisson}
@@ -218,6 +235,7 @@ wells. We can prescribe the flow balance equation
   Q^m_{w,in} &\ldots& \textrm{flow from upper aquifer,} \nonumber\\
   Q^m_{w,out} &\ldots& \textrm{flow into lower aquifer.} \nonumber
 \end{eqnarray}
+\notePE{TODO: add arrow (flow) to the top}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: add arrow (flow) to the top
@@ -296,7 +314,8 @@ and use \eqref{eqn:average} which results in
           c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
   =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
 \end{multline}
-
+\noteJB{Consider sum over aquifers to get square term from communication on wells.
+Boundary conditions on wells?}
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
 % \begin{equation} \label{eqn:bilinear_form_a}
@@ -333,16 +352,18 @@ placed at the center. It can be easily proved that the function
 \end{equation}
 %
 is the solution of a Laplace equation $-T \Delta h = 0$, just by putting the function into the equation. 
-Argument $r_w$ of the logarithm is the distance from the well center
-%
+For sake of simplicity we introduce a distance function 
 \begin{equation*}
       r_w(\bx) = \|\bx - \xi_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2}.
 \end{equation*}
+of the well $W$.
+\noteJB{Rather move close to the definition of enrichment function.}
 %
 We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure head on the distance from 
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
 radius of the well $R_w$ and introduce (global) enrichment function
+\noteJB{Change notation $R$ for enrichment radius, $\rho_W$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
@@ -365,6 +386,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 %   \end{cases}.
 % \end{equation}
 
+\notePE{TODO: do not forget to replace the notation of the enrichment function}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: do not forget to replace the notation of the enrichment function
@@ -376,7 +398,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
   \label{fig:enrich_func}
 \end{figure}
 
-%TODO: define enrichment zone    
+\notePE{TODO: define enrichment zone}
     
 \subsection{Partition of unity methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
@@ -395,7 +417,7 @@ in the following way
     \phi_{\alpha w} = N_\alpha(\bx)L_{\alpha w}(\bx), \quad \alpha\in\mathcal{I}^e_w, w\in\mathcal{W},
 \end{equation}
 where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
-%TODO: define test functions, refer to the weak form
+\notePE{TODO: define test functions, refer to the weak form}
 
 \subsubsection{Corrected XFEM}
 The corrected XFEM \cite{cxfem} deals with the convergence problem on blending elements and 
@@ -424,7 +446,9 @@ The enrichment function changes into the form
 \begin{equation} \label{eqn:xfem_ramp}
     L_{\alpha w} = G_w(\bx) s_{w}(\bx), \quad \alpha\in\mathcal{J}^e, w\in\mathcal{W}.
 \end{equation}
-They further suggests the \textbf{shifted} enrichment functions in order to preserve the property of standard 
+They 
+\noteJB{Who are they? introduce shifed XFEM method and giv the same reference.}
+further suggests the \textbf{shifted} enrichment functions in order to preserve the property of standard 
 FE approximation at nodes $h(\bx_\alpha)=a_\alpha$; the value at the node is equal the corresponding degree
 of freedom. The enrichment functions must be then zero at the nodes which is satisfied in the form
 \begin{equation} \label{eqn:xfem_shift}
@@ -436,6 +460,7 @@ $a_\alpha = h_D(\bx_\alpha)$.
 
 For the purpose of this article, let's call the XFEM with ramp function \textbf{XFEM-r} and the shifted 
 version \textbf{XFEM-s}, as we shall reference to them later.
+\noteJB{I prefer to be more explicit and use "ramp function XFEM" and "shifted XFEM", this is more clear for a reader familiar with the topic.}
 
 \subsubsection{SGFEM}
 Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
@@ -453,6 +478,8 @@ associated with nodes $\mathcal{I}(\tau)$ of the element $\tau$
 Of course $\alpha\in\mathcal{I}(\tau)$ in \eqref{eqn:sgfem_enrich}.
 Notice that there are no additional enriched nodes on blending elements, like in $\mathcal{J}^e$ in 
 \eqref{eqn:xfem_ramp} and \eqref{eqn:xfem_shift}, and no ramp function is involved.
+
+\noteJB{I miss explicit specification of discrete spaces.}
 
 % \subsection{Assembly}
 % Having the enrichment functions defined, the enriched nodes set and the equations discretized, we can approach
@@ -522,15 +549,18 @@ are the price for using enrichment functions and a coarse mesh.
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of the pressure head in the vicinity of a well (the singularity),
+  \noteJB{in fact it is the steep gradiant of enrichment base functions.}
   \item the well edge (since the elements of the triangulation do not take the well into account)
+  \noteJB{Should mention that due to the singularity the integrated function is very large and small changes in the domain shape can lead to big erros.}
 \end{itemize}
 
-%TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist
+\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
 One of the approaches to improve integration is local element refinement. We remind that the refinement only enables
 placing more quadrature points in the element and does not bring any more degrees of freedom in the 
 system. We will discuss the criteria for adaptive refinement, suggest improvement and compare our solution
 with the original one in this subsection. We will refer also some of the convergence results which will be 
 shown later in \ref{sec:results}.
+\noteJB{Rather use term "adaptive quadrature" then local element refinement. Finite elemnts remain intouched.}
 
 \subsection{Adaptive refinement of an element}
 \label{sec:refinement_element}
@@ -578,6 +608,7 @@ were computed also using the corresponding adaptive integration. Notice the scal
 the error on elements is in small range and is not significantly concentrated anywhere. On the other hand, 
 the original version shows out large error that is concentrated on the closest non-refined element to the well.
 
+\notePE{TODO: add axis, remove legend label, try to sharpen}
 \begin{figure}[!htb]
 %   \vspace{0pt}
 %TODO: add axis, remove legend label, try to sharpen
@@ -623,6 +654,7 @@ Finally the highest level of refinement is chosen to be 10 and the quadrature or
 the quadrature points generated by the process described above in \ref{sec:refinement_element} is then similar 
 both in the original (14793) and improved version (14819).
 
+\notePE{TODO: add refinement level to legend}
 \begin{figure}[!htb]
 %   \vspace{0pt}
 %TODO: add refinement level to legend
@@ -644,7 +676,11 @@ both in the original (14793) and improved version (14819).
 % 
 % * problem is that we do not represent the well edge and mainly its surrounding well enough
 
-
+\notePE{
+* non-optimal convergence rate with the approach of [gracie] and their integration scheme 3-4\\
+* the above can be improved by using higher order quadrature rules (6-6)\\
+* problem is that we do not represent the well edge and mainly its surrounding well enough
+}
 
 \section{A priori adaptive quadrature}
 
@@ -699,7 +735,7 @@ This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
 \[
    h\le h_b(\epsilon) = \Big(\frac{\epsilon R^{p_e}}{c_e}\Big)^{\frac{1}{p_e-2}}. 
 \]
-TODO: modify test of integration on unit disk for the function $1/r^2$.
+\noteJB{TODO: modify test of integration on unit disk for the function $1/r^2$.}
 
 
 Based on the presented analysis above, we propose following rules for adaptive quadrature:
@@ -714,14 +750,24 @@ original function (i.e. $f(r)=0$ for $r\le R$).
  use at least the same order as necessary for FEM.
 \end{enumerate}
 
-TODO:
+\noteJB{TODO:
 We should estimate true error numericaly using one more subdivision and compare it to prescribed tolerance, we should be safely 
 below, without increasing the number of evaluation comapred to current implementation.
+}
 
 
 \section{Estimate the enrichment radius}
 The enrichment is done in order to diminish approximation error of the precise solution of the problem, i.e.
-$\tilde e_h = \min\limits_{u_h \in V_h} \| u - u_h \|_{V}$. Let us consider a well at origin, the radius $R$ of the 
+$\tilde e_h = \inf\limits_{u_h \in V_h} \| u - u_h \|_{V}$. Let us consider a single well at the origin. The solution
+can be splitted $u=u_s+u_r$ to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
+Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}) we get
+\[
+   \norm{u - u_h}_{H^1(\Omega)} \le c_a \inf_{u_h \in V^P_h} \norm{u - u_h}_{H^1(\Omega)} 
+   \le c_a \big(\inf_{u_h \in V_h} \norm{u_s - u_{h}}_{H^1(\Omega)} + \inf_{u_h \in V^P_h} \norm{\log |\vc x| - u_h})_{H^1(\Omega)}
+\]
+]
+
+state with a radius $R$ of the 
 enrichment should be chosen so that 
 \[
    \min\limits_{u_h \in V^P_h} \| \log  \vc x - u_h\|_{V(\Omega^P)} \le \epsilon
@@ -824,7 +870,7 @@ SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{
 
 \subsection{Analytical solution}
 To measure convergence an analytic solution is needed. 
-%TODO: why only single aquifer problems
+\notePE{TODO: why only single aquifer problems}
 Let's start with a Laplace problem on a circular disk
 with a single well in the center
 \begin{eqnarray} \label{eqn:laplace_problem}
@@ -907,3 +953,4 @@ no. 21066/115 on the Technical University of Liberec.
 \endinput
 %%
 %% End of file `elsarticle-template-harv.tex'.
+
