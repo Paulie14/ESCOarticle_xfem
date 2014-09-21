@@ -778,11 +778,10 @@ The enrichment is done in order to diminish approximation error of the precise s
 $\tilde e_h = \inf\limits_{u_h \in V_h} \| u - u_h \|_{V}$. Let us consider a single well at the origin. The solution
 can be splitted $u=u_s+u_r$ to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
 Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}) we get
-\[
-   \norm{u - u_h}_{H^1(\Omega)} \le c_a \inf_{u_h \in V^P_h} \norm{u - u_h}_{H^1(\Omega)} 
-   \le c_a \big(\inf_{u_h \in V_h} \norm{u_s - u_{h}}_{H^1(\Omega)} + \inf_{u_h \in V^P_h} \norm{\log |\vc x| - u_h})_{H^1(\Omega)}
-\]
-]
+\begin{multline}
+   \norm{u - u_h}_{H^1(\Omega)} \le c_a \inf_{u_h \in V^P_h} \norm{u - u_h}_{H^1(\Omega)} \\
+   \le c_a \big(\inf_{u_h \in V_h} \norm{u_s - u_{h}}_{H^1(\Omega)} + \inf_{u_h \in V^P_h} \norm{\log |\vc x| - u_h}\big)_{H^1(\Omega)}
+\end{multline}
 
 state with a radius $R$ of the 
 enrichment should be chosen so that 
@@ -829,23 +828,26 @@ refined meshes are gathered in the table \ref{tab:log_h1_estimate}.
 % \cmidrule(r){1-2}
 $h$    & min & max \\
 \midrule
-$\rfrac{14}{8}$    & 0.7 & 5.3   \\
-$\rfrac{14}{16}$   & 1.0 & 17.4  \\
-$\rfrac{14}{32}$   & 1.5 & 51.8  \\
-$\rfrac{14}{64}$   & 2.1 & 150   \\
-$\rfrac{14}{128}$  & 3.0 & 427   \\
+$\rfrac{14}{8}$    & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{14}{16}$   & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{14}{32}$   & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{14}{64}$   & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{14}{128}$  & 1.41 & 201   \\ %& 3.0 & 427   \\
 \bottomrule
 \end{tabular}
 \caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
-values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.}
+values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
+\notePE{Seems that there is still a coeffient close to $\sqrt{2}$.}}
 \label{tab:log_h1_estimate}
 \end{center}
 \end{table}
 %
 We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is close to 1.0 which means we
-have a good upper estimate. In the first row, the element size ($h>1.0$) breaks the assumptions under which the 
-estimate was derived. Further we can see in the \fig{fig:log_estimate_a} the error over the elements. We can 
-compare it with the \fig{fig:log_estimate_b} and see that the ratio is smallest where the error is largest 
+have a good upper estimate. 
+
+Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
+compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
+(our estimate is best) where the error is largest 
 (in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
 better approximated by the linear functions in the diagonal directions than in the axes directions.
 
@@ -858,23 +860,36 @@ better approximated by the linear functions in the diagonal directions than in t
   \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
     \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
   \caption[Log error estimate.]
-  {Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  {\notePE{Exchange figures with correct scales -- after running corrected test.}
+  Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
   in the center where the $\log$ singularity is situated and where the function is cut off.
   }
   \label{fig:log_estimate}
 \end{figure}
 
 
-Let us consider a 2D domain. The $H^1$ error on elements in distance $r$ is same as in the 1D case up to a constant close to 1 
-(potrebuje numericke overeni). Thus error on the band at distance $r$ is proportional to 
-\[
+Let us consider a 2D domain. The $H^1$ error on elements in distance $r$ is same as in the 1D case up to 
+a constant close to 1 as we have seen above. Thus error on the band at distance $r$ is proportional to 
+\begin{equation} \label{eqn:enr_choice_1}
  \|\log \vc x - u_h\|^2_{H^1(\Omega^P)} \approx \int_R^{diam \Omega} 2\pi r \frac{h^3}{12 r^4} \d r \le \frac{2\pi h^3}{12} 
 \frac{1}{2R^2} \approx \frac{h^3}{4R^2}.
-\]
-Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ should be
-\[
+\end{equation}
+Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ follows directly from \eqref{eqn:enr_choice_1}
+\begin{equation} \label{eqn:enr_choice_2}
   R = \frac{h^{3/2}}{4\epsilon}
-\]
+\end{equation}
+
+We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
+source term present. \notePE{Define the two test case - with and without source.}
+The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
+enrichment radius. As a reference in the graph, we added the error of classic FEM applied on the same problem 
+but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
+chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
+approaching the accuracy limits of the integration.
+
+We also see in \fig{fig:radius_conv_1} that the error is not decreasing significantly for larger enrichment 
+radii. This trend is more obvious from the graph in \fig{fig:radius_conv_2} which shows the dependance of the
+error on the enrichment radius for different element sizes.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
