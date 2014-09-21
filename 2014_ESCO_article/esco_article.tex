@@ -193,23 +193,25 @@ at the end.
 
 \section{Model}
 \label{sec:model}
-We consider a steady flow in a system of aquifers (2D layers of given thickness) which are separated by 
+We consider a steady flow in a system of aquifers (2D horizontal layers of given thickness) which are separated by 
 impermeable layers (aquitards). The aquifers are connected by wells which act as sources
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
 condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
 
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
-$m=1,\ldots M$, $B^m_w$ be its cross-section with $w$-th well, $w\in\mathcal{W}=\{1,\ldots,W\}$, and denote
-the union $B^m=\bigcup\limits_{w}B^m_w$. 
-We then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
+$m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
+with the base center $\vc{x}_w$, radius $r_w$ and height $|z_1-z_M|$.  We further denote 
+$B^m_w = B_W \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
+and the union $B^m=\bigcup\limits_{w}B^m_w$. 
+We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
-$\partial B^m=\bigcup\limits_{w}\partial B^m_w$, such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
+$\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
+such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
 
-\noteJB{define aquifers with their $z$-coordinate, $z_m$
+\noteJB{DONE: define aquifers with their $z$-coordinate, $z_m$
 define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le \rho_W\}$.
 An finally $B_W^m = B_W \cap \Theta^m$.}
-
 
 The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
 boundary conditions
@@ -363,7 +365,7 @@ We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure h
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
 radius of the well $\rho_w$ and introduce (global) enrichment function
-\noteJB{Change notation $R$ for enrichment radius, $\rho_W$ for radius of the well.}
+\noteJB{DONE: Change notation $R$ for enrichment radius, $\rho_W$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
@@ -386,7 +388,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 %   \end{cases}.
 % \end{equation}
 
-\notePE{TODO: do not forget to replace the notation of the enrichment function}
+\notePE{DONE: do not forget to replace the notation of the enrichment function}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: do not forget to replace the notation of the enrichment function
@@ -398,7 +400,11 @@ placed at the same positions throughout the aquifers (we consider only vertical 
   \label{fig:enrich_func}
 \end{figure}
 
-\notePE{TODO: define enrichment zone}
+\notePE{DONE: define enrichment zone}
+
+In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally.
+The area of the enrichment in our case is a circle of radius $R$ around a well. $R$ will be further called
+the enrichment radius.
     
 \subsection{Partition of unity methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
@@ -446,9 +452,9 @@ The enrichment function changes into the form
 \begin{equation} \label{eqn:xfem_ramp}
     L_{\alpha w} = G_w(\bx) s_{w}(\bx), \quad \alpha\in\mathcal{J}^e, w\in\mathcal{W}.
 \end{equation}
-They 
-\noteJB{Who are they? introduce shifed XFEM method and giv the same reference.}
-further suggests the \textbf{shifted} enrichment functions in order to preserve the property of standard 
+\noteJB{DONE: Who are they? introduce shifed XFEM method and giv the same reference.}
+In \cite{cxfem}, they 
+further suggest the \textbf{shifted} enrichment functions in order to preserve the property of standard 
 FE approximation at nodes $h(\bx_\alpha)=a_\alpha$; the value at the node is equal the corresponding degree
 of freedom. The enrichment functions must be then zero at the nodes which is satisfied in the form
 \begin{equation} \label{eqn:xfem_shift}
@@ -458,9 +464,10 @@ of freedom. The enrichment functions must be then zero at the nodes which is sat
 The property of the shifted formulation enables us to prescribe Dirichlet boundary condition such that
 $a_\alpha = h_D(\bx_\alpha)$.
 
-For the purpose of this article, let's call the XFEM with ramp function \textbf{XFEM-r} and the shifted 
-version \textbf{XFEM-s}, as we shall reference to them later.
-\noteJB{I prefer to be more explicit and use "ramp function XFEM" and "shifted XFEM", this is more clear for a reader familiar with the topic.}
+For the purpose of this article, let's call the two methods described above the \textbf{ramp function XFEM}  
+and the \textbf{shifted XFEM}, as we shall reference to them later.
+\noteJB{DONE: I prefer to be more explicit and use "ramp function XFEM" and "shifted XFEM", 
+this is more clear for a reader familiar with the topic.}
 
 \subsubsection{SGFEM}
 Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
