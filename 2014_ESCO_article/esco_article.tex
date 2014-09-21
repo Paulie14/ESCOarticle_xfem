@@ -207,7 +207,7 @@ consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
 
 \noteJB{define aquifers with their $z$-coordinate, $z_m$
-define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le r_W\}$.
+define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le \rho_W\}$.
 An finally $B_W^m = B_W \cap \Theta^m$.}
 
 
@@ -362,15 +362,15 @@ of the well $W$.
 We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure head on the distance from 
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
-radius of the well $R_w$ and introduce (global) enrichment function
+radius of the well $\rho_w$ and introduce (global) enrichment function
 \noteJB{Change notation $R$ for enrichment radius, $\rho_W$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
 s_w(\bx) = 
   \begin{cases}
-  \log(r_w(\bx)), & r_w > R_w\\
-  \log(R_w), & r_w \le R_w\\
+  \log(r_w(\bx)), & r_w > \rho_w\\
+  \log(\rho_w), & r_w \le \rho_w\\
   \end{cases}.
 \end{equation}
 See \fig{fig:enrich_func}.
@@ -554,7 +554,7 @@ There are two aspects which the integration must handle properly:
   \noteJB{Should mention that due to the singularity the integrated function is very large and small changes in the domain shape can lead to big erros.}
 \end{itemize}
 
-\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
+%\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
 One of the approaches to improve integration is local element refinement. We remind that the refinement only enables
 placing more quadrature points in the element and does not bring any more degrees of freedom in the 
 system. We will discuss the criteria for adaptive refinement, suggest improvement and compare our solution
@@ -593,7 +593,7 @@ and the integration error is large.
 We suggested additional criterion for subelements refinement which takes into account a subelement diameter 
 and its distance from the well
 \begin{equation}
-  d_T > C_R|d_{min} - r_w|,
+  d_T > C_R|d_{min} - \rho_w|,
 \end{equation}
 where $d_T$ is the diameter of the subelement and $d_{min}$ is minimal distance between a vertex of 
 the subelement and the well edge. $C_R$ is a scaling constant, equal 1.0 by default, through which we can 
@@ -673,7 +673,7 @@ the original version shows out large error that is concentrated on the closest n
 
 \section{A priori adaptive quadrature}
 
-Let us assume just one well of radius $R$ situated at the origin. The worst term to integrate is
+Let us assume just one well of radius $\rho$ situated at the origin. The worst term to integrate is
 \begin{equation}
     \label{eq:term-of-interest}
     f(r)=(\nabla \log r )^2 \approx r^{-2}
@@ -710,29 +710,29 @@ then the convergence criterion following from \eqref{eq:error-density} reads:
 \]
 
 Derived criterion holds only on squares, where the integrated function is smooth.
-This is not the case for squares intersecting the boundary of the well, $r_{min} \le R \le r_{max}$, where we integrate 
+This is not the case for squares intersecting the boundary of the well, $r_{min} \le \rho \le r_{max}$, where we integrate 
 discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
 \[
   \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
 \]
-where $S'$ is square with side $H=h/R$ and $\vc {r'} = \vc{r}/R$. Empiricaly determined error of the midpoint rule for later 
+where $S'$ is square with side $H=h/\rho$ and $\vc {r'} = \vc{r}/\rho$. Empiricaly determined error of the midpoint rule for later 
 integral is
 \[
     E(H) = c_e H^{p_e}, \quad \text{with } c_e=0.08,\ p_e=2.5.
 \]
 This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
 \begin{equation} \label{eqn:h_criterion}
-   h\le h_b(\epsilon) = \Big(\frac{\epsilon R^{p_e}}{c_e}\Big)^{\frac{1}{p_e-2}}. 
+   h\le h_b(\epsilon) = \Big(\frac{\epsilon \rho^{p_e}}{c_e}\Big)^{\frac{1}{p_e-2}}. 
 \end{equation}
 
 %\noteJB{TODO: modify test of integration on unit disk for the function $1/r^2$.}
 
 Based on the presented analysis above, we propose following rules for adaptive quadrature:
 \begin{enumerate}
- \item If $r_{max} < R$ the square quadrature is zero.
- \item If $r_{min} < R < r_{max}$. For $h \ge h_b(\epsilon)$ subdivide the square, else use lowest order quadrature for 
-original function (i.e. $f(r)=0$ for $r\le R$).
- \item If $r_{min} > R$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
+ \item If $r_{max} < \rho$ the square quadrature is zero.
+ \item If $r_{min} < \rho < r_{max}$. For $h \ge h_b(\epsilon)$ subdivide the square, else use lowest order quadrature for 
+original function (i.e. $f(r)=0$ for $r\le \rho$).
+ \item If $r_{min} > \rho$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
  \begin{equation} \label{eqn:alpha_criterion}
     \frac{\alpha_n h^{2n}}{r_{min}^{2n+2}} \le \epsilon,
  \end{equation}
@@ -945,13 +945,13 @@ and find the constants $a,b$ using the boundary conditions such that \eqref{eqn:
 of \eqref{eqn:laplace_problem}.
 We obtain $a,b$ by solving
 \begin{eqnarray*}
-  a\log(R_w) + b = P_w, \\
+  a\log(\rho_w) + b = P_w, \\
   a\log(R) + b = P_D,
 \end{eqnarray*}
-where $R$ is radius of the domain and $R_w$ is the well radius.
+where $R$ is radius of the domain and $\rho_w$ is the well radius.
 The solution of \eqref{eqn:laplace_problem}, which we shall use as the reference, is then
 \begin{equation} \label{eqn:laplace_solution}
-  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{R_w}{R}\right)}, \; b=-a\log R
+  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
 \end{equation}
 
 Second problem we solve is a Poisson problem
