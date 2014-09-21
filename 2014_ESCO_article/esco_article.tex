@@ -882,7 +882,7 @@ Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ follows dir
 We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
 source term present. \notePE{Define the two test case - with and without source.}
 The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
-enrichment radius. As a reference in the graph, we added the error of classic FEM applied on the same problem 
+enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
 but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
 chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
 approaching the accuracy limits of the integration.
@@ -901,7 +901,8 @@ error on the enrichment radius for different element sizes.
 %   \hspace{0pt}
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Adaptive quadrature convergence.]{Convergence graph of adaptive quadrature on function $r^{-2}$.}
+  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM sin(x)'
+  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:radius_conv_1}
 \end{figure}
 \begin{figure}[!htb]
@@ -914,7 +915,8 @@ error on the enrichment radius for different element sizes.
 %   \hspace{0pt}
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Adaptive quadrature convergence.]{Convergence graph of adaptive quadrature on function $r^{-2}$.}
+  \caption[Enrichment radius choice.]{Dependance of the error on the enrichment radius for different
+  element sizes.}
   \label{fig:radius_conv_2}
 \end{figure}
 
