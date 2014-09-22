@@ -54,7 +54,6 @@
 \usepackage{amsmath}
 \usepackage{esint}
 
-
 %% The amsthm package provides extended theorem environments
 %% \usepackage{amsthm}
 
@@ -70,6 +69,8 @@
 \journal{Applied Mathematics and Computation}
 
 %commands:
+\newcommand{\defref}[1]{\hyperref[#1]{Def.~\ref{#1}}}
+\newcommand{\probref}[1]{\hyperref[#1]{Problem~\ref{#1}}}
 \newcommand{\fig}[1]{\hyperref[#1]{Fig.\ref{#1}}}
 \newcommand{\figpath}{../graphics/}
 
@@ -88,6 +89,8 @@
 \newcommand{\noteJB}[1]{{\color{Blue} \textbf{JB: } \textit{#1}}}
 \newcommand{\notePE}[1]{{\color{Orange} \textbf{PE: } \textit{#1}}}
 
+\newdefinition{mdef}{Definition}%[section]
+\newdefinition{prob}{Problem}%[section]
 
 \begin{document}
 
@@ -756,7 +759,7 @@ below, without increasing the number of evaluation comapred to current implement
 We now describe the experiment from which we obtained the coefficients in the criterion 
 \eqref{eqn:h_criterion}. Let us have a single element, a square $4\times4$, out of which a circle of unit radius 
 is cut off -- this represents an element with a well. We now want to investigate integration error
-in the vicinity of the circle on the function $f=r^{-2}$, $r$ beiing the distance from the center of the circle. 
+in the vicinity of the circle on the function $f=r^{-2}$, $r$ being the distance from the center of the circle. 
 
 We compute the integral on the selected level of refinement only on the squares intersecting the circle. Then
 we refine the squares up to the 12-th level, integrate again and compute the difference. Quadratures rules
@@ -936,44 +939,86 @@ SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{
 \section{Results}
 \label{sec:results}
 
-\subsection{Analytical solution}
-To measure convergence an analytic solution is needed. 
-\notePE{TODO: why only single aquifer problems}
-Let's start with a Laplace problem on a circular disk
-with a single well in the center
-\begin{eqnarray} \label{eqn:laplace_problem}
-    -T \Delta h = 0 \nonumber\\
-    h|_{\partial\Omega} = P_D \\
-    h|_{B_w} = P_w \nonumber
-\end{eqnarray}
-where the pressure $P_w$ at the well edge $B_w$ and the pressure $P_D$ at the boundary are given.
-Remind the function \eqref{eqn:solution_form} $h=\log(r_w)+b$ (which we used to define the enrichment function) 
-and find the constants $a,b$ using the boundary conditions such that \eqref{eqn:solution_form} is the solution 
-of \eqref{eqn:laplace_problem}.
-We obtain $a,b$ by solving
+\subsection{Test cases}
+In order to measure convergence an analytic solution is needed. We suggest two following test cases which were
+used in our numerical tests. We confined our tests to single aquifer problems for the purpose of this article 
+but our implementation enables multi-aquifer systems as well.
+
+\notePE{TODO: Move before the numerical tests.}
+\begin{prob}[Laplace equation] \label{def:test_case_1}
+Find the solution $h$ of a single aquifer problem
+\begin{eqnarray*} \label{eqn:laplace_problem}
+    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D \\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
+The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
+\end{prob}
+We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
+pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
+(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
+and use the boundary conditions to find the constants $a,b$  such that they satisfy
 \begin{eqnarray*}
   a\log(\rho_w) + b = P_w, \\
   a\log(R) + b = P_D,
 \end{eqnarray*}
-where $R$ is radius of the domain and $\rho_w$ is the well radius.
-The solution of \eqref{eqn:laplace_problem}, which we shall use as the reference, is then
+where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
+The solution is then
 \begin{equation} \label{eqn:laplace_solution}
   h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
 \end{equation}
+The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
+\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
+diagonal of the square.
 
-Second problem we solve is a Poisson problem
-\begin{eqnarray} \label{eqn:poisson_problem}
-    -T \Delta h = TU\omega^2\sin(\omega x) \nonumber\\
-    h|_{\partial\Omega} = P_D + U\sin(\omega x)\\
-    h|_{B_w} = P_w. \nonumber
-\end{eqnarray}
-where $U$ and $\omega$ are given
+\begin{prob}[Poisson equation] \label{def:test_case_2}
+Find the solution $h$ of a single aquifer problem with a source term
+\begin{eqnarray*} \label{eqn:poisson_problem}
+    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where $U$ and $\omega$ are given.
+\end{prob}
 %where $U$ is the amplitude and $\omega$ is the angular frequency 
-and the solution 
+The analytic solution of \probref{def:test_case_2}
 \begin{equation} \label{eqn:poisson_solution}
   h=a\log(r_w)+b+U\sin(\omega x),
 \end{equation}
-with $a,b$ being the same as in \eqref{eqn:laplace_solution}, is obtained the same way as above.
+is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
+
+The input parameters for the numerical test of \probref{def:test_case_1} and \probref{def:test_case_2} 
+are gather in the table \ref{tab:parameters}.
+%
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+parameter    & value \\
+\midrule
+$\Omega$   & $(-100,100)\times(-100,100)$   \\
+$\vc{x}_w$  & $[5.43,5.43]$   \\
+transimisivity $T$          & 1.0   \\
+boundary pressure $P_D$     & 0.0   \\
+well pressure $P_w$         & 100.0 \\
+well radius $\rho_w$        & 0.2 \\
+$\sigma_w$                  & $10^5$ \\
+$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
+$U$                         & 0.03 \\
+$\omega$                    & 8.0 \\
+\bottomrule
+\end{tabular}
+\caption{Input parameters for the numerical tests. Units are omitted.
+\notePE{TODO: Are the units necessary here?}}
+\label{tab:parameters}
+\end{center}
+\end{table}
+%
 
 \subsection{Convergence on Laplace problem}
 \subsection{Convergence on Poisson problem with sinusoidal source}
