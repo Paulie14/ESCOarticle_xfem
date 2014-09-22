@@ -353,16 +353,20 @@ In our case the simple problem is finding pressure distribution in a circular do
 placed at the center. It can be easily proved that the function
 %
 \begin{equation} \label{eqn:solution_form}
-  h = a \log(r_w)+b
+  h = a \log(r_w)+b, %\quad \textrm{where }
+\end{equation}
+where $r_w$ is a distance function
+\begin{equation} \label{eqn:distance}
+r_w(\vc{x}) = \|\bx - \vc{x}_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2},
 \end{equation}
 %
 is the solution of a Laplace equation $-T \Delta h = 0$, just by putting the function into the equation. 
-For sake of simplicity we introduce a distance function 
-\begin{equation*}
-      r_w(\bx) = \|\bx - \xi_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2}.
-\end{equation*}
-of the well $W$.
-\noteJB{Rather move close to the definition of enrichment function.}
+% For sake of simplicity we introduce a distance function 
+% \begin{equation*}
+%       r_w(\bx) = \|\bx - \xi_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2}.
+% \end{equation*}
+% of the well $W$.
+\noteJB{DONE:Rather move close to the definition of enrichment function.}
 %
 We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure head on the distance from 
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
@@ -558,22 +562,27 @@ are the price for using enrichment functions and a coarse mesh.
 
 There are two aspects which the integration must handle properly:
 \begin{itemize}
-  \item the steep gradient of the pressure head in the vicinity of a well (the singularity),
-  \noteJB{in fact it is the steep gradiant of enrichment base functions.}
+  \item the steep gradient of enrichment base functions in the vicinity of a well (the singularity),
+  \noteJB{DONE: in fact it is the steep gradiant of enrichment base functions.}
   \item the well edge (since the elements of the triangulation do not take the well into account)
-  \noteJB{Should mention that due to the singularity the integrated function is very large and small changes in the domain shape can lead to big erros.}
 \end{itemize}
 
+Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
+can lead to large errors in integration.
+
+\noteJB{DONE: Should mention that due to the singularity the integrated function is very large and small 
+changes in the domain shape can lead to big erros.}
+
 %\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
-One of the approaches to improve integration is local element refinement. We remind that the refinement only enables
-placing more quadrature points in the element and does not bring any more degrees of freedom in the 
-system. We will discuss the criteria for adaptive refinement, suggest improvement and compare our solution
+One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
+small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
+in the system. We will discuss the adaptivity criteria, suggest improvement and compare our solution
 with the original one in this subsection. We will refer also some of the convergence results which will be 
 shown later in \ref{sec:results}.
-\noteJB{Rather use term "adaptive quadrature" then local element refinement. Finite elemnts remain intouched.}
 
 \subsection{Adaptive refinement of an element}
 \label{sec:refinement_element}
+\noteJB{Rather use term "adaptive quadrature" then local element refinement. Finite elements remain untouched.}
 
 Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
 that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
