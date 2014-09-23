@@ -80,10 +80,12 @@
 \def\d{\mathrm{d}}
 \def\norm#1{\| #1 \|}
 \def\abs#1{| #1 |}
+\def\prtl{\partial}
 \newcommand{\dd}{\; \mathrm{d}}
 \newcommand{\R}{\mathbf{R}}
 \newcommand{\bx}{\vc{x}}
 \newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+
 
 \newcommand{\noteJB}[1]{{\color{Blue} \textbf{JB: } \textit{#1}}}
 \newcommand{\notePE}[1]{{\color{Orange} \textbf{PE: } \textit{#1}}}
@@ -201,7 +203,7 @@ condition of the aquifers which can be of Dirichlet type or be homogeneous of Ne
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
 $m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
-with the base center $\vc{x}_w$, radius $r_w$ and height $|z_1-z_M|$.  We further denote 
+with the base center $\vc{x}_w$, radius $\rho_w$ and height $|z_1-z_M|$.  We further denote 
 $B^m_w = B_W \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
 and the union $B^m=\bigcup\limits_{w}B^m_w$. 
 We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
@@ -365,7 +367,7 @@ We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure h
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
 radius of the well $\rho_w$ and introduce (global) enrichment function
-\noteJB{DONE: Change notation $R$ for enrichment radius, $\rho_W$ for radius of the well.}
+\noteJB{DONE: Change notation $R$ for enrichment radius, $\rho_w$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
@@ -401,10 +403,12 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 \end{figure}
 
 \notePE{DONE: define enrichment zone}
+\noteJB{Later I need more precise definition of enrichment zone. Consider to move this to next subsection and describe common notation of node index sets.}
 
-In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally.
-The area of the enrichment in our case is a circle of radius $R$ around a well. $R$ will be further called
-the enrichment radius.
+In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
+to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
+nodes that are in some enrichment zone.
+
     
 \subsection{Partition of unity methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
@@ -781,42 +785,67 @@ quadrature $c_e=12.65$ and $p_e=1.27$.
 \end{figure}
 
 \section{Estimate the enrichment radius}
-The enrichment is done in order to diminish approximation error of the precise solution of the problem, i.e.
-$\tilde e_h = \inf\limits_{u_h \in V_h} \| u - u_h \|_{V}$. Let us consider a single well at the origin. The solution
-can be splitted $u=u_s+u_r$ to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
-Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}) we get
-\begin{multline}
-   \norm{u - u_h}_{H^1(\Omega)} \le c_a \inf_{u_h \in V^P_h} \norm{u - u_h}_{H^1(\Omega)} \\
-   \le c_a \big(\inf_{u_h \in V_h} \norm{u_s - u_{h}}_{H^1(\Omega)} + \inf_{u_h \in V^P_h} \norm{\log |\vc x| - u_h}\big)_{H^1(\Omega)}
-\end{multline}
-
-state with a radius $R$ of the 
-enrichment should be chosen so that 
+In this section, we shall study dependance of the solution error on the enrichement radius $R$. First part is devoted to 
+theoretical analysis the later part presents numerical results.
+Let us consider a general elliptic problem to find $u\in V$ satifying
 \[
-   \min\limits_{u_h \in V^P_h} \| \log  \vc x - u_h\|_{V(\Omega^P)} \le \epsilon
+   a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
 \]
-where $V^P_h$ is polynomial finite element approximation space on unenriched part $\Omega^P$ of the domain $\Omega$, 
-$V = H^1(\Omega)$, and $\epsilon$ is prescribed tolerance. 
-
-For linear elements and 1D case, we get
-\begin{align*}
- \|\log x - u_h\|^2_{L^2(r,r+h)} 
- &= h\int_0^1 \abs{\log(r+ht) - \big[ (1-t)\log r + t\log(r+h) \big]}^2\d t\\
- &= \frac{h^5}{4r^4}\int_0^1 t^2(1-t)^2 + O(h^6)\approx \frac{h^5}{120 r^4}
-\end{align*}
-
-\begin{align*}
- \|\nabla (\log x - u_h)\|^2_{L^2(r,r+h)} &=
- h\int_0^1 \abs{\frac{1}{r+ht} - \frac{\log(r+h) - \log r}{h}}^2\d t \\
- &=
-\frac{h^3}{r^4}\int_0^1 (\frac12-t)^2 + O(h^4)\approx 
-\frac{h^3}{12 r^4}
-\end{align*}
-
-And thus,
-\begin{equation} \label{eqn:log_h1_estimate}
-  \|\log x - u_h\|_{H^1(r,r+h)} \approx h^{3/2} r^{-2} 12^{-1/2}.
+where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \gamma \norm{v}_V^2$, $\gamma>0$, and $f$ an bounded linear form, $f\in V'$. 
+Suppose, that the problem is to be solved on a domain $\Omega \subset \R^2$ with a single hole (well) of radius $\rho$ at the origin. 
+Let us assume, that the solution can be splitted to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
+Let $V^P_h$ be a polynomial finite element subspace of $V$ on a regular mesh of elements with a maximal diameter $h$
+and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enrichment zone $Z_R$, i.e.
+\[
+   \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
+\]
+Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}), we get
+\begin{equation}
+    \label{eq:std_err_estimate}
+    \norm{u - u_h}_{V} \le c_a \inf_{v \in V_h} \norm{u - v}_{V} 
+    \le c_a \big(\inf_{v \in V^P_h} \norm{u_r - v}_{V} + \inf_{v \in V_h} \norm{u_s - v}_{V} \big).   
 \end{equation}
+where $c_a=1+\norm{a}/\gamma$.
+In the following, we consider $V=H^1(\Omega)$, square grid and $V^P_h$ formed by bilinear finite elements. 
+Then \eqref{eq:std_err_estimate} can be further estimated using approximation preperty of $V^P_h$:
+\begin{equation}
+    \label{eq:particular_estimate}
+    \norm{u - u_h}_{V} \le c_a \big(c h \abs{u_r}_{H^2(\Omega)} + \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \big)   
+\end{equation}
+where $\Pi u_s$ denotes interpolation of $u_s$ in $V^P_h$. Our next aim is to find tight estimate for the second term.
+To this end, we calculate $H^1$ error on a single square element $S_{h,r}$ with side $h$ and distance $r$ from origin.
+Using parametrization $0<s,t<1$,  we get
+
+\begin{align*}
+ (u_s - \Pi u_s)(s,t)&=\log\sqrt{(r+hs)^2+(ht)^2} -\Big[(1-s)(1-t)\log r + (1-s)t\log\sqrt{r^2+h^2}\\
+ &\quad+ s(1-t) \log(r+h) + st\log\sqrt{(r+h)^2+h^2} \Big]\\
+ &=\frac12 \frac{h^2}{r^2}\big(t^2-t - s^2 +s\big) + O(h^3)
+\end{align*}
+and 
+\begin{equation}
+ \nabla(u_s - \Pi u_s)(s,t) = \frac{h}{r^2} \Big( \frac12-s, t-\frac12 \Big) + O(h^2).
+\end{equation}
+Assuming $h<1$, we can neglect higher order terms. Then by direct integration
+\begin{align*}
+ \norm{u_s - \Pi u_s}^2_{L^2(S_{h,r})} \approx \frac14 \frac{h^6}{r^4}\int_0^1\int_0^1 (t^2-t-s^2+s)^2\,\d s\, \d t = \frac{1}{360}\frac{h^6}{r^4} 
+\end{align*}
+and
+\begin{align*}
+ \norm{\nabla(u_s - \Pi u_s)}^2_{L^2(S_{h,r})} \approx \frac{2h^4}{r^4} \int_0^1 \Big(t-\frac12\Big)^2 \d t = \frac{1}{6}\frac{h^4}{r^4}.
+\end{align*}
+Thus for the density of squared error we obtain 
+\[
+    \frac{1}{\abs{S_{h,r}}} \norm{u_s - \Pi u_s}^2_{H^1(S_{h,r})} \approx \frac{h^2}{6r^4}
+\]
+and we can estimate
+\[
+  \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}.
+\]
+Recalling the estimate \eqref{eq:particular_estimate}, we can conclude that optimal choice of the enrichment radius is $1/R\approx \abs{u_r}_H^2(\Omega)$, 
+which balance error in the regular and the singular part. \noteJB{Possible remarks: General form of the error; automatic choice via aposteriori error estimates
+$R \approx h/\norm{u-u_h}_{H^1}$.}
+
+
 
 We confirm the validity of the estimate \eqref{eqn:log_h1_estimate} in 2D case by a numerical test.
 The ratio 
@@ -875,16 +904,6 @@ better approximated by the linear functions in the diagonal directions than in t
 \end{figure}
 
 
-Let us consider a 2D domain. The $H^1$ error on elements in distance $r$ is same as in the 1D case up to 
-a constant close to 1 as we have seen above. Thus error on the band at distance $r$ is proportional to 
-\begin{equation} \label{eqn:enr_choice_1}
- \|\log \vc x - u_h\|^2_{H^1(\Omega^P)} \approx \int_R^{diam \Omega} 2\pi r \frac{h^3}{12 r^4} \d r \le \frac{2\pi h^3}{12} 
-\frac{1}{2R^2} \approx \frac{h^3}{4R^2}.
-\end{equation}
-Then, the optimal choice of $R$ for given $H^1$ tolerance $\epsilon$ follows directly from \eqref{eqn:enr_choice_1}
-\begin{equation} \label{eqn:enr_choice_2}
-  R = \frac{h^{3/2}}{4\epsilon}
-\end{equation}
 
 We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
 source term present. \notePE{Define the two test case - with and without source.}
