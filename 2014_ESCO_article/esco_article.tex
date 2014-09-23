@@ -289,7 +289,8 @@ later replaced by the average
 \begin{equation} \label{eqn:average}
   \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
 \end{equation}
-which corresponds to \cite{gracie}.
+which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
+amount is possible since our test cases are symetric.
 
 \subsection{Weak formulation}
 We define the trial and the test spaces
@@ -342,7 +343,7 @@ Boundary conditions on wells?}
 % $H^m_w$ are also constants, chosen to be equal one, and so \eqref{eqn:well_balance} is not modified.
 
 \section{Discretization}
-\label{sec:pum_methods}
+\label{sec:discretization}
 We can now proceed to the choice of the enrichment and discretize the system of equations
 \eqref{eqn:weak_form}.
 Let's imagine that we have only one aquifer so we can omit the upper index $m$ in this section.
@@ -419,6 +420,7 @@ nodes that are in some enrichment zone.
 
     
 \subsection{Partition of unity methods}
+\label{sec:pum_methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
 functions associated with the node $\bx_\alpha$ of the triangulation. 
 In \textbf{standard XFEM}, we write the solution in the form
@@ -555,6 +557,87 @@ Notice that there are no additional enriched nodes on blending elements, like in
 %   \rm{diag}(\mathbf{E}^m)_w &=&\int\limits_{B^m_w} \sigma^m_w + c^{m+1}_w   ,\qquad \forall w\in\mathcal{W}\\
 %   \rm{diag}(\mathbf{F}^m)_w &=& -c^m_w ,\qquad \forall w\in\mathcal{W}
 % \end{eqnarray}
+
+\section{Test problems} \label{sec:test_cases}
+In this section we define problems that we solve in our numerical experiments. We restrict ourselves to 
+single aquifer problems for the purpose of this article but our implementation enables multi-aquifer systems 
+as well. In order to measure convergence it is desirable to have an analytic solution which is available
+in the two following cases. 
+
+\begin{prob}[Laplace equation] \label{def:test_case_1}
+Find the solution $h$ of a single aquifer problem
+\begin{eqnarray*} \label{eqn:laplace_problem}
+    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D \\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
+The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
+\end{prob}
+We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
+pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
+(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
+and use the boundary conditions to find the constants $a,b$  such that they satisfy
+\begin{eqnarray*}
+  a\log(\rho_w) + b = P_w, \\
+  a\log(R) + b = P_D,
+\end{eqnarray*}
+where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
+The solution is then
+\begin{equation} \label{eqn:laplace_solution}
+  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
+\end{equation}
+The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
+\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
+diagonal of the square.
+
+\begin{prob}[Poisson equation] \label{def:test_case_2}
+Find the solution $h$ of a single aquifer problem with a source term
+\begin{eqnarray*} \label{eqn:poisson_problem}
+    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where $U$ and $\omega$ are given.
+\end{prob}
+%where $U$ is the amplitude and $\omega$ is the angular frequency 
+The analytic solution of \probref{def:test_case_2}
+\begin{equation} \label{eqn:poisson_solution}
+  h=a\log(r_w)+b+U\sin(\omega x),
+\end{equation}
+is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
+
+The input parameters for the numerical tests of \probref{def:test_case_1} and \probref{def:test_case_2} 
+are gathered in the table \ref{tab:parameters}.
+%
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+parameter    & value \\
+\midrule
+$\Omega$   & $(-100,100)\times(-100,100)$   \\
+$\vc{x}_w$  & $[5.43,5.43]$   \\
+transimisivity $T$          & 1.0   \\
+boundary pressure $P_D$     & 0.0   \\
+well pressure $P_w$         & 100.0 \\
+well radius $\rho_w$        & 0.2 \\
+$\sigma_w$                  & $10^5$ \\
+$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
+$U$                         & 0.03 \\
+$\omega$                    & 8.0 \\
+\bottomrule
+\end{tabular}
+\caption{Input parameters for the numerical tests. Units are omitted.
+\notePE{TODO: Are the units necessary here?}}
+\label{tab:parameters}
+\end{center}
+\end{table}
+%
 
 \section{Integration on enriched elements}
 \label{sec:integration}
@@ -877,22 +960,24 @@ refined meshes are gathered in the table \ref{tab:log_h1_estimate}.
 % \cmidrule(r){1-2}
 $h$    & min & max \\
 \midrule
-$\rfrac{14}{8}$    & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
-$\rfrac{14}{16}$   & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
-$\rfrac{14}{32}$   & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
-$\rfrac{14}{64}$   & 1.41 & 99.5  \\ %& 2.1 & 150   \\
-$\rfrac{14}{128}$  & 1.41 & 201   \\ %& 3.0 & 427   \\
+$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
 \bottomrule
 \end{tabular}
 \caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
 values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
-\notePE{Seems that there is still a coeffient close to $\sqrt{2}$.}}
+\notePE{DONE: Seems that there is still a coeffient close to $\sqrt{2}$.}}
 \label{tab:log_h1_estimate}
 \end{center}
 \end{table}
 %
-We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is close to 1.0 which means we
-have a good upper estimate. 
+We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
+which means we have a good upper estimate. 
+The value in brackets at the finest refinement pertains to several elements near the well where the used 
+quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
 
 Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
 compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
@@ -932,7 +1017,6 @@ error on the enrichment radius for different element sizes.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
-%TODO: add refinement level to legend
   \centering    
   \includegraphics[width=0.9\textwidth]{results/radius_conv_1.pdf}
 %   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
@@ -946,7 +1030,6 @@ error on the enrichment radius for different element sizes.
 \end{figure}
 \begin{figure}[!htb]
 %   \vspace{0pt}
-%TODO: add refinement level to legend
   \centering    
   \includegraphics[width=0.9\textwidth]{results/radius_conv_2.pdf}
 %   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
@@ -954,7 +1037,7 @@ error on the enrichment radius for different element sizes.
 %   \hspace{0pt}
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Dependance of the error on the enrichment radius for different
+  \caption[Enrichment radius choice.]{Dependence of the error on the enrichment radius for different
   element sizes.}
   \label{fig:radius_conv_2}
 \end{figure}
@@ -967,90 +1050,35 @@ SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{
 
 \section{Results}
 \label{sec:results}
+In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
+defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 
-\subsection{Test cases}
-In order to measure convergence an analytic solution is needed. We suggest two following test cases which were
-used in our numerical tests. We confined our tests to single aquifer problems for the purpose of this article 
-but our implementation enables multi-aquifer systems as well.
+Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
+At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
+with the highest error estimate are refined (the element size is then taken at the smallest elements in the 
+vicinity of the well). We see that the convergence is slow until the size of elements reaches the scale of the
+well. Therefore we divided the graph in two parts with convergence rates 0.56 and 1.27.
 
-\notePE{TODO: Move before the numerical tests.}
-\begin{prob}[Laplace equation] \label{def:test_case_1}
-Find the solution $h$ of a single aquifer problem
-\begin{eqnarray*} \label{eqn:laplace_problem}
-    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D \\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
-The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
-\end{prob}
-We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
-pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
-(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
-and use the boundary conditions to find the constants $a,b$  such that they satisfy
-\begin{eqnarray*}
-  a\log(\rho_w) + b = P_w, \\
-  a\log(R) + b = P_D,
-\end{eqnarray*}
-where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
-The solution is then
-\begin{equation} \label{eqn:laplace_solution}
-  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
-\end{equation}
-The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
-\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
-diagonal of the square.
 
-\begin{prob}[Poisson equation] \label{def:test_case_2}
-Find the solution $h$ of a single aquifer problem with a source term
-\begin{eqnarray*} \label{eqn:poisson_problem}
-    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where $U$ and $\omega$ are given.
-\end{prob}
-%where $U$ is the amplitude and $\omega$ is the angular frequency 
-The analytic solution of \probref{def:test_case_2}
-\begin{equation} \label{eqn:poisson_solution}
-  h=a\log(r_w)+b+U\sin(\omega x),
-\end{equation}
-is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
 
-The input parameters for the numerical test of \probref{def:test_case_1} and \probref{def:test_case_2} 
-are gather in the table \ref{tab:parameters}.
-%
-\begin{table}[!ht]
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-parameter    & value \\
-\midrule
-$\Omega$   & $(-100,100)\times(-100,100)$   \\
-$\vc{x}_w$  & $[5.43,5.43]$   \\
-transimisivity $T$          & 1.0   \\
-boundary pressure $P_D$     & 0.0   \\
-well pressure $P_w$         & 100.0 \\
-well radius $\rho_w$        & 0.2 \\
-$\sigma_w$                  & $10^5$ \\
-$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
-$U$                         & 0.03 \\
-$\omega$                    & 8.0 \\
-\bottomrule
-\end{tabular}
-\caption{Input parameters for the numerical tests. Units are omitted.
-\notePE{TODO: Are the units necessary here?}}
-\label{tab:parameters}
-\end{center}
-\end{table}
-%
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/convergence.pdf}
+  \caption[Convergence graph \probref{def:test_case_1}]{Convergence graph of different methods on 
+  \probref{def:test_case_1}. }
+  \label{fig:convergence}
+\end{figure}
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
+  \caption[Convergence graph \probref{def:test_case_2}]{Convergence graph of different methods on 
+  \probref{def:test_case_2}. The 'FEM sin(x)'
+  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
+  \label{fig:convergence_sin}
+\end{figure}
 
-\subsection{Convergence on Laplace problem}
-\subsection{Convergence on Poisson problem with sinusoidal source}
 
 \section{Summary}
 \label{sec:summary}
