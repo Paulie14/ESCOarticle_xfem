@@ -204,6 +204,7 @@ impermeable layers (aquitards). The aquifers are connected by wells which act as
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
 condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
 
+\subsection{Mathematical model}
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
 $m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
@@ -214,10 +215,6 @@ We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior bo
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
 such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
-
-\noteJB{DONE: define aquifers with their $z$-coordinate, $z_m$
-define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le \rho_W\}$.
-An finally $B_W^m = B_W \cap \Theta^m$.}
 
 The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
 boundary conditions
@@ -365,18 +362,11 @@ r_w(\vc{x}) = \|\bx - \vc{x}_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2},
 \end{equation}
 %
 is the solution of a Laplace equation $-T \Delta h = 0$, just by putting the function into the equation. 
-% For sake of simplicity we introduce a distance function 
-% \begin{equation*}
-%       r_w(\bx) = \|\bx - \xi_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2}.
-% \end{equation*}
-% of the well $W$.
-\noteJB{DONE:Rather move close to the definition of enrichment function.}
 %
 We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure head on the distance from 
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
 radius of the well $\rho_w$ and introduce (global) enrichment function
-\noteJB{DONE: Change notation $R$ for enrichment radius, $\rho_w$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
@@ -399,7 +389,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 %   \end{cases}.
 % \end{equation}
 
-\notePE{DONE: do not forget to replace the notation of the enrichment function}
+%\notePE{DONE: do not forget to replace the notation of the enrichment function}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: do not forget to replace the notation of the enrichment function
@@ -411,12 +401,11 @@ placed at the same positions throughout the aquifers (we consider only vertical 
   \label{fig:enrich_func}
 \end{figure}
 
-\notePE{DONE: define enrichment zone}
-\noteJB{Later I need more precise definition of enrichment zone. Consider to move this to next subsection and describe common notation of node index sets.}
 
 In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
 to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
 nodes that are in some enrichment zone.
+\noteJB{$B_R$ is used in two different meanings, either as cylinder or as the disk (ball in $R^2$).}
 
     
 \subsection{Partition of unity methods}
@@ -440,7 +429,7 @@ where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
 \notePE{TODO: define test functions, refer to the weak form}
 
 \subsubsection{Corrected XFEM}
-The corrected XFEM \cite{cxfem} deals with the convergence problem on blending elements and 
+The corrected XFEM, introduced in  \cite{cxfem}, deals with the convergence problem on blending elements and 
 introduces the \textbf{ramp function}
 %\begin{equation} \label{eqn:ramp_function}
 \begin{eqnarray} \label{eqn:ramp_function}
@@ -466,9 +455,10 @@ The enrichment function changes into the form
 \begin{equation} \label{eqn:xfem_ramp}
     L_{\alpha w} = G_w(\bx) s_{w}(\bx), \quad \alpha\in\mathcal{J}^e, w\in\mathcal{W}.
 \end{equation}
-\noteJB{DONE: Who are they? introduce shifed XFEM method and giv the same reference.}
-In \cite{cxfem}, they 
-further suggest the \textbf{shifted} enrichment functions in order to preserve the property of standard 
+
+
+In the same work, i.e. \cite{cxfem}, authors further suggest the \textbf{shifted} enrichment functions in order 
+to preserve the property of standard 
 FE approximation at nodes $h(\bx_\alpha)=a_\alpha$; the value at the node is equal the corresponding degree
 of freedom. The enrichment functions must be then zero at the nodes which is satisfied in the form
 \begin{equation} \label{eqn:xfem_shift}
@@ -480,8 +470,6 @@ $a_\alpha = h_D(\bx_\alpha)$.
 
 For the purpose of this article, let's call the two methods described above the \textbf{ramp function XFEM}  
 and the \textbf{shifted XFEM}, as we shall reference to them later.
-\noteJB{DONE: I prefer to be more explicit and use "ramp function XFEM" and "shifted XFEM", 
-this is more clear for a reader familiar with the topic.}
 
 \subsubsection{SGFEM}
 Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
@@ -571,16 +559,11 @@ are the price for using enrichment functions and a coarse mesh.
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of a well (the singularity),
-  \noteJB{DONE: in fact it is the steep gradiant of enrichment base functions.}
   \item the well edge (since the elements of the triangulation do not take the well into account)
 \end{itemize}
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in integration.
-
-\noteJB{DONE: Should mention that due to the singularity the integrated function is very large and small 
-changes in the domain shape can lead to big erros.}
-
 %\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
 One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
 small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
@@ -588,9 +571,8 @@ in the system. We will discuss the adaptivity criteria, suggest improvement and 
 with the original one in this subsection. We will refer also some of the convergence results which will be 
 shown later in \ref{sec:results}.
 
-\subsection{Adaptive refinement of an element}
+\subsection{Adaptive quadrature}
 \label{sec:refinement_element}
-\noteJB{Rather use term "adaptive quadrature" then local element refinement. Finite elements remain untouched.}
 
 Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
 that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
@@ -815,7 +797,7 @@ and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on
 \[
    \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
 \]
-Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}), we get
+Using standard error estimate for eliptic PDE (see e.g. \cite{ciarlet_basic_1991}), we get
 \begin{equation}
     \label{eq:std_err_estimate}
     \norm{u - u_h}_{V} \le c_a \inf_{v \in V_h} \norm{u - v}_{V} 
@@ -857,17 +839,10 @@ and we can estimate
 \[
   \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}.
 \]
-Recalling the estimate \eqref{eq:particular_estimate}, we can conclude that optimal choice of the enrichment radius is $1/R\approx \abs{u_r}_H^2(\Omega)$, 
-which balance error in the regular and the singular part. \noteJB{Possible remarks: General form of the error; automatic choice via aposteriori error estimates
-$R \approx h/\norm{u-u_h}_{H^1}$.}
+Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_H^1(\Omega)$, 
+which balance error in the regular and the singular part. In combination with an a posteriori error analysis this could give a rule for automatic
+determination of the enrichment radius.
 
-
-
-
-\subsection{Condition number}
-Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
-for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
-SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
 
 \section{Numerical results}
