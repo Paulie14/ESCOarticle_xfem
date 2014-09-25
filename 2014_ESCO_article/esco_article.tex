@@ -933,19 +933,16 @@ CG solver tolerance         & $10^-9$ \\
 \end{table}
 %
 
-\subsection{Condition number}
-Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
-for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
-SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
-
 \subsection{Comparison of XFEM methods}
+\notePE{I would rather use PUM methods in the title.}
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 
 Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
-with the highest error estimate are refined (the element size is then taken at the smallest elements in the 
-vicinity of the well). We see that the convergence is slow until the size of elements reaches the scale of the
+with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
+The element size is then taken at the smallest elements in the 
+vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
 well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
 We see that a very fine mesh is needed to capture the singularity.
 On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
@@ -957,7 +954,7 @@ matrix condition number grows rapidly and the CG solver does not converge even i
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 conditionality of the matrix still corrupts the computation.
 
-The shifted XFEM and SGFEM behave nearly the same way give the best results. We only remind that SGFEM saves 
+The shifted XFEM and SGFEM behave nearly the same way and give the best results. We only mention that SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
 What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
 the point where the adaptive quadrature with fixed level is not accurate enough thus the 
@@ -972,14 +969,19 @@ refinement has no influence on the error.
   \label{fig:convergence}
 \end{figure}
 
-When solving the \probref{def:test_case_2} we put the convergence of standard FEM on the problem with the well
-omitted as a reference in the graph, see the 'FEM sin(x)' with convergence rate 2.0. The closer the PUM
-methods are to 'FEM sin(x)' the better the approximation of the singularity is.
+When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of 
+standard FEM on the problem with the well omitted as a reference in the graph, see the 'FEM sin(x)' with 
+convergence rate 2.0. The closer the PUM methods are to 'FEM sin(x)' the better the approximation of 
+the singularity is.
 
 In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. 
 
-%All the PUM methods have again nearly optimal convergence rate. The standard XFEM 
+All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
+are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
+\notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
+by small level of quadrature refinement, by large contant for h/rho criterion (tried h/rho<=0.1). What should 
+we blame except me?}
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -991,7 +993,39 @@ comes from the singular part of the solution.
   \label{fig:convergence_sin}
 \end{figure}
 
+\subsection{Condition number}
+We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PUM methods. 
+Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
+for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
+SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
+
+We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
+The Jacobi preconditioner was used each time. 
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/iterations.pdf}
+  \caption[Iterations graph]{Graph of dependence of the CG iteration count on the 
+  number of degrees of freedom. Measured on both problems with no serious distinction observed.}
+  \label{fig:iterations}
+\end{figure}
+
 \subsection{Dependence on the enrichment radius}
+%
+The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
+dependence of global $L^2$ error on the enrichment radius in agreement with \eqref{eq:singular_approx_error}.
+
+Validity of the estimate \eqref{eq:grad_estimate_on_square} is confirmed by calculation of the ratio
+\begin{equation} \label{eqn:log_h1_estimate_ratio}
+\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+\end{equation}
+on every element $T$ of the sequence of refined meshes a $5\times5$ Gaussian quadrature. 
+The results on five refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
+We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
+which means we have a good upper estimate. 
+The value in brackets at the finest refinement pertains to several elements near the well where the used 
+quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
 %
 \begin{table}
 \begin{center}
@@ -1008,13 +1042,19 @@ $\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
 $\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
 \bottomrule
 \end{tabular}
-\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
+\caption{Numerical validation of the estimate \eqref{eq:grad_estimate_on_square} in 2D case. The minimal and maximal 
 values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
 \notePE{DONE: Seems that there is still a coeffient close to $\sqrt{2}$.}}
 \label{tab:log_h1_estimate}
 \end{center}
 \end{table}
-%
+
+Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
+compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
+(our estimate is best) where the error is largest 
+(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
+better approximated by the linear functions in the diagonal directions than in the axes directions.
+
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
@@ -1024,35 +1064,12 @@ values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for diffe
   \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
     \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
   \caption[Log error estimate.]
-  {\notePE{Exchange figures with correct scales -- after running corrected test.}
-  Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  {
+  Results of the numerical validation of the estimate \eqref{eq:grad_estimate_on_square}. The elements are left out 
   in the center where the $\log$ singularity is situated and where the function is cut off.
   }
   \label{fig:log_estimate}
 \end{figure}
-%
-The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
-dependence of global $L^2$ error on the enrichment radius in agreement with \eqref{eq:singular_approx_error}.
-
-Validity of the estimate \eqref{eq:grad_estimate_on_square} is confirmed by calculation of the ratio
-\begin{equation} \label{eqn:log_h1_estimate_ratio}
-\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
-\end{equation}
-on every element $T$ of the sequence of refined meshes a $5\times5$ Gaussian quadrature. 
-The results on five refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
-We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
-which means we have a good upper estimate. 
-The value in brackets at the finest refinement pertains to several elements near the well where the used 
-quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
-
-Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
-compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
-(our estimate is best) where the error is largest 
-(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
-better approximated by the linear functions in the diagonal directions than in the axes directions.
-
-
-
 
 We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
 source term present. \notePE{Define the two test case - with and without source.}
