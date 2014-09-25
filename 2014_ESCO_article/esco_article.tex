@@ -628,8 +628,9 @@ well pressure $P_w$         & 100.0 \\
 well radius $\rho_w$        & 0.2 \\
 $\sigma_w$                  & $10^5$ \\
 $c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
-$U$                         & 0.03 \\
-$\omega$                    & 8.0 \\
+$U$                         & 8.0 \\
+$\omega$                    & 0.03 \\
+CG solver tolerance         & $10^-9$ \\
 \bottomrule
 \end{tabular}
 \caption{Input parameters for the numerical tests. Units are omitted.
@@ -1057,9 +1058,22 @@ Let us start with the \probref{def:test_case_1} and look at the convergence grap
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (the element size is then taken at the smallest elements in the 
 vicinity of the well). We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divided the graph in two parts with convergence rates 0.56 and 1.27.
+well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
+We see that a very fine mesh is needed to capture the singularity.
+On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
+with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
+also editing the mesh.
 
+The standard XFEM method pushes the error down by three orders. It has optimal convergence rate but the system
+matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
+problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
+conditionality of the matrix still corrupts the computation.
 
+The shifted XFEM and SGFEM behave nearly the same way give the best results. We only remind that SGFEM saves 
+small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
+What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
+the point where the adaptive quadrature with fixed level is not accurate enough thus the 
+refinement has no influence on the error.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1069,6 +1083,16 @@ well. Therefore we divided the graph in two parts with convergence rates 0.56 an
   \probref{def:test_case_1}. }
   \label{fig:convergence}
 \end{figure}
+
+When solving the \probref{def:test_case_2} we put the convergence of standard FEM on the problem with the well
+omitted as a reference in the graph, see the 'FEM sin(x)' with convergence rate 2.0. The closer the PUM
+methods are to 'FEM sin(x)' the better the approximation of the singularity is.
+
+In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+comes from the singular part of the solution. 
+
+%All the PUM methods have again nearly optimal convergence rate. The standard XFEM 
+
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
