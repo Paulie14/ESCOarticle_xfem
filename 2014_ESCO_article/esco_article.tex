@@ -204,6 +204,7 @@ impermeable layers (aquitards). The aquifers are connected by wells which act as
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
 condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
 
+\subsection{Mathematical model}
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
 $m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
@@ -214,10 +215,6 @@ We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior bo
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
 such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
-
-\noteJB{DONE: define aquifers with their $z$-coordinate, $z_m$
-define the well $B_W$ at position $\vc x_W$ with radius $r_W$ as cylinder $\{\abs{\vc x - \vc x_W} \le \rho_W\}$.
-An finally $B_W^m = B_W \cap \Theta^m$.}
 
 The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
 boundary conditions
@@ -365,18 +362,11 @@ r_w(\vc{x}) = \|\bx - \vc{x}_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2},
 \end{equation}
 %
 is the solution of a Laplace equation $-T \Delta h = 0$, just by putting the function into the equation. 
-% For sake of simplicity we introduce a distance function 
-% \begin{equation*}
-%       r_w(\bx) = \|\bx - \xi_w\|= \sqrt{(x-x_w)^2+(y-y_w)^2}.
-% \end{equation*}
-% of the well $W$.
-\noteJB{DONE:Rather move close to the definition of enrichment function.}
 %
 We see in \eqref{eqn:solution_form} the logarithmic dependence of the pressure head on the distance from 
 the well. If we represented the well only by a~point, the pressure head would go to infinity while closing 
 to the point (singularity $\lim \limits_{r\rightarrow 0} \log r= -\infty$). Instead, we keep in mind the
 radius of the well $\rho_w$ and introduce (global) enrichment function
-\noteJB{DONE: Change notation $R$ for enrichment radius, $\rho_w$ for radius of the well.}
 %
 \begin{equation}
 \label{eqn:enrich_func}
@@ -399,7 +389,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 %   \end{cases}.
 % \end{equation}
 
-\notePE{DONE: do not forget to replace the notation of the enrichment function}
+%\notePE{DONE: do not forget to replace the notation of the enrichment function}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: do not forget to replace the notation of the enrichment function
@@ -411,12 +401,11 @@ placed at the same positions throughout the aquifers (we consider only vertical 
   \label{fig:enrich_func}
 \end{figure}
 
-\notePE{DONE: define enrichment zone}
-\noteJB{Later I need more precise definition of enrichment zone. Consider to move this to next subsection and describe common notation of node index sets.}
 
 In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
 to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
 nodes that are in some enrichment zone.
+\noteJB{$B_R$ is used in two different meanings, either as cylinder or as the disk (ball in $R^2$).}
 
     
 \subsection{Partition of unity methods}
@@ -440,7 +429,7 @@ where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
 \notePE{TODO: define test functions, refer to the weak form}
 
 \subsubsection{Corrected XFEM}
-The corrected XFEM \cite{cxfem} deals with the convergence problem on blending elements and 
+The corrected XFEM, introduced in  \cite{cxfem}, deals with the convergence problem on blending elements and 
 introduces the \textbf{ramp function}
 %\begin{equation} \label{eqn:ramp_function}
 \begin{eqnarray} \label{eqn:ramp_function}
@@ -466,9 +455,10 @@ The enrichment function changes into the form
 \begin{equation} \label{eqn:xfem_ramp}
     L_{\alpha w} = G_w(\bx) s_{w}(\bx), \quad \alpha\in\mathcal{J}^e, w\in\mathcal{W}.
 \end{equation}
-\noteJB{DONE: Who are they? introduce shifed XFEM method and giv the same reference.}
-In \cite{cxfem}, they 
-further suggest the \textbf{shifted} enrichment functions in order to preserve the property of standard 
+
+
+In the same work, i.e. \cite{cxfem}, authors further suggest the \textbf{shifted} enrichment functions in order 
+to preserve the property of standard 
 FE approximation at nodes $h(\bx_\alpha)=a_\alpha$; the value at the node is equal the corresponding degree
 of freedom. The enrichment functions must be then zero at the nodes which is satisfied in the form
 \begin{equation} \label{eqn:xfem_shift}
@@ -480,8 +470,6 @@ $a_\alpha = h_D(\bx_\alpha)$.
 
 For the purpose of this article, let's call the two methods described above the \textbf{ramp function XFEM}  
 and the \textbf{shifted XFEM}, as we shall reference to them later.
-\noteJB{DONE: I prefer to be more explicit and use "ramp function XFEM" and "shifted XFEM", 
-this is more clear for a reader familiar with the topic.}
 
 \subsubsection{SGFEM}
 Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
@@ -558,87 +546,6 @@ Notice that there are no additional enriched nodes on blending elements, like in
 %   \rm{diag}(\mathbf{F}^m)_w &=& -c^m_w ,\qquad \forall w\in\mathcal{W}
 % \end{eqnarray}
 
-\section{Test problems} \label{sec:test_cases}
-In this section we define problems that we solve in our numerical experiments. We restrict ourselves to 
-single aquifer problems for the purpose of this article but our implementation enables multi-aquifer systems 
-as well. In order to measure convergence it is desirable to have an analytic solution which is available
-in the two following cases. 
-
-\begin{prob}[Laplace equation] \label{def:test_case_1}
-Find the solution $h$ of a single aquifer problem
-\begin{eqnarray*} \label{eqn:laplace_problem}
-    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D \\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
-The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
-\end{prob}
-We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
-pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
-(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
-and use the boundary conditions to find the constants $a,b$  such that they satisfy
-\begin{eqnarray*}
-  a\log(\rho_w) + b = P_w, \\
-  a\log(R) + b = P_D,
-\end{eqnarray*}
-where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
-The solution is then
-\begin{equation} \label{eqn:laplace_solution}
-  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
-\end{equation}
-The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
-\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
-diagonal of the square.
-
-\begin{prob}[Poisson equation] \label{def:test_case_2}
-Find the solution $h$ of a single aquifer problem with a source term
-\begin{eqnarray*} \label{eqn:poisson_problem}
-    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where $U$ and $\omega$ are given.
-\end{prob}
-%where $U$ is the amplitude and $\omega$ is the angular frequency 
-The analytic solution of \probref{def:test_case_2}
-\begin{equation} \label{eqn:poisson_solution}
-  h=a\log(r_w)+b+U\sin(\omega x),
-\end{equation}
-is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
-
-The input parameters for the numerical tests of \probref{def:test_case_1} and \probref{def:test_case_2} 
-are gathered in the table \ref{tab:parameters}.
-%
-\begin{table}[!ht]
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-parameter    & value \\
-\midrule
-$\Omega$   & $(-100,100)\times(-100,100)$   \\
-$\vc{x}_w$  & $[5.43,5.43]$   \\
-transimisivity $T$          & 1.0   \\
-boundary pressure $P_D$     & 0.0   \\
-well pressure $P_w$         & 100.0 \\
-well radius $\rho_w$        & 0.2 \\
-$\sigma_w$                  & $10^5$ \\
-$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
-$U$                         & 8.0 \\
-$\omega$                    & 0.03 \\
-CG solver tolerance         & $10^-9$ \\
-\bottomrule
-\end{tabular}
-\caption{Input parameters for the numerical tests. Units are omitted.
-\notePE{TODO: Are the units necessary here?}}
-\label{tab:parameters}
-\end{center}
-\end{table}
-%
 
 \section{Integration on enriched elements}
 \label{sec:integration}
@@ -652,16 +559,11 @@ are the price for using enrichment functions and a coarse mesh.
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of a well (the singularity),
-  \noteJB{DONE: in fact it is the steep gradiant of enrichment base functions.}
   \item the well edge (since the elements of the triangulation do not take the well into account)
 \end{itemize}
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in integration.
-
-\noteJB{DONE: Should mention that due to the singularity the integrated function is very large and small 
-changes in the domain shape can lead to big erros.}
-
 %\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
 One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
 small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
@@ -669,9 +571,8 @@ in the system. We will discuss the adaptivity criteria, suggest improvement and 
 with the original one in this subsection. We will refer also some of the convergence results which will be 
 shown later in \ref{sec:results}.
 
-\subsection{Adaptive refinement of an element}
+\subsection{Adaptive quadrature}
 \label{sec:refinement_element}
-\noteJB{Rather use term "adaptive quadrature" then local element refinement. Finite elements remain untouched.}
 
 Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
 that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
@@ -896,7 +797,7 @@ and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on
 \[
    \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
 \]
-Using standard error estimate for eliptic PDE (see e.g. \cite{arnold_lecture_2009}), we get
+Using standard error estimate for eliptic PDE (see e.g. \cite{ciarlet_basic_1991}), we get
 \begin{equation}
     \label{eq:std_err_estimate}
     \norm{u - u_h}_{V} \le c_a \inf_{v \in V_h} \norm{u - v}_{V} 
@@ -927,130 +828,117 @@ Assuming $h<1$, we can neglect higher order terms. Then by direct integration
  \norm{u_s - \Pi u_s}^2_{L^2(S_{h,r})} \approx \frac14 \frac{h^6}{r^4}\int_0^1\int_0^1 (t^2-t-s^2+s)^2\,\d s\, \d t = \frac{1}{360}\frac{h^6}{r^4} 
 \end{align*}
 and
-\begin{align*}
- \norm{\nabla(u_s - \Pi u_s)}^2_{L^2(S_{h,r})} \approx \frac{2h^4}{r^4} \int_0^1 \Big(t-\frac12\Big)^2 \d t = \frac{1}{6}\frac{h^4}{r^4}.
-\end{align*}
-Thus for the density of squared error we obtain 
+\begin{equation}
+    \label{eq:grad_estimate_on_square}
+    \norm{\nabla(u_s - \Pi u_s)}^2_{L^2(S_{h,r})} \approx \frac{2h^4}{r^4} \int_0^1 \Big(t-\frac12\Big)^2 \d t = \frac{1}{6}\frac{h^4}{r^4}.
+\end{equation}
+Thus for the density of squared error we have
 \[
     \frac{1}{\abs{S_{h,r}}} \norm{u_s - \Pi u_s}^2_{H^1(S_{h,r})} \approx \frac{h^2}{6r^4}
 \]
-and we can estimate
-\[
-  \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}.
-\]
-Recalling the estimate \eqref{eq:particular_estimate}, we can conclude that optimal choice of the enrichment radius is $1/R\approx \abs{u_r}_H^2(\Omega)$, 
-which balance error in the regular and the singular part. \noteJB{Possible remarks: General form of the error; automatic choice via aposteriori error estimates
-$R \approx h/\norm{u-u_h}_{H^1}$.}
-
-
-
-We confirm the validity of the estimate \eqref{eqn:log_h1_estimate} in 2D case by a numerical test.
-The ratio 
-\begin{equation} \label{eqn:log_h1_estimate_ratio}
-\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+which after integration over the unenriched domain gives final estimate:
+\begin{equation}
+    \label{eq:singular_approx_error}
+    \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}. 
 \end{equation}
-is computed on every element $T$ of the mesh using a $5\times5$ Gaussian quadrature, with $h$ being the 
-element diameter and $r$ being the distance between the element center and the origin. The results on five
-refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
+
+Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_H^1(\Omega)$, 
+which balance error in the regular and the singular part. In combination with an a posteriori error analysis this could give a rule for automatic
+determination of the enrichment radius.
+
+
+
+\section{Numerical results}
+\label{sec:results}
+
+\subsection{Test problems} \label{sec:test_cases}
+In this section we define problems that we solve in our numerical experiments. We restrict ourselves to 
+single aquifer problems for the purpose of this article but our implementation enables multi-aquifer systems 
+as well. In order to measure convergence it is desirable to have an analytic solution which is available
+in the two following cases. 
+
+\begin{prob}[Laplace equation] \label{def:test_case_1}
+Find the solution $h$ of a single aquifer problem
+\begin{eqnarray*} \label{eqn:laplace_problem}
+    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D \\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
+The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
+\end{prob}
+We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
+pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
+(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
+and use the boundary conditions to find the constants $a,b$  such that they satisfy
+\begin{eqnarray*}
+  a\log(\rho_w) + b = P_w, \\
+  a\log(R) + b = P_D,
+\end{eqnarray*}
+where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
+The solution is then
+\begin{equation} \label{eqn:laplace_solution}
+  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
+\end{equation}
+The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
+\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
+diagonal of the square.
+
+\begin{prob}[Poisson equation] \label{def:test_case_2}
+Find the solution $h$ of a single aquifer problem with a source term
+\begin{eqnarray*} \label{eqn:poisson_problem}
+    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
+    h|_{B_w} &=& P_w \\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+\end{eqnarray*}
+where $U$ and $\omega$ are given.
+\end{prob}
+%where $U$ is the amplitude and $\omega$ is the angular frequency 
+The analytic solution of \probref{def:test_case_2}
+\begin{equation} \label{eqn:poisson_solution}
+  h=a\log(r_w)+b+U\sin(\omega x),
+\end{equation}
+is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
+
+The input parameters for the numerical tests of \probref{def:test_case_1} and \probref{def:test_case_2} 
+are gathered in the table \ref{tab:parameters}.
 %
-\begin{table}
+\begin{table}[!ht]
 \begin{center}
 \begin{tabular}{crr}
 \toprule
 % \multicolumn{2}{c}{Item} \\
 % \cmidrule(r){1-2}
-$h$    & min & max \\
+parameter    & value \\
 \midrule
-$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
-$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
-$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
-$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
-$\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
+$\Omega$   & $(-100,100)\times(-100,100)$   \\
+$\vc{x}_w$  & $[5.43,5.43]$   \\
+transimisivity $T$          & 1.0   \\
+boundary pressure $P_D$     & 0.0   \\
+well pressure $P_w$         & 100.0 \\
+well radius $\rho_w$        & 0.2 \\
+$\sigma_w$                  & $10^5$ \\
+$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
+$U$                         & 8.0 \\
+$\omega$                    & 0.03 \\
+CG solver tolerance         & $10^-9$ \\
 \bottomrule
 \end{tabular}
-\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
-values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
-\notePE{DONE: Seems that there is still a coeffient close to $\sqrt{2}$.}}
-\label{tab:log_h1_estimate}
+\caption{Input parameters for the numerical tests. Units are omitted.
+\notePE{TODO: Are the units necessary here?}}
+\label{tab:parameters}
 \end{center}
 \end{table}
 %
-We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
-which means we have a good upper estimate. 
-The value in brackets at the finest refinement pertains to several elements near the well where the used 
-quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
 
-Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
-compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
-(our estimate is best) where the error is largest 
-(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
-better approximated by the linear functions in the diagonal directions than in the axes directions.
-
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
-    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
-  \hspace{0pt}
-  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
-    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
-  \caption[Log error estimate.]
-  {\notePE{Exchange figures with correct scales -- after running corrected test.}
-  Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
-  in the center where the $\log$ singularity is situated and where the function is cut off.
-  }
-  \label{fig:log_estimate}
-\end{figure}
-
-
-
-We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
-source term present. \notePE{Define the two test case - with and without source.}
-The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
-enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
-but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
-chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
-approaching the accuracy limits of the integration.
-
-We also see in \fig{fig:radius_conv_1} that the error is not decreasing significantly for larger enrichment 
-radii. This trend is more obvious from the graph in \fig{fig:radius_conv_2} which shows the dependance of the
-error on the enrichment radius for different element sizes.
-
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=0.9\textwidth]{results/radius_conv_1.pdf}
-%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
-%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
-%   \hspace{0pt}
-%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
-%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM sin(x)'
-  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
-  \label{fig:radius_conv_1}
-\end{figure}
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=0.9\textwidth]{results/radius_conv_2.pdf}
-%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
-%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
-%   \hspace{0pt}
-%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
-%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Dependence of the error on the enrichment radius for different
-  element sizes.}
-  \label{fig:radius_conv_2}
-\end{figure}
-
-\section{Condition number}
+\subsection{Condition number}
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
 for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
-
-\section{Results}
-\label{sec:results}
+\subsection{Comparison of XFEM methods}
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 
@@ -1102,6 +990,111 @@ comes from the singular part of the solution.
   data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
+
+\subsection{Dependance on the enrichment radius}
+%
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
+values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
+\notePE{DONE: Seems that there is still a coeffient close to $\sqrt{2}$.}}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
+%
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
+  \hspace{0pt}
+  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
+  \caption[Log error estimate.]
+  {\notePE{Exchange figures with correct scales -- after running corrected test.}
+  Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  in the center where the $\log$ singularity is situated and where the function is cut off.
+  }
+  \label{fig:log_estimate}
+\end{figure}
+%
+The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
+dependance of global $L^2$ error on the enrichment radius in agreement with \eqref{eq:singular_approx_error}.
+
+Validity of the estimate \eqref{eq:grad_estimate_on_square} is confirmed by calculation of the ratio
+\begin{equation} \label{eqn:log_h1_estimate_ratio}
+\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+\end{equation}
+on every element $T$ of the sequence of refined meshes a $5\times5$ Gaussian quadrature. 
+The results on five refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
+We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
+which means we have a good upper estimate. 
+The value in brackets at the finest refinement pertains to several elements near the well where the used 
+quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
+
+Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
+compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
+(our estimate is best) where the error is largest 
+(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
+better approximated by the linear functions in the diagonal directions than in the axes directions.
+
+
+
+
+We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
+source term present. \notePE{Define the two test case - with and without source.}
+The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
+enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
+but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
+chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
+approaching the accuracy limits of the integration.
+
+We also see in \fig{fig:radius_conv_1} that the error is not decreasing significantly for larger enrichment 
+radii. This trend is more obvious from the graph in \fig{fig:radius_conv_2} which shows the dependance of the
+error on the enrichment radius for different element sizes.
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=0.9\textwidth]{results/radius_conv_1.pdf}
+%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
+%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
+%   \hspace{0pt}
+%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
+%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
+  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM sin(x)'
+  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
+  \label{fig:radius_conv_1}
+\end{figure}
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=0.9\textwidth]{results/radius_conv_2.pdf}
+%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
+%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
+%   \hspace{0pt}
+%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
+%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
+  \caption[Enrichment radius choice.]{Dependence of the error on the enrichment radius for different
+  element sizes.}
+  \label{fig:radius_conv_2}
+\end{figure}
+
+
+
 
 
 \section{Summary}
