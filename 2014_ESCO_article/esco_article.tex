@@ -448,7 +448,7 @@ introduces the \textbf{ramp function}
 %   \end{cases}
 \end{eqnarray}
 %\end{equation}
-It also extends the set of enriched nodes, denoted by $\mathcal{J}^e$, by enriching (un-enriched) nodes 
+It also extends the set of enriched nodes, denoted by $\mathcal{J}^e$, by enriching (unenriched) nodes 
 on elements, where only some of the nodes are in $\mathcal{I}^e$. Thus $\mathcal{I}^e\subset\mathcal{J}^e$ 
 and there are more enriched nodes.
 The enrichment function changes into the form
@@ -808,7 +808,7 @@ In the following, we consider $V=H^1(\Omega)$, square grid and $V^P_h$ formed by
 Then \eqref{eq:std_err_estimate} can be further estimated using approximation property of $V^P_h$:
 \begin{equation}
     \label{eq:particular_estimate}
-    \norm{u - u_h}_{V} \le c_a \big(c h \abs{u_r}_{H^2(\Omega)} + \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \big)   
+    \norm{u - u_h}_{H^1(\Omega)} \le c_a \big(c h \abs{u_r}_{H^2(\Omega)} + \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \big)   
 \end{equation}
 where $\Pi u_s$ denotes interpolation of $u_s$ in $V^P_h$. Our next aim is to find tight estimate for the second term.
 To this end, we calculate $H^1$ error on a single square element $S_{h,r}$ with side $h$ and distance $r$ from origin.
@@ -817,13 +817,13 @@ Using parametrization $0<s,t<1$,  we get
 \begin{align*}
  (u_s - \Pi u_s)(s,t)&=\log\sqrt{(r+hs)^2+(ht)^2} -\Big[(1-s)(1-t)\log r + (1-s)t\log\sqrt{r^2+h^2}\\
  &\quad+ s(1-t) \log(r+h) + st\log\sqrt{(r+h)^2+h^2} \Big]\\
- &=\frac12 \frac{h^2}{r^2}\big(t^2-t - s^2 +s\big) + O(h^3)
+ &=\frac12 \frac{h^2}{r^2}\big(t^2-t - s^2 +s\big) + O(\frac{h^3}{r^3})
 \end{align*}
 and 
 \begin{equation}
- \nabla(u_s - \Pi u_s)(s,t) = \frac{h}{r^2} \Big( \frac12-s, t-\frac12 \Big) + O(h^2).
+ \nabla(u_s - \Pi u_s)(s,t) = \frac{h}{r^2} \Big( \frac12-s, t-\frac12 \Big) + O(\frac{h^2}{r^2}).
 \end{equation}
-Assuming $h<1$, we can neglect higher order terms. Then by direct integration
+Assuming $h<r$, we can neglect higher order terms. Then by direct integration
 \begin{align*}
  \norm{u_s - \Pi u_s}^2_{L^2(S_{h,r})} \approx \frac14 \frac{h^6}{r^4}\int_0^1\int_0^1 (t^2-t-s^2+s)^2\,\d s\, \d t = \frac{1}{360}\frac{h^6}{r^4} 
 \end{align*}
@@ -836,7 +836,7 @@ Thus for the density of squared error we have
 \[
     \frac{1}{\abs{S_{h,r}}} \norm{u_s - \Pi u_s}^2_{H^1(S_{h,r})} \approx \frac{h^2}{6r^4}
 \]
-which after integration over the un-enriched domain gives final estimate:
+which after integration over the unenriched domain gives final estimate:
 \begin{equation}
     \label{eq:singular_approx_error}
     \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}. 
@@ -970,29 +970,11 @@ Condition number for matrices resulting from conforming FEM applied to Laplace e
 for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
+
+
+
+
 \subsection{Dependence on the enrichment radius}
-%
-\begin{table}
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-$h$    & min & max \\
-\midrule
-$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
-$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
-$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
-$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
-$\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
-\bottomrule
-\end{tabular}
-\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
-values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
-\notePE{DONE: Seems that there is still a coefficient close to $\sqrt{2}$.}}
-\label{tab:log_h1_estimate}
-\end{center}
-\end{table}
 %
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1010,6 +992,28 @@ values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for diffe
   \label{fig:log_estimate}
 \end{figure}
 %
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{14}{128}$ & 1.00 (0.756)& 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Minimal and maximal values of the ratio \eqref{eqn:log_h1_estimate_ratio} for sequence of refined 
+meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate_on_square}.}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
+\noteJB{What is the min value on the last row?}
+%
 The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
 dependence of global $L^2$ error on the enrichment radius in agreement with \eqref{eq:singular_approx_error}.
 
@@ -1017,26 +1021,25 @@ Validity of the estimate \eqref{eq:grad_estimate_on_square} is confirmed by calc
 \begin{equation} \label{eqn:log_h1_estimate_ratio}
 \frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
 \end{equation}
-on every element $T$ of the sequence of refined meshes a $5\times5$ Gaussian quadrature. 
+on every element $T$ of the sequence of refined meshes using a $5\times5$ Gaussian quadrature for estimation of $H^1$ norm. Table 
+\ref{tab:log_h1_estimate} reports the minimum and the maximum value of the ratio over all elements of every mesh.
+The minimum value are close to 1 independently of $h$ so our estimate is tight. Moreover, the minimum value is attained on the majority of
+elements, see Figure \fig{fig:log_estimate_b}. Both parts of Figure \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
+where the nonlinear term of the tensor product bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
-The results on five refined meshes are gathered in the table \ref{tab:log_h1_estimate}. 
-We can see from the 'min' column of the table \ref{tab:log_h1_estimate} that the ratio is very close to 1.0 
-which means we have a good upper estimate. 
-The value in brackets at the finest refinement pertains to several elements near the well where the used 
-quadrature is too coarse. However the ratio is greater than or equal 1.0 elsewhere.
-
-Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
-compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio is closest to 1.0 
-(our estimate is best) where the error is largest 
-(in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
-better approximated by the linear functions in the diagonal directions than in the axes directions.
-
-
-
+Next, we study influence of the enrichment radius $R$ to the global $L^2$ error. To this end, we have run solution of Problem 2 with parameter $U=3$
+using shifted XFEM as described in the previous section for different mesh step and different values of $R$.
+Let us remind that $O(h^p)$ convergence of the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the $L^2$ norm 
+for the linear elliptic problems (c.f. \cite{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
+and \eqref{eq:singular_approx_error}, we expect $O(h^2)$ convergence of $L^2$ norm independently of the enrichment radius. This is 
+clearly demonstrated on Figure \fig{fig:radius_conv_1}. Lack of convergence under certain error threshold is probably due to 
+quadrature error as discussed in the previous section. For comparison, we plot also error of the regular part of the solution 
+resolved by unenriched FEM displaying $O(h^2)$ convergence. As predicted the total error gets closer to the error of the 
+regular part of the solution as the enrichment radius grows, but for certain critical $R$. 
 
 We demonstrate the behavior of the model depending on the enrichment radius choice on our test case with 
 source term present. \notePE{Define the two test case - with and without source.}
-The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
+The convergence graph in  shows how the error depends on the element size for different 
 enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
 but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
 chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
