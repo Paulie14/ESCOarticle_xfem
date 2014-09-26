@@ -599,35 +599,48 @@ and the integration error is large.
   \label{fig:adapt_refinement}
 \end{figure}
 
-We suggested additional criterion for subelements refinement which takes into account a subelement diameter 
+We suggest additional criterion for subelements refinement which takes into account a subelement diameter 
 and its distance from the well
 \begin{equation}
-  d_T > C_R|d_{min} - \rho_w|,
+  h \leq C_R r_{min},
 \end{equation}
-where $d_T$ is the diameter of the subelement and $d_{min}$ is minimal distance between a vertex of 
-the subelement and the well edge. $C_R$ is a scaling constant, equal 1.0 by default, through which we can 
-control the significance of the criterion.
+\notePE{Originally, I compute $r_{min}$ between vertices and the well center, but I believe that the results would be the same.}
+where $h$ is the diameter of the subelement and $r_{min}$ is the minimal distance between a vertex of 
+the subelement and the well center. $C_R$ is a scaling constant, equal 0.5 by default, through which we can 
+control the significance of the criterion. If satisfied, the subelement is not refined anymore.
 
 In this way, the elements in which the well does not lie are also refined as you can see in 
 \fig{fig:adapt_ref_b}. The quadrature points are then distributed more 'smoothly' around the well and the
 integrals with gradients can be computed more accurately. 
 
-In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements which 
-were computed also using the corresponding adaptive integration. Notice the scale of the improved version -- 
-the error on elements is in small range and is not significantly concentrated anywhere. On the other hand, 
+Eventually, we do 10 levels of improved adaptive refinement with the following rules ($r_{max}$ is the maximal
+distance of a vertex of the subelement and the well center):
+\begin{enumerate}
+ \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
+ \item If $r_{min} < \rho < r_{max}$, the square is refined, $3\times3$ quadrature is set. If any of the 
+ quadrature points lie in the well circle then they are removed.
+ \item If $r_{min} > \rho$, we test the suggested criterion $h \leq C_R r_{min}$. If it is satisfied, the 
+ $3\times3$ quadrature is set, else the subelement is further refined.
+\end{enumerate}
+
+In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
+The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
+on the enriched element with the well and $4\times4$ quadrature rules on the other enriched elements. 
+The improved adaptive quadrature is computed as desribed above. Notice the scale of the improved version -- 
+the error on elements is in small range and is not significantly concentrated anywhere. In contrast, 
 the original version shows out large error that is concentrated on the closest non-refined element to the well.
 
 %\notePE{TODO: add axis, remove legend label, try to sharpen}
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
-  \subfloat[original refinement]{\label{fig:adapt_ref_norm_a} 
+  \subfloat[original]{\label{fig:adapt_ref_norm_a} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_old.pdf} }
   \hspace{0pt}
-  \subfloat[improved refinement]{\label{fig:adapt_ref_norm_b} 
+  \subfloat[improved]{\label{fig:adapt_ref_norm_b} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_new.pdf} }
-  \caption[Adaptive refinement comparison]
-  {Comparison of element-wise error in $L_2$ norm using different refinement techniques.
+  \caption[Adaptive quadrature refinement comparison]
+  {Comparison of element-wise error in $L_2$ norm using original and improved adaptive quadrature.
   }
   \label{fig:adapt_refinement_norm}
 \end{figure}
@@ -674,10 +687,7 @@ the original version shows out large error that is concentrated on the closest n
 %   \label{fig:adapt_ref_convergence}
 % \end{figure}
 
-\notePE{
-* non-optimal convergence rate with the approach of [gracie] and their integration scheme 3-4\\
-* the above can be improved by using higher order quadrature rules (6-6)\\
-* problem is that we do not represent the well edge and mainly its surrounding well enough
+\notePE{the original one can be improved by using higher order quadrature rules (6-6)\\
 }
 
 \section{A priori adaptive quadrature}
