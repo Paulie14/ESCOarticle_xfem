@@ -783,9 +783,9 @@ quadrature $c_e=12.65$ and $p_e=1.27$.
 \end{figure}
 
 \section{Estimate the enrichment radius}
-In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
+In this section, we shall study dependance of the solution error on the enrichement radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
-Let us consider a general elliptic problem to find $u\in V$ satisfying
+Let us consider a general elliptic problem to find $u\in V$ satifying
 \[
    a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
 \]
@@ -921,8 +921,9 @@ well pressure $P_w$         & 100.0 \\
 well radius $\rho_w$        & 0.2 \\
 $\sigma_w$                  & $10^5$ \\
 $c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
-$U$                         & 0.03 \\
-$\omega$                    & 8.0 \\
+$U$                         & 8.0 \\
+$\omega$                    & 0.03 \\
+CG solver tolerance         & $10^-9$ \\
 \bottomrule
 \end{tabular}
 \caption{Input parameters for the numerical tests. Units are omitted.
@@ -932,20 +933,32 @@ $\omega$                    & 8.0 \\
 \end{table}
 %
 
-
-
-
-
-
 \subsection{Comparison of XFEM methods}
+\notePE{I would rather use PUM methods in the title.}
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 
 Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
-with the highest error estimate are refined (the element size is then taken at the smallest elements in the 
-vicinity of the well). We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divided the graph in two parts with convergence rates 0.56 and 1.27.
+with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
+The element size is then taken at the smallest elements in the 
+vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
+well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
+We see that a very fine mesh is needed to capture the singularity.
+On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
+with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
+also editing the mesh.
+
+The standard XFEM method pushes the error down by three orders. It has optimal convergence rate but the system
+matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
+problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
+conditionality of the matrix still corrupts the computation.
+
+The shifted XFEM and SGFEM behave nearly the same way and give the best results. We only mention that SGFEM saves 
+small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
+What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
+the point where the adaptive quadrature with fixed level is not accurate enough thus the 
+refinement has no influence on the error.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -955,6 +968,21 @@ well. Therefore we divided the graph in two parts with convergence rates 0.56 an
   \probref{def:test_case_1}. }
   \label{fig:convergence}
 \end{figure}
+
+When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of 
+standard FEM on the problem with the well omitted as a reference in the graph, see the 'FEM sin(x)' with 
+convergence rate 2.0. The closer the PUM methods are to 'FEM sin(x)' the better the approximation of 
+the singularity is.
+
+In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+comes from the singular part of the solution. 
+
+All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
+are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
+\notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
+by small level of quadrature refinement, by large contant for h/rho criterion (tried h/rho<=0.1). What should 
+we blame except me?}
+
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
@@ -966,14 +994,28 @@ well. Therefore we divided the graph in two parts with convergence rates 0.56 an
 \end{figure}
 
 \subsection{Condition number}
+We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PUM methods. 
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
 for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
+We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
+The Jacobi preconditioner was used each time. 
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/iterations.pdf}
+  \caption[Iterations graph]{Graph of dependence of the CG iteration count on the 
+  number of degrees of freedom. Measured on both problems with no serious distinction observed.}
+  \label{fig:iterations}
+\end{figure}
 
 
 
 
+
+\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
 \subsection{Dependence on the enrichment radius}
 %
 \begin{figure}[!htb]
@@ -985,8 +1027,8 @@ SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{
   \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
     \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
   \caption[Log error estimate.]
-  {\notePE{Exchange figures with correct scales -- after running corrected test.}
-  Results of the numerical validation of the estimate \eqref{eqn:log_h1_estimate}. The elements are left out 
+  {
+  Results of the numerical validation of the estimate \eqref{eq:grad_estimate_on_square}. The elements are left out 
   in the center where the $\log$ singularity is situated and where the function is cut off.
   }
   \label{fig:log_estimate}
@@ -1075,6 +1117,9 @@ error on the enrichment radius for different element sizes.
   element sizes.}
   \label{fig:radius_conv_2}
 \end{figure}
+
+
+
 
 
 \section{Summary}
