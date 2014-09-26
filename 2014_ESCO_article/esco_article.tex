@@ -287,7 +287,7 @@ later replaced by the average
   \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
 \end{equation}
 which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
-amount is possible since our test cases are symetric.
+amount is possible since our test cases are symmetric.
 
 \subsection{Weak formulation}
 We define the trial and the test spaces
@@ -626,7 +626,7 @@ distance of a vertex of the subelement and the well center):
 In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
 The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
 on the enriched element with the well and $4\times4$ quadrature rules on the other enriched elements. 
-The improved adaptive quadrature is computed as desribed above. Notice the scale of the improved version -- 
+The improved adaptive quadrature is computed as described above. Notice the scale of the improved version -- 
 the error on elements is in small range and is not significantly concentrated anywhere. In contrast, 
 the original version shows out large error that is concentrated on the closest non-refined element to the well.
 
@@ -734,7 +734,7 @@ discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map 
 \[
   \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
 \]
-where $S'$ is square with side $H=h/\rho$ and $\vc {r'} = \vc{r}/\rho$. Empiricaly determined error of the midpoint rule for later 
+where $S'$ is square with side $H=h/\rho$ and $\vc {r'} = \vc{r}/\rho$. Empirically determined error of the midpoint rule for later 
 integral is
 \[
     E(H) = c_e H^{p_e}, \quad \text{with } c_e=0.08,\ p_e=2.5.
@@ -759,8 +759,8 @@ original function (i.e. $f(r)=0$ for $r\le \rho$).
 \end{enumerate}
 
 \noteJB{TODO:
-We should estimate true error numericaly using one more subdivision and compare it to prescribed tolerance, we should be safely 
-below, without increasing the number of evaluation comapred to current implementation.
+We should estimate true error numerically using one more subdivision and compare it to prescribed tolerance, we should be safely 
+below, without increasing the number of evaluation compared to current implementation.
 }
 
 
@@ -775,7 +775,7 @@ we refine the squares up to the 12-th level, integrate again and compute the dif
 $1\times1$, $2\times2$, $3\times3$ and $4\times4$ are used. The results are shown in 
 \fig{fig:adapt_integration_conv} also with convergence trend lines equations. The conclusion can be made
 that it is more efficient to refine one more level with one-point quadrature than to use higher order 
-quadrature on the coarser level. As for the coeffiecient, these can be read from the graph -- for the one point
+quadrature on the coarser level. As for the coefficient, these can be read from the graph -- for the one point
 quadrature $c_e=12.65$ and $p_e=1.27$.
 
 \begin{figure}[!htb]
@@ -793,21 +793,21 @@ quadrature $c_e=12.65$ and $p_e=1.27$.
 \end{figure}
 
 \section{Estimate the enrichment radius}
-In this section, we shall study dependence of the solution error on the enrichement radius $R$. First part is devoted to 
+In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
-Let us consider a general elliptic problem to find $u\in V$ satifying
+Let us consider a general elliptic problem to find $u\in V$ satisfying
 \[
    a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
 \]
 where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \gamma \norm{v}_V^2$, $\gamma>0$, and $f$ an bounded linear form, $f\in V'$. 
 Suppose, that the problem is to be solved on a domain $\Omega \subset \R^2$ with a single hole (well) of radius $\rho$ at the origin. 
-Let us assume, that the solution can be splitted to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
+Let us assume, that the solution can be split to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
 Let $V^P_h$ be a polynomial finite element subspace of $V$ on a regular mesh of elements with a maximal diameter $h$
 and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enrichment zone $Z_R$, i.e.
 \[
    \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
 \]
-Using standard error estimate for eliptic PDE (see e.g. \cite{ciarlet_basic_1991}), we get
+Using standard error estimate for elliptic PDE (see e.g. \cite{ciarlet_basic_1991}), we get
 \begin{equation}
     \label{eq:std_err_estimate}
     \norm{u - u_h}_{V} \le c_a \inf_{v \in V_h} \norm{u - v}_{V} 
@@ -815,7 +815,7 @@ Using standard error estimate for eliptic PDE (see e.g. \cite{ciarlet_basic_1991
 \end{equation}
 where $c_a=1+\norm{a}/\gamma$.
 In the following, we consider $V=H^1(\Omega)$, square grid and $V^P_h$ formed by bilinear finite elements. 
-Then \eqref{eq:std_err_estimate} can be further estimated using approximation preperty of $V^P_h$:
+Then \eqref{eq:std_err_estimate} can be further estimated using approximation property of $V^P_h$:
 \begin{equation}
     \label{eq:particular_estimate}
     \norm{u - u_h}_{V} \le c_a \big(c h \abs{u_r}_{H^2(\Omega)} + \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \big)   
@@ -990,7 +990,7 @@ comes from the singular part of the solution.
 All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 \notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
-by small level of quadrature refinement, by large contant for h/rho criterion (tried h/rho<=0.1). What should 
+by small level of quadrature refinement, by large constant for h/rho criterion (tried h/rho<=0.1). What should 
 we blame except me?}
 
 \begin{figure}[!htb]
@@ -1010,7 +1010,7 @@ for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is nu
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
 We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
-The Jacobi preconditioner was used each time. 
+The Jacobi preconditioning was used each time. 
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1054,13 +1054,13 @@ $\rfrac{14}{128}$ & (0.756) 1.00 & 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   
 \end{tabular}
 \caption{Numerical validation of the estimate \eqref{eq:grad_estimate_on_square} in 2D case. The minimal and maximal 
 values of \eqref{eqn:log_h1_estimate_ratio} are collected in the table for different refinements.
-\notePE{DONE: Seems that there is still a coeffient close to $\sqrt{2}$.}}
+\notePE{DONE: Seems that there is still a coefficient close to $\sqrt{2}$.}}
 \label{tab:log_h1_estimate}
 \end{center}
 \end{table}
 
 Further we can see the error in $H^1$ norm over the elements in the \fig{fig:log_estimate_a}. We can 
-compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio iis closest to 1.0 
+compare it with the ratio in the \fig{fig:log_estimate_b} and see that the ratio is closest to 1.0 
 (our estimate is best) where the error is largest 
 (in $x$ and $y$ directions) and otherwise in diagonal directions. We can also notice that the logarithm is 
 better approximated by the linear functions in the diagonal directions than in the axes directions.
@@ -1081,7 +1081,7 @@ better approximated by the linear functions in the diagonal directions than in t
   \label{fig:log_estimate}
 \end{figure}
 
-We demonstrate the behaviour of the model depending on the enrichment radius choice on our test case with 
+We demonstrate the behavior of the model depending on the enrichment radius choice on our test case with 
 source term present. \notePE{Define the two test case - with and without source.}
 The convergence graph in \fig{fig:radius_conv_1} shows how the error depends on the element size for different 
 enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
