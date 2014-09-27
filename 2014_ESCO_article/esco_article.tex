@@ -169,17 +169,17 @@ PUM \sep XFEM \sep SGFEM \sep adaptive integration \sep point sources
 
 People often consider in their models of flow in porous media very large areas which can contain various 
 phenomena of a very small scale compared with the size of the areas. These can be some disruptions of the porous 
-media, e.g. cracks and wells, or material inhomogeneities that cause large gradients in pressure head and 
+medium, e.g. cracks and wells, or material inhomogeneities that cause large gradients in pressure head and 
 velocity or even their discontinuities.
 
-Using the standard finite element method (FEM) we are unable to properly approximate the quantities in the 
+Using the standard finite element method (FEM) we are unable to properly approximate quantities in the 
 vicinity of these disturbances, unless we introduce elements of the same scale in the mesh. This leads to 
 higher requirements on mesh processing (refinement) and increase of computational costs due to growing number  
 of degrees of freedom.
 
 In this work we use PU (Partition of Unity) methods to overcome these problems and demonstrate it on a steady 
 %quasi-three-dimensional model of multi-aquifer system 
-two-dimensional aquifer model containing hydro-geological wells which cause singularities in solution. 
+two-dimensional aquifer model containing hydro-geological wells which cause singularities in the solution. 
 We follow the work \cite{gracie,craig} of Gracie and Craig who have already used the XFEM (eXtended FEM) 
 on a~similar model. However, we focus mainly on the study of the PU methods. In particular, we use the XFEM 
 and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{cxfem}, 
@@ -191,32 +191,35 @@ In addition, we suggest better choice of enrichment area based on a tolerance cr
 The implementation was done in C++ language using the Deal II library~\cite{deal}, the finite element library.
 which does not support any enrichment techniques at the moment.
 
-We describe the model in the beginning of the article, set the problem and go through the
-PU methods in more details. Then we show some numerical aspects of the problem which we must deal with, 
-especially the adaptive integration in section \ref{sec:integration}. Results, convergence of methods and
-conditioning of the algebraic system are discussed right after and further research goals are pointed out 
-at the end. 
+We describe the model in the beginning of the article in \ref{sec:model}, set the problem and derivate its weak formulation. 
+In section \ref{sec:discretization} we discretize the problem and go through the PU methods 
+in details. After that we investigate the problem of integration in the enrichment area and suggest some 
+improvements in \ref{sec:integration}. The study on the proper choice of the enrichment area is presented in 
+section \ref{sec:enrichemnt_radius}. 
+Finally in section \ref{sec:results}, test problems are set and numerical results are shown; 
+in particular a set of experiments validating some of the theoretical results and convergence tests.
+Open questions are summarized and further research goals are pointed out at the end. 
 
 \section{Model}
 \label{sec:model}
 We consider a steady flow in a system of aquifers (2D horizontal layers of given thickness) which are separated by 
 impermeable layers (aquitards). The aquifers are connected by wells which act as sources
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
-condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
+condition of the aquifers which can be of Dirichlet type or homogeneous of Neumann type.
 
 \subsection{Mathematical model}
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
-$m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
+$m=1,\ldots M$, and $z_m$ be its vertical coordinate. The well $w$ is defined by a cylinder $B_w$
 with the base center $\vc{x}_w$, radius $\rho_w$ and height $|z_1-z_M|$.  We further denote 
-$B^m_w = B_W \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
+$B^m_w = B_w \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
 and the union $B^m=\bigcup\limits_{w}B^m_w$. 
 We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
 such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
 
-The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
+The distribution of pressure head in the $m$-th aquifer is described by Poisson equation and 
 boundary conditions
 \begin{eqnarray} \label{eqn:poisson}
 \nabla\cdot(-\mathbf{T}^m\nabla h^m) &=& f^m \qquad \textrm{on } \Omega^m\subset\R^2,\; \forall m=1,\dots,M, \\
@@ -240,7 +243,6 @@ wells. We can prescribe the flow balance equation
   Q^m_{w,in} &\ldots& \textrm{flow from upper aquifer,} \nonumber\\
   Q^m_{w,out} &\ldots& \textrm{flow into lower aquifer.} \nonumber
 \end{eqnarray}
-\notePE{TODO: add arrow (flow) to the top}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: add arrow (flow) to the top
@@ -254,7 +256,7 @@ wells. We can prescribe the flow balance equation
 
 \fig{fig:well_flows} presents the equation \eqref{eqn:well_flows} and denotes the flows $Q^m_{w,\cdot}$ by red arrows.
 We can look at the flows in the balance equation as 1D problems which are governed by a difference of pressure
-heads and a transition coefficient. Using this idea, we can substitute the flows in the equation 
+head and a transition coefficient. Using this idea, we can substitute the flows in the equation 
 \eqref{eqn:well_flows} and get
 \begin{eqnarray} 
 \int_{\partial B_w^m}\sigma_w^m \left(h^m - H_w^m\right) \dd s
@@ -278,7 +280,7 @@ and is adjusted to the form
   c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
 \end{equation}
 The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
-as part of the solution from the equation \eqref{eqn:well_balance_top}, see $H^4$ in \fig{fig:well_flows}.
+as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
 
 The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
 well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
@@ -792,7 +794,7 @@ quadrature $c_e=12.65$ and $p_e=1.27$.
   \label{fig:adapt_integration_conv}
 \end{figure}
 
-\section{Estimate the enrichment radius}
+\section{Estimate the enrichment radius} \label{sec:enrichemnt_radius}
 In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
 Let us consider a general elliptic problem to find $u\in V$ satisfying
