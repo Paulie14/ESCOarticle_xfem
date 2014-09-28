@@ -570,12 +570,12 @@ can lead to large errors in integration.
 One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
 small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
 in the system. We will discuss the adaptivity criteria, suggest improvement and compare our solution
-with the original one in this subsection. We will refer also some of the convergence results which will be 
-shown later in \ref{sec:results}.
+with the original one in this subsection. 
+%JB%We will refer also some of the convergence results which will be 
+%JB%shown later in \ref{sec:results}.
 
-\subsection{Adaptive quadrature}
+\subsection{Legacy adaptive quadrature}
 \label{sec:refinement_element}
-
 Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
 that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
 well only in some special cases when the well is at the node of an element or near the center of an element. 
@@ -601,29 +601,107 @@ and the integration error is large.
   \label{fig:adapt_refinement}
 \end{figure}
 
-We suggest additional criterion for subelements refinement which takes into account a subelement diameter 
-and its distance from the well
+\subsection{Estimate of quadrature error}
+
+Let us assume just one well of radius $\rho$ situated at the origin. The worst term to integrate is
 \begin{equation}
-  h \leq C_R r_{min},
+    \label{eq:term-of-interest}
+    f(r)=(\nabla \log r )^2 \approx r^{-2}
 \end{equation}
-\notePE{Originally, I compute $r_{min}$ between vertices and the well center, but I believe that the results would be the same.}
-where $h$ is the diameter of the subelement and $r_{min}$ is the minimal distance between a vertex of 
-the subelement and the well center. $C_R$ is a scaling constant, equal 0.5 by default, through which we can 
-control the significance of the criterion. If satisfied, the subelement is not refined anymore.
+%
+independently of the particular variant of the PUM method. Consider a~square $S$ with a~side $\delta$ and 
+let us denote $r_{min}$ and $r_{max}$ the minimum and maximum distance to the origin respectively.
+We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ on the square $S$  
+by the error of 1D quadrature of the same order on $(r_{min}, r_{min}+\delta)$:
+\[
+  E^n(S) \le \delta E^n((r_{min}, r_{min}+\delta)).
+\]
+This is a conservative estimate, which is natural for elements near the main $x$ and $y$ axis, where the error is maximal.
+
+To guarantee prescribed tolerance $\epsilon$, we want to control the error density
+\begin{equation}
+    \label{eq:error-density}
+     E^n(S) \delta^{-2} \le \delta^{-1} E^n((r_{min}, r_{min}+\delta)) \le \epsilon. 
+\end{equation}
+
+Formula for the error of 1D Gauss quadrature of order $n$ ($n$ quadrature points). Quadrature error for $\int_r^{r+\delta} f$ is 
+\[
+  E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
+\]
+for some $\xi_n \in (r, r+\delta)$. 
+For the term of interest, i.e. \eqref{eq:term-of-interest}, we have 
+\[
+  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)},
+\]
+then the convergence criterion following from \eqref{eq:error-density} reads:
+\[
+  \delta^{-1}E_n = \alpha_n \left( \frac{\delta}{r_{min}} \right)^{2n} \frac{1}{r_{min}^2} \le \epsilon, 
+  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2
+\]
+
+%JB%Derived criterion holds only on squares, where the integrated function is smooth.
+%JB%This is not the case for squares intersecting the boundary of the well, $r_{min} \le \rho \le r_{max}$, where we integrate 
+%JB%discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
+%JB%\[
+%JB%  \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
+%JB%\]
+%JB%where $S'$ is square with side $H=\delta/\rho$ and $\vc {r'} = \vc{r}/\rho$. Empirically determined error of the midpoint rule for later 
+%JB%integral is
+%JB%\[
+%JB%    E(H) = c_e H^{p_e}, \quad \text{with } c_e=0.08,\ p_e=2.5.
+%JB%\]
+%JB%This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
+%JB%\begin{equation} \label{eqn:h_criterion}
+%JB%   h\le h_b(\epsilon) = \Big(\frac{\epsilon \rho^{p_e}}{c_e}\Big)^{\frac{1}{p_e-2}}. 
+%JB%\end{equation}
+%JB%
+%\noteJB{TODO: modify test of integration on unit disk for the function $1/r^2$.}
+
+\subsection{A priori adaptive quadrature rules}
+Based on the analysis presented above, we propose following rules for adaptive quadrature:
+%JB%\begin{enumerate}
+%JB% \item If $r_{max} < \rho$ the square quadrature is zero.
+%JB% \item If $r_{min} < \rho < r_{max}$ (square cross the well boundary) we subdivide the square unless $\delta < 2^{-12}h$.
+%JB% \item If $r_{min} > \rho$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
+%JB% \begin{equation} \label{eqn:alpha_criterion}
+%JB%    \frac{\alpha_n h^{2n}}{r_{min}^{2n+2}} \le \epsilon,
+%JB% \end{equation}
+%JB% use at least the same order as necessary for FEM.
+%JB%\end{enumerate}
+%JB%
+%\noteJB{TODO:
+%We should estimate true error numerically using one more subdivision and compare it to prescribed tolerance, we should be safely 
+%below, without increasing the number of evaluation compared to current implementation.
+%}
+
+
+
+%JB%We suggest additional criterion for subelements refinement which takes into account a subelement diameter 
+%JB%and its distance from the well
+%JB%\begin{equation}
+%JB%  h \leq C_R r_{min},
+%JB%\end{equation}
+%JB%\notePE{Originally, I compute $r_{min}$ between vertices and the well center, but I believe that the results would be the same.}
+%JB%where $h$ is the diameter of the subelement and $r_{min}$ is the minimal distance between a vertex of 
+%JB%the subelement and the well center. $C_R$ is a scaling constant, equal 0.5 by default, through which we can 
+%JB%control the significance of the criterion. If satisfied, the subelement is not refined anymore.
+%JB%
+
+%JB%Eventually, we do 10 levels of improved adaptive refinement with the following rules ($r_{max}$ is the maximal
+%JB%distance of a vertex of the subelement and the well center):
+\begin{enumerate}
+ \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
+ \item If $r_{min} < \rho < r_{max}$ and $\delta > 2^{-10}h$, the square is refined.
+ \item If $r_{min} < \rho < r_{max}$ and $\delta \le 2^{-10}h$, $3\times3$ Gauss quadrature is used.
+ Values in quadrature points lying in the well are set to zero.
+ \item If $r_{min} > \rho$ and $\delta > r_{min} / 2$, square is refined.
+ \item If $r_{min} > \rho$ and $\delta \le r_{min} / 2$, $3\times3$ quadrature is used.
+\end{enumerate}
 
 In this way, the elements in which the well does not lie are also refined as you can see in 
 \fig{fig:adapt_ref_b}. The quadrature points are then distributed more 'smoothly' around the well and the
 integrals with gradients can be computed more accurately. 
 
-Eventually, we do 10 levels of improved adaptive refinement with the following rules ($r_{max}$ is the maximal
-distance of a vertex of the subelement and the well center):
-\begin{enumerate}
- \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
- \item If $r_{min} < \rho < r_{max}$, the square is refined, $3\times3$ quadrature is set. If any of the 
- quadrature points lie in the well circle then they are removed.
- \item If $r_{min} > \rho$, we test the suggested criterion $h \leq C_R r_{min}$. If it is satisfied, the 
- $3\times3$ quadrature is set, else the subelement is further refined.
-\end{enumerate}
 
 In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
 The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
@@ -692,108 +770,36 @@ the original version shows out large error that is concentrated on the closest n
 \notePE{the original one can be improved by using higher order quadrature rules (6-6)\\
 }
 
-\section{A priori adaptive quadrature}
-
-Let us assume just one well of radius $\rho$ situated at the origin. The worst term to integrate is
-\begin{equation}
-    \label{eq:term-of-interest}
-    f(r)=(\nabla \log r )^2 \approx r^{-2}
-\end{equation}
-%
-independently of the particular variant of the PUM method. Consider a~square $S$ with a~side $h$ and 
-let us denote $r_{min}$ and $r_{max}$ the minimum and maximum distance to the origin respectively.
-We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ on the square $S$  
-by the error of 1D quadrature of the same order on $(r_{min}, r_{min}+h)$:
-\[
-  E^n(S) \le h E^n((r_{min}, r_{min}+h)).
-\]
-This is a conservative estimate, which is natural for elements near the main $x$ and $y$ axis, where the error is maximal.
-
-To guarantee prescribed tolerance $\epsilon$, we want to control the error density
-\begin{equation}
-    \label{eq:error-density}
-     E^n(S) h^{-2} \le h^{-1} E^n((r_{min}, r_{min}+h)) \le \epsilon. 
-\end{equation}
-
-Formula for the error of 1D Gauss quadrature of order $n$ ($n$ quadrature points). Quadrature error for $\int_r^{r+h} f$ is 
-\[
-  E_n = \frac{h^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
-\]
-for some $\xi_n \in (r, r+h)$. 
-For the term of interest, i.e. \eqref{eq:term-of-interest}, we have 
-\[
-  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)},
-\]
-then the convergence criterion following from \eqref{eq:error-density} reads:
-\[
-  h^{-1}E_n = \alpha_n \left( \frac{h}{r_{min}} \right)^{2n} \frac{1}{r_{min}^2} \le \epsilon, 
-  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2
-\]
-
-Derived criterion holds only on squares, where the integrated function is smooth.
-This is not the case for squares intersecting the boundary of the well, $r_{min} \le \rho \le r_{max}$, where we integrate 
-discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
-\[
-  \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
-\]
-where $S'$ is square with side $H=h/\rho$ and $\vc {r'} = \vc{r}/\rho$. Empirically determined error of the midpoint rule for later 
-integral is
-\[
-    E(H) = c_e H^{p_e}, \quad \text{with } c_e=0.08,\ p_e=2.5.
-\]
-This error has to be smaller then $\epsilon h^2$, thus for $h$ we get formula:
-\begin{equation} \label{eqn:h_criterion}
-   h\le h_b(\epsilon) = \Big(\frac{\epsilon \rho^{p_e}}{c_e}\Big)^{\frac{1}{p_e-2}}. 
-\end{equation}
-
-%\noteJB{TODO: modify test of integration on unit disk for the function $1/r^2$.}
-
-Based on the presented analysis above, we propose following rules for adaptive quadrature:
-\begin{enumerate}
- \item If $r_{max} < \rho$ the square quadrature is zero.
- \item If $r_{min} < \rho < r_{max}$. For $h \ge h_b(\epsilon)$ subdivide the square, else use lowest order quadrature for 
-original function (i.e. $f(r)=0$ for $r\le \rho$).
- \item If $r_{min} > \rho$. For $\frac{h}{r_{min}} > \frac{1}{2}$ subdivide the square, else select order $n$ so that 
- \begin{equation} \label{eqn:alpha_criterion}
-    \frac{\alpha_n h^{2n}}{r_{min}^{2n+2}} \le \epsilon,
- \end{equation}
- use at least the same order as necessary for FEM.
-\end{enumerate}
-
-\noteJB{TODO:
-We should estimate true error numerically using one more subdivision and compare it to prescribed tolerance, we should be safely 
-below, without increasing the number of evaluation compared to current implementation.
-}
 
 
-\subsection{Adaptive integration experiment}
-We now describe the experiment from which we obtained the coefficients in the criterion 
-\eqref{eqn:h_criterion}. Let us have a single element, a square $4\times4$, out of which a circle of unit radius 
-is cut off -- this represents an element with a well. We now want to investigate integration error
-in the vicinity of the circle on the function $f=r^{-2}$, $r$ being the distance from the center of the circle. 
-
-We compute the integral on the selected level of refinement only on the squares intersecting the circle. Then
-we refine the squares up to the 12-th level, integrate again and compute the difference. Quadratures rules
-$1\times1$, $2\times2$, $3\times3$ and $4\times4$ are used. The results are shown in 
-\fig{fig:adapt_integration_conv} also with convergence trend lines equations. The conclusion can be made
-that it is more efficient to refine one more level with one-point quadrature than to use higher order 
-quadrature on the coarser level. As for the coefficient, these can be read from the graph -- for the one point
-quadrature $c_e=12.65$ and $p_e=1.27$.
-
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=0.9\textwidth]{results/adapt_integration_conv.pdf}
-%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
-%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
-%   \hspace{0pt}
-%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
-%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Adaptive quadrature convergence.]{Convergence graph of adaptive quadrature on function $r^{-2}$.
-  \\ \notePE{thicker trend lines}}
-  \label{fig:adapt_integration_conv}
-\end{figure}
-
+%JB%\subsection{Adaptive integration experiment}
+%JB%We now describe the experiment from which we obtained the coefficients in the criterion 
+%JB%\eqref{eqn:h_criterion}. Let us have a single element, a square $4\times4$, out of which a circle of unit radius 
+%JB%is cut off -- this represents an element with a well. We now want to investigate integration error
+%JB%in the vicinity of the circle on the function $f=r^{-2}$, $r$ being the distance from the center of the circle. 
+%JB%
+%JB%We compute the integral on the selected level of refinement only on the squares intersecting the circle. Then
+%JB%we refine the squares up to the 12-th level, integrate again and compute the difference. Quadratures rules
+%JB%$1\times1$, $2\times2$, $3\times3$ and $4\times4$ are used. The results are shown in 
+%JB%\fig{fig:adapt_integration_conv} also with convergence trend lines equations. The conclusion can be made
+%JB%that it is more efficient to refine one more level with one-point quadrature than to use higher order 
+%JB%quadrature on the coarser level. As for the coefficient, these can be read from the graph -- for the one point
+%JB%quadrature $c_e=12.65$ and $p_e=1.27$.
+%JB%
+%JB%\begin{figure}[!htb]
+%JB%%   \vspace{0pt}
+%JB%  \centering    
+%JB%  \includegraphics[width=0.9\textwidth]{results/adapt_integration_conv.pdf}
+%JB%%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
+%JB%%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
+%JB%%   \hspace{0pt}
+%JB%%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
+%JB%%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
+%JB%  \caption[Adaptive quadrature convergence.]{Convergence graph of adaptive quadrature on function $r^{-2}$.
+%JB%  \\ \notePE{thicker trend lines}}
+%JB%  \label{fig:adapt_integration_conv}
+%JB%\end{figure}
+%JB%
 \section{Estimate the enrichment radius} \label{sec:enrichemnt_radius}
 In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
