@@ -139,7 +139,7 @@
 
 \begin{abstract}
 %% Text of abstract
-In this work we demonstrate usage of Partition of Unity (PU) methods to improve approximation of singularities 
+In this work we demonstrate the usage of Partition of Unity (PU) methods to improve approximation of singularities 
 in the solution of the Poisson equation. Our model describes a steady flow of water in a system of aquifers
 which consist of porous media. The aquifers are perforated by wells and boreholes which are often represented
 as point sources considering their small diameter in comparison with the vast size of the aquifer. This 
@@ -168,18 +168,18 @@ PUM \sep XFEM \sep SGFEM \sep adaptive integration \sep point sources
 \label{sec:introduction}
 
 People often consider in their models of flow in porous media very large areas which can contain various 
-phenomena of very small scale compared with the size of the areas. These can be some disruptions of the porous 
-media, e.g. cracks and wells, or material inhomogeneities that cause large gradients in pressure head and 
+phenomena of a very small scale compared with the size of the areas. These can be some disruptions of the porous 
+medium, e.g. cracks and wells, or material inhomogeneities that cause large gradients in pressure head and 
 velocity or even their discontinuities.
 
-Using the standard finite element method (FEM) we are unable to properly approximate the quantities in the 
+Using the standard finite element method (FEM) we are unable to properly approximate quantities in the 
 vicinity of these disturbances, unless we introduce elements of the same scale in the mesh. This leads to 
 higher requirements on mesh processing (refinement) and increase of computational costs due to growing number  
 of degrees of freedom.
 
 In this work we use PU (Partition of Unity) methods to overcome these problems and demonstrate it on a steady 
 %quasi-three-dimensional model of multi-aquifer system 
-two-dimensional aquifer model containing hydro-geological wells which cause singularities in solution. 
+two-dimensional aquifer model containing hydro-geological wells which cause singularities in the solution. 
 We follow the work \cite{gracie,craig} of Gracie and Craig who have already used the XFEM (eXtended FEM) 
 on a~similar model. However, we focus mainly on the study of the PU methods. In particular, we use the XFEM 
 and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{cxfem}, 
@@ -191,32 +191,35 @@ In addition, we suggest better choice of enrichment area based on a tolerance cr
 The implementation was done in C++ language using the Deal II library~\cite{deal}, the finite element library.
 which does not support any enrichment techniques at the moment.
 
-We describe the model in the beginning of the article, set the problem and go through the
-PU methods in more details. Then we show some numerical aspects of the problem which we must deal with, 
-especially the adaptive integration in section \ref{sec:integration}. Results, convergence of methods and
-conditioning of the algebraic system are discussed right after and further research goals are pointed out 
-at the end. 
+We describe the model in the beginning of the article in \ref{sec:model}, set the problem and derivate its weak formulation. 
+In section \ref{sec:discretization} we discretize the problem and go through the PU methods 
+in details. After that we investigate the problem of integration in the enrichment area and suggest some 
+improvements in \ref{sec:integration}. The study on the proper choice of the enrichment area is presented in 
+section \ref{sec:enrichemnt_radius}. 
+Finally in section \ref{sec:results}, test problems are set and numerical results are shown; 
+in particular a set of experiments validating some of the theoretical results and convergence tests.
+Open questions are summarized and further research goals are pointed out at the end. 
 
 \section{Model}
 \label{sec:model}
 We consider a steady flow in a system of aquifers (2D horizontal layers of given thickness) which are separated by 
 impermeable layers (aquitards). The aquifers are connected by wells which act as sources
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
-condition of the aquifers which can be of Dirichlet type or be homogeneous of Neumann type.
+condition of the aquifers which can be of Dirichlet type or homogeneous of Neumann type.
 
 \subsection{Mathematical model}
 We describe the wells as interior boundary condition therefore we need to define the computational domain
 as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
-$m=1,\ldots M$, and $z_m$ be the vertical coordinate of the aquifer. The well $w$ is defined by a cylinder $B_w$
+$m=1,\ldots M$, and $z_m$ be its vertical coordinate. The well $w$ is defined by a cylinder $B_w$
 with the base center $\vc{x}_w$, radius $\rho_w$ and height $|z_1-z_M|$.  We further denote 
-$B^m_w = B_W \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
+$B^m_w = B_w \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
 and the union $B^m=\bigcup\limits_{w}B^m_w$. 
 We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
 such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
 
-The distribution of the pressure head in $m$-th aquifer is described by Poisson equation and 
+The distribution of pressure head in the $m$-th aquifer is described by Poisson equation and 
 boundary conditions
 \begin{eqnarray} \label{eqn:poisson}
 \nabla\cdot(-\mathbf{T}^m\nabla h^m) &=& f^m \qquad \textrm{on } \Omega^m\subset\R^2,\; \forall m=1,\dots,M, \\
@@ -240,7 +243,6 @@ wells. We can prescribe the flow balance equation
   Q^m_{w,in} &\ldots& \textrm{flow from upper aquifer,} \nonumber\\
   Q^m_{w,out} &\ldots& \textrm{flow into lower aquifer.} \nonumber
 \end{eqnarray}
-\notePE{TODO: add arrow (flow) to the top}
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: add arrow (flow) to the top
@@ -254,7 +256,7 @@ wells. We can prescribe the flow balance equation
 
 \fig{fig:well_flows} presents the equation \eqref{eqn:well_flows} and denotes the flows $Q^m_{w,\cdot}$ by red arrows.
 We can look at the flows in the balance equation as 1D problems which are governed by a difference of pressure
-heads and a transition coefficient. Using this idea, we can substitute the flows in the equation 
+head and a transition coefficient. Using this idea, we can substitute the flows in the equation 
 \eqref{eqn:well_flows} and get
 \begin{eqnarray} 
 \int_{\partial B_w^m}\sigma_w^m \left(h^m - H_w^m\right) \dd s
@@ -278,7 +280,7 @@ and is adjusted to the form
   c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
 \end{equation}
 The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
-as part of the solution from the equation \eqref{eqn:well_balance_top}, see $H^4$ in \fig{fig:well_flows}.
+as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
 
 The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
 well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
@@ -599,35 +601,48 @@ and the integration error is large.
   \label{fig:adapt_refinement}
 \end{figure}
 
-We suggested additional criterion for subelements refinement which takes into account a subelement diameter 
+We suggest additional criterion for subelements refinement which takes into account a subelement diameter 
 and its distance from the well
 \begin{equation}
-  d_T > C_R|d_{min} - \rho_w|,
+  h \leq C_R r_{min},
 \end{equation}
-where $d_T$ is the diameter of the subelement and $d_{min}$ is minimal distance between a vertex of 
-the subelement and the well edge. $C_R$ is a scaling constant, equal 1.0 by default, through which we can 
-control the significance of the criterion.
+\notePE{Originally, I compute $r_{min}$ between vertices and the well center, but I believe that the results would be the same.}
+where $h$ is the diameter of the subelement and $r_{min}$ is the minimal distance between a vertex of 
+the subelement and the well center. $C_R$ is a scaling constant, equal 0.5 by default, through which we can 
+control the significance of the criterion. If satisfied, the subelement is not refined anymore.
 
 In this way, the elements in which the well does not lie are also refined as you can see in 
 \fig{fig:adapt_ref_b}. The quadrature points are then distributed more 'smoothly' around the well and the
 integrals with gradients can be computed more accurately. 
 
-In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements which 
-were computed also using the corresponding adaptive integration. Notice the scale of the improved version -- 
-the error on elements is in small range and is not significantly concentrated anywhere. On the other hand, 
+Eventually, we do 10 levels of improved adaptive refinement with the following rules ($r_{max}$ is the maximal
+distance of a vertex of the subelement and the well center):
+\begin{enumerate}
+ \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
+ \item If $r_{min} < \rho < r_{max}$, the square is refined, $3\times3$ quadrature is set. If any of the 
+ quadrature points lie in the well circle then they are removed.
+ \item If $r_{min} > \rho$, we test the suggested criterion $h \leq C_R r_{min}$. If it is satisfied, the 
+ $3\times3$ quadrature is set, else the subelement is further refined.
+\end{enumerate}
+
+In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
+The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
+on the enriched element with the well and $4\times4$ quadrature rules on the other enriched elements. 
+The improved adaptive quadrature is computed as described above. Notice the scale of the improved version -- 
+the error on elements is in small range and is not significantly concentrated anywhere. In contrast, 
 the original version shows out large error that is concentrated on the closest non-refined element to the well.
 
 %\notePE{TODO: add axis, remove legend label, try to sharpen}
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
-  \subfloat[original refinement]{\label{fig:adapt_ref_norm_a} 
+  \subfloat[original]{\label{fig:adapt_ref_norm_a} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_old.pdf} }
   \hspace{0pt}
-  \subfloat[improved refinement]{\label{fig:adapt_ref_norm_b} 
+  \subfloat[improved]{\label{fig:adapt_ref_norm_b} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_new.pdf} }
-  \caption[Adaptive refinement comparison]
-  {Comparison of element-wise error in $L_2$ norm using different refinement techniques.
+  \caption[Adaptive quadrature refinement comparison]
+  {Comparison of element-wise error in $L_2$ norm using original and improved adaptive quadrature.
   }
   \label{fig:adapt_refinement_norm}
 \end{figure}
@@ -674,10 +689,7 @@ the original version shows out large error that is concentrated on the closest n
 %   \label{fig:adapt_ref_convergence}
 % \end{figure}
 
-\notePE{
-* non-optimal convergence rate with the approach of [gracie] and their integration scheme 3-4\\
-* the above can be improved by using higher order quadrature rules (6-6)\\
-* problem is that we do not represent the well edge and mainly its surrounding well enough
+\notePE{the original one can be improved by using higher order quadrature rules (6-6)\\
 }
 
 \section{A priori adaptive quadrature}
@@ -782,16 +794,16 @@ quadrature $c_e=12.65$ and $p_e=1.27$.
   \label{fig:adapt_integration_conv}
 \end{figure}
 
-\section{Estimate the enrichment radius}
-In this section, we shall study dependance of the solution error on the enrichement radius $R$. First part is devoted to 
+\section{Estimate the enrichment radius} \label{sec:enrichemnt_radius}
+In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
-Let us consider a general elliptic problem to find $u\in V$ satifying
+Let us consider a general elliptic problem to find $u\in V$ satisfying
 \[
    a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
 \]
 where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \gamma \norm{v}_V^2$, $\gamma>0$, and $f$ an bounded linear form, $f\in V'$. 
 Suppose, that the problem is to be solved on a domain $\Omega \subset \R^2$ with a single hole (well) of radius $\rho$ at the origin. 
-Let us assume, that the solution can be spitted to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
+Let us assume, that the solution can be split to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
 Let $V^P_h$ be a polynomial finite element subspace of $V$ on a regular mesh of elements with a maximal diameter $h$
 and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enrichment zone $Z_R$, i.e.
 \[
@@ -980,7 +992,7 @@ comes from the singular part of the solution.
 All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 \notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
-by small level of quadrature refinement, by large contant for h/rho criterion (tried h/rho<=0.1). What should 
+by small level of quadrature refinement, by large constant for h/rho criterion (tried h/rho<=0.1). What should 
 we blame except me?}
 
 \begin{figure}[!htb]
@@ -1000,7 +1012,7 @@ for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is nu
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
 We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
-The Jacobi preconditioner was used each time. 
+The Jacobi preconditioning was used each time. 
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
