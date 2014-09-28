@@ -797,7 +797,7 @@ and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on
 \[
    \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
 \]
-Using standard error estimate for elliptic PDE (see e.g. \cite{ciarlet_basic_1991}), we get
+Using standard error estimate for elliptic PDE (e.g. \cite[Theorem 13.1]{ciarlet_basic_1991}), we get
 \begin{equation}
     \label{eq:std_err_estimate}
     \norm{u - u_h}_{V} \le c_a \inf_{v \in V_h} \norm{u - v}_{V} 
@@ -1015,7 +1015,6 @@ The Jacobi preconditioner was used each time.
 
 
 
-\caption{Numerical validation of the estimate \eqref{eqn:log_h1_estimate} in 2D case. The minimal and maximal 
 \subsection{Dependence on the enrichment radius}
 %
 \begin{figure}[!htb]
@@ -1054,42 +1053,46 @@ meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate
 \label{tab:log_h1_estimate}
 \end{center}
 \end{table}
-\noteJB{What is the min value on the last row?}
 %
 The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
-dependence of global $L^2$ error on the enrichment radius in agreement with \eqref{eq:singular_approx_error}.
+numerically dependence of $L^2$ norm of the error on the enrichment radius and compare it with \eqref{eq:singular_approx_error}.
 
-Validity of the estimate \eqref{eq:grad_estimate_on_square} is confirmed by calculation of the ratio
+Validity of the estimate \eqref{eq:grad_estimate_on_square} is verified by calculation of the ratio
 \begin{equation} \label{eqn:log_h1_estimate_ratio}
-\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|\log \vc x - u_h\|^2_{H^1(T)}}
+\frac{h^{3/2} r^{-2} 12^{-1/2}}{\|u_s - \Pi u_s\|^2_{H^1(T)}},\quad u_s(\vc x) = \log \abs{\vc x}
 \end{equation}
-on every element $T$ of the sequence of refined meshes using a $5\times5$ Gaussian quadrature for estimation of $H^1$ norm. Table 
+on every element $T$ of the sequence of refined meshes using a $5\times5$ Gaussian quadrature for estimation of the $H^1$ norm. Table 
 \ref{tab:log_h1_estimate} reports the minimum and the maximum value of the ratio over all elements of every mesh.
-The minimum value are close to 1 independently of $h$ so our estimate is tight. Moreover, the minimum value is attained on the majority of
+The minimum value are close to 1 independently of $h$ which is in perfect agreement with \eqref{eq:grad_estimate_on_square}.
+Moreover, the minimum value is attained on the majority of
 elements, see Figure \fig{fig:log_estimate_b}. Both parts of Figure \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
 where the nonlinear term of the tensor product bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
 Next, we study influence of the enrichment radius $R$ to the global $L^2$ error. To this end, we have run solution of Problem 2 with parameter $U=3$
 using shifted XFEM as described in the previous section for different mesh step and different values of $R$.
 Let us remind that $O(h^p)$ convergence of the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the $L^2$ norm 
-for the linear elliptic problems (c.f. \cite{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
+for the linear elliptic problems (c.f. \cite[Theorem 19.2]{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
 and \eqref{eq:singular_approx_error}, we expect $O(h^2)$ convergence of $L^2$ norm independently of the enrichment radius. This is 
 clearly demonstrated on Figure \fig{fig:radius_conv_1}. Lack of convergence under certain error threshold is probably due to 
-quadrature error as discussed in the previous section. For comparison, we plot also error of the regular part of the solution 
-resolved by unenriched FEM displaying $O(h^2)$ convergence. As predicted the total error gets closer to the error of the 
-regular part of the solution as the enrichment radius grows, but for certain critical $R$. 
+quadrature error as discussed in the previous section. For comparison, we plot also error of the regular part of the solution
+\[
+  u_r(x,y) = U \sin (\omega x)
+\]
+]
+resolved by unenriched FEM displaying $O(h^2)$ convergence. \noteJB{Is it really $u_r$ what is plotted, make it clear in caption.}
+As predicted the total error diminish with $R$ but can not 
+drop under the the error of $u_r$. By direct computation, we get
+\[
+  \norm{u_r - \Pi u_r}_{H^1(\Omega)} = \frac{1}{12}UHh\omega^2 + O(h^2)
+\]
+where $H=100$ is domain side and $U=3$, $\omega=0.03$. Then according to \eqref{eq:singular_approx_error},
+we get critical value of the enrichment radius
+\[
+    R_c \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
+\]
+This value roughly match a breakpoint on plots of error in dependence of $R$ on 
+on Figure \fig{fig:radius_conv_1}.
 
-We demonstrate the behavior of the model depending on the enrichment radius choice on our test case with 
-source term present. \notePE{Define the two test case - with and without source.}
-The convergence graph in  shows how the error depends on the element size for different 
-enrichment radius. As a reference in the graph, we added the error of classical FEM applied on the same problem 
-but with well omitted -- the convergence rate is optimal 2.0. We see that the convergence rate for all the 
-chosen enrichment radii is very close to the optimum. It is degraded for smaller element size while we are
-approaching the accuracy limits of the integration.
-
-We also see in \fig{fig:radius_conv_1} that the error is not decreasing significantly for larger enrichment 
-radii. This trend is more obvious from the graph in \fig{fig:radius_conv_2} which shows the dependence of the
-error on the enrichment radius for different element sizes.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
