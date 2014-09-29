@@ -18,8 +18,8 @@
 %% with harvard style bibliographic references
 %% SP 2008/03/01
 
-\documentclass[preprint,12pt]{elsarticle}
-%\documentclass{elsarticle}
+%\documentclass[preprint,12pt]{elsarticle}
+\documentclass{elsarticle}
 %\documentclass[3p,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
@@ -1152,6 +1152,24 @@ on Figure \fig{fig:radius_conv_1}.
 
 \section{Summary}
 \label{sec:summary}
+
+We presented a study on the usage of several PU methods -- the XFEM, its corrected version with the ramp 
+function and the shiftment, and the SGFEM. The problem setting was inspired by the work \cite{gracie,craig} 
+of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
+rather than in computation of complex problems.
+
+We investigated the issue of a sub-optimal convergence rate addressed in \cite{gracie}. We revealed the problem
+in the adaptive quadrature and we suggested better adaptivity rules. The improvement was confirmed by the numerical
+tests in \ref{sec:res_comparison} where we obtained optimal convergence rates.
+
+All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM we saw that at 
+least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
+the SGFEM converged optimally and did not show any difference in the solution precision.
+
+The ill-conditioning of the system matrix was encountered when using the standard XFEM and the ramp function XFEM.
+The iteration count was measured.
+
+From the results in \ref{sec:res_comparison} we saw that the usage of the shifted XFEM or SGFEM 
 
 \section{Acknowledgement}
 This work was made under the sincere guidance and support of Mgr. Jan B{\v r}ezina, Ph.D.
