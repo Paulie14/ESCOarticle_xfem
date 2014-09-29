@@ -404,7 +404,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 \end{figure}
 
 
-In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
+In contrast to global enrichment methods, the XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
 to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
 nodes that are in some enrichment zone.
 \noteJB{$B_R$ is used in two different meanings, either as cylinder or as the disk (ball in $R^2$).}
@@ -414,7 +414,7 @@ nodes that are in some enrichment zone.
 \label{sec:pum_methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
 functions associated with the node $\bx_\alpha$ of the triangulation. 
-In \textbf{standard XFEM}, we write the solution in the form
+In the \textbf{standard XFEM}, we write the solution in the form
 \begin{equation} \label{eqn:xfem_standard_form}
   h(\bx) = \sum \limits_{\alpha\in\mathcal{I}}a_\alpha N_\alpha(\bx)
     + \sum \limits_{w\in\mathcal{W}} \sum \limits_{\alpha\in\mathcal{I}^e_w} b_{\alpha w} \phi_{\alpha w}(\bx),
@@ -428,7 +428,6 @@ in the following way
     \phi_{\alpha w} = N_\alpha(\bx)L_{\alpha w}(\bx), \quad \alpha\in\mathcal{I}^e_w, w\in\mathcal{W},
 \end{equation}
 where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
-\notePE{TODO: define test functions, refer to the weak form}
 
 \subsubsection{Corrected XFEM}
 The corrected XFEM, introduced in  \cite{cxfem}, deals with the convergence problem on blending elements and 
@@ -938,7 +937,6 @@ $\sigma_w$                  & $10^5$ \\
 $c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
 $U$                         & 8.0 \\
 $\omega$                    & 0.03 \\
-CG solver tolerance         & $10^-9$ \\
 \bottomrule
 \end{tabular}
 \caption{Input parameters for the numerical tests. Units are omitted.
@@ -948,10 +946,11 @@ CG solver tolerance         & $10^-9$ \\
 \end{table}
 %
 
-\subsection{Comparison of XFEM methods}
-\notePE{I would rather use PUM methods in the title.}
+\subsection{Comparison of PU methods} \label{sec:res_comparison}
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
+The linear system is always solved by conjugate gradients (CG) with Jacobi preconditioning 
+and tolerance set $10^{-9}$.
 
 Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
@@ -964,14 +963,14 @@ On the other hand the adaptive refinement can save us a lot of degrees of freedo
 with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
 also editing the mesh.
 
-The standard XFEM method pushes the error down by three orders. It has optimal convergence rate but the system
+The standard XFEM pushes the error down by three orders. It has optimal convergence rate but the system
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 ill-conditioning of the matrix still corrupts the computation. We discuss the conditioning of the system more 
-in next subsection \ref{sec:conditioning}.
+in next subsection \ref{sec:res_conditioning}.
 
-The shifted XFEM and SGFEM behave nearly the same way and give the best results. We only mention that SGFEM saves 
-small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
+The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
+small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
 What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
 the point where the adaptive quadrature with fixed level is not accurate enough thus the 
 refinement has no influence on the error.
@@ -987,13 +986,13 @@ refinement has no influence on the error.
 
 When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of the
 standard FEM on the problem with the well omitted as a reference in the graph (finding only the regular part $u_r$), 
-see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PUM methods are to 'FEM (ur)' the better 
+see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PU methods are to 'FEM (ur)' the better 
 the approximation of the singularity is.
 
-In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+In case of the standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. 
 
-All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
+All the PU methods have again nearly optimal convergence rate. The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 \notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
 by small level of quadrature refinement, by large constant for h/rho criterion (tried h/rho<=0.1). What should 
@@ -1009,16 +1008,16 @@ we blame except me?}
   \label{fig:convergence_sin}
 \end{figure}
 
-\subsection{Conditioning of the system matrix} \label{sec:conditioning}
-We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PUM methods. 
+\subsection{Conditioning of the system matrix} \label{sec:res_conditioning}
+We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PU methods. 
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
 for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of degrees of freedom. 
 With local preconditioning (Jacobi, 
-SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
+SOR, ILU) one can usually achieve the number of iterations $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
-We observe the iteration counts needed by CG solver and gather them in the graph in \fig{fig:iterations}.
-The Jacobi preconditioning is used each time and tolerance $10^{-9}$ is set. The number of iterations of the 
-standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
+Let us use the data from the numerical tests above in \ref{sec:res_comparison}.
+We observe the iteration count needed by CG solver and gather the values in the graph in \fig{fig:iterations}.
+The number of iterations of the standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
