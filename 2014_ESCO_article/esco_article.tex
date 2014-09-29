@@ -272,24 +272,30 @@ values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal
 satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
 
 Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
-With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
-
-We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
-and is adjusted to the form
+The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
+to formulate additional equations
 \begin{equation} \label{eqn:well_balance_top}
-  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
+  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
 \end{equation}
-The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
-as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
+to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
+%With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
 
-The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
-well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
-later replaced by the average
-\begin{equation} \label{eqn:average}
-  \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
-\end{equation}
-which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
-amount is possible since our test cases are symmetric.
+% We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
+% and is adjusted to the form
+% \begin{equation} \label{eqn:well_balance_top}
+%   c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
+% \end{equation}
+% The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
+% as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
+
+% The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
+% well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
+% later replaced by the average
+% \begin{equation} \label{eqn:average}
+%   \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
+% \end{equation}
+% which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
+% amount is possible since our test cases are symmetric.
 
 \subsection{Weak formulation}
 We define the trial and the test spaces
@@ -301,8 +307,8 @@ where $H^1$ and $H^1_0$ are standard Sobolev spaces and
 \[ H^1_0(\Omega^m)=\{\varphi\in H^1(\Omega^m); \varphi|_{\Gamma^m_D}=0\}. \]
 We can now introduce the weak solution $u$ and test functions $v$
 \begin{eqnarray} \label{eqn:solution}
-   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M+1}_W)\in V, \\
-   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M+1}_W)\in V_0.
+   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M}_W)\in V, \\
+   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M}_W)\in V_0.
 \end{eqnarray}
 
 To obtain the weak form we apply the standard Galerkin method. We multiply the equations \eqref{eqn:poisson} 
@@ -312,18 +318,35 @@ by test functions $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m
   + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
   = \int \limits_{\Omega^m} f^m\varphi^m% - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
+% We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
+% which results in
+% \begin{multline} \label{eqn:weak_form}
+%   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+%         + \sum \limits_{w\in \mathcal{W}} \sigma^m_w\left( \avg{h^m}-H^m_w\right)
+%           \left(\avg{\varphi^m}-\Phi^m_w\right) + \\
+%           + \sum\limits_{w\in\mathcal{W}} \Big[
+%           c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
+%   =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
+% \end{multline}
+% \noteJB{Consider sum over aquifers to get square term from communication on wells.
+% Boundary conditions on wells?}
 We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
-and use \eqref{eqn:average} which results in
+and sum up over $m$ which results in
 \begin{multline} \label{eqn:weak_form}
-  \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-        + \sum \limits_{w\in \mathcal{W}} \sigma^m_w\left( \avg{h^m}-H^m_w\right)
-          \left(\avg{\varphi^m}-\Phi^m_w\right) + \\
-          + \sum\limits_{w\in\mathcal{W}} \Big[
-          c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
-  =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
+  \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+        + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)
+          \left(\varphi^m-\Phi^m_w\right) \dd\bx + \\
+          + \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}}
+          c_w^{m}\left( H^{m-1}_w-H_w^{m}\right)\left(\Phi^{m-1}_w - \Phi^m_w\right) = \\
+  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx -
+  \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}} c^{M+1}_w\left(H^M_w-H^{M+1}_w\right) \quad \forall m=1,\ldots,M.
 \end{multline}
-\noteJB{Consider sum over aquifers to get square term from communication on wells.
-Boundary conditions on wells?}
+% \noteJB{Consider sum over aquifers to get square term from communication on wells.
+% Boundary conditions on wells?}
+We can see in \eqref{eqn:weak_form} the elliptic character of the weak form. In fact, it is possible to proove
+the existence and the uniqueness using the Lax Milgram lemma. It is sufficient to have only one well pressure value 
+set on input so the unique solution exists. In that case, the Neumann boundary condition can be along the 
+whole outer boundary and uniqueness is still provided.
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
 % \begin{equation} \label{eqn:bilinear_form_a}
