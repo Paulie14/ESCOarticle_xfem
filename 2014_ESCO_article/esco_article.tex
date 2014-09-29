@@ -566,12 +566,10 @@ There are two aspects which the integration must handle properly:
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in integration.
-%\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
-One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
-small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
-in the system. We will discuss the adaptivity criteria, suggest improvement and compare our solution
-with the original one in this subsection. We will refer also some of the convergence results which will be 
-shown later in \ref{sec:results}.
+One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
+small pieces (squares on the reference element) only to place more quadrature points inside but not to bring 
+any more degrees of freedom in the system. We will discuss the adaptivity criteria, suggest improvement and 
+compare our solution with the original one in the following subsection. 
 
 \subsection{Adaptive quadrature}
 \label{sec:refinement_element}
