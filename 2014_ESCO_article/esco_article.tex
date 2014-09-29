@@ -980,7 +980,7 @@ At first we solve the problem by standard FEM with adaptive mesh refinement wher
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
 The element size is then taken at the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
+well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27 in the $L^2$ norm.
 We see that a very fine mesh is needed to capture the singularity.
 On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
 with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
@@ -990,20 +990,18 @@ The standard XFEM pushes the error down by three orders. It has optimal converge
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 ill-conditioning of the matrix still corrupts the computation. We discuss the conditioning of the system more 
-in next subsection \ref{sec:res_conditioning}.
+in the next subsection \ref{sec:res_conditioning}.
 
 The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
-What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
-the point where the adaptive quadrature with fixed level is not accurate enough thus the 
-refinement has no influence on the error.
+The convergence rate in $L^2$ norm closing to 2.0 is optimal.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence.pdf}
   \caption[Convergence graph \probref{def:test_case_1}]{Convergence graph of different methods on 
-  \probref{def:test_case_1}. }
+  \probref{def:test_case_1}. The error is computed in $L^2$ norm.}
   \label{fig:convergence}
 \end{figure}
 
@@ -1026,7 +1024,7 @@ we blame except me?}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
   \caption[Convergence graph \probref{def:test_case_2}]{Convergence graph of different methods on 
-  \probref{def:test_case_2}. The 'FEM (ur)'
+  \probref{def:test_case_2} in $L^2$ norm. The 'FEM (ur)'
   data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
