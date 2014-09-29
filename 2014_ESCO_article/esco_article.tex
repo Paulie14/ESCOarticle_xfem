@@ -967,7 +967,8 @@ also editing the mesh.
 The standard XFEM method pushes the error down by three orders. It has optimal convergence rate but the system
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
-conditionality of the matrix still corrupts the computation.
+ill-conditioning of the matrix still corrupts the computation. We discuss the conditioning of the system more 
+in next subsection \ref{sec:conditioning}.
 
 The shifted XFEM and SGFEM behave nearly the same way and give the best results. We only mention that SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
@@ -1008,14 +1009,16 @@ we blame except me?}
   \label{fig:convergence_sin}
 \end{figure}
 
-\subsection{Condition number}
+\subsection{Conditioning of the system matrix} \label{sec:conditioning}
 We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PUM methods. 
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
-for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
+for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of degrees of freedom. 
+With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
-We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
-The Jacobi preconditioning was used each time. 
+We observe the iteration counts needed by CG solver and gather them in the graph in \fig{fig:iterations}.
+The Jacobi preconditioning is used each time and tolerance $10^{-9}$ is set. The number of iterations of the 
+standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1025,9 +1028,16 @@ The Jacobi preconditioning was used each time.
   number of degrees of freedom. Measured on both problems with no serious distinction observed.}
   \label{fig:iterations}
 \end{figure}
+%
+We can see clearly the enormous growth of the number of iterations in case of the standard XFEM and the ramp 
+function XFEM. These problems are generally known and are described for example in the overview of the XFEM in
+\cite{g_x_overview}. The usage of enrichment functions can make the approximation space almost linearly 
+dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
-
-
+Summarizing the theory in \cite{sgfem} we can say that the conditioning of the SGFEM system is not worse than the one of the 
+associated standard FEM system. This is satisfied in our case and we see from the graph in \fig{fig:iterations}
+that the shifted XFEM has similarly good results. This area of the problem would need deeper investigation
+and it will be probably a part of the following work.
 
 
 \subsection{Dependence on the enrichment radius}
