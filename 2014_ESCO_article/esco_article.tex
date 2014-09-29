@@ -985,10 +985,10 @@ refinement has no influence on the error.
   \label{fig:convergence}
 \end{figure}
 
-When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of 
-standard FEM on the problem with the well omitted as a reference in the graph, see the 'FEM sin(x)' with 
-convergence rate 2.0. The closer the PUM methods are to 'FEM sin(x)' the better the approximation of 
-the singularity is.
+When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of the
+standard FEM on the problem with the well omitted as a reference in the graph (finding only the regular part $u_r$), 
+see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PUM methods are to 'FEM (ur)' the better 
+the approximation of the singularity is.
 
 In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. 
@@ -1004,7 +1004,7 @@ we blame except me?}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
   \caption[Convergence graph \probref{def:test_case_2}]{Convergence graph of different methods on 
-  \probref{def:test_case_2}. The 'FEM sin(x)'
+  \probref{def:test_case_2}. The 'FEM (ur)'
   data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
@@ -1035,9 +1035,10 @@ function XFEM. These problems are generally known and are described for example 
 dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
 Summarizing the theory in \cite{sgfem} we can say that the conditioning of the SGFEM system is not worse than the one of the 
-associated standard FEM system. This is satisfied in our case and we see from the graph in \fig{fig:iterations}
-that the shifted XFEM has similarly good results. This area of the problem would need deeper investigation
-and it will be probably a part of the following work.
+associated standard FEM system. We have only the number of iterations on the standard FEM system for comparison, 
+but we see from the graph in \fig{fig:iterations} that the results in case of the SGFEM are satisfying.
+CG used on the shifted XFEM system has similarly good results. This area of the problem would need deeper 
+investigation and we will look at it in a part of our following work.
 
 
 \subsection{Dependence on the enrichment radius}
@@ -1128,8 +1129,8 @@ on Figure \fig{fig:radius_conv_1}.
 %   \hspace{0pt}
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM sin(x)'
-  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
+  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM (ur)'
+  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence rate 2.0.}
   \label{fig:radius_conv_1}
 \end{figure}
 \begin{figure}[!htb]
