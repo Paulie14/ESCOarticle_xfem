@@ -1,0 +1,29 @@
+Dear Pavel Solin,
+
+We wish to submit a new manuscript entitled 
+“Partition of unity methods for approximation of point water sources in~porous media” 
+for possible publication in "Applied Matematics and Computation" journal in special issue ESCO 2014.
+We confirm that this work is original and has not been published elsewhere nor it is currently under consideration for publication elsewhere.
+
+This paper is devoted to the application of the partition of unity methods (PUM) on the groundwater flow problem 
+in order to resolve singularities appearing around wells. We perform comparison of four slightly different PUM
+in terms of convergence and conditioning. We perform analysis of the quadrature error and influence of the 
+enriched domain on the solution error. 
+
+This work further develops results due to R. Gracie and J. Craig, the only work concerning the usage of XFEM to the well problems.
+Original contribution of the manuscript covers: detailed tests of convergence, 
+comparison of different methods, better quadrature strategy, and discussion of the role of the enriched domain.
+
+Proposed reviewers:
+Robert Gracie, Department of Civil and Environment Engineering, University of Waterloo; rgracie@uwaterloo.ca
+Thomas-Peter Fries, Institute for Structural Analysis; Graz University of Technology; fries@tugraz.at
+Uday Banerjee, Department of Mathematics; Syracuse University; banerjee@syr.edu
+Jack Chessa, Department of Mechanical Engineering; University of Texas at El Paso; jfchessa@utep.edu
+
+
+Please address all correspondence concerning this manuscript to: pavel.exner@tul.cz.
+Thank you for considering this article for publication.
+
+With kind regards
+
+Pavel Exner, Jan Brezina
