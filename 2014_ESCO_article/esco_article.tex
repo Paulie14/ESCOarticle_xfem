@@ -574,21 +574,20 @@ with the original one in this subsection.
 %JB%We will refer also some of the convergence results which will be 
 %JB%shown later in \ref{sec:results}.
 
-\subsection{Legacy adaptive quadrature}
+\subsection{Instability of adaptive quadrature}
 \label{sec:refinement_element}
-Gracie and Craig used in \cite{gracie} a criterion for adaptive refinement according to which only the subelements 
-that have nonzero cross-section with the well are refined. This catches nicely the well edge but it can work 
-well only in some special cases when the well is at the node of an element or near the center of an element. 
-The problem comes when the well is placed near the edge or node of an element. In that case there can be
-large difference in the size of neighboring subelements as you can see in \fig{fig:adapt_ref_a}. Although
+Gracie and Craig in \cite{gracie} refine only subregions that cross the boundary of the well, using at most 12 refinements.
+This catches nicely the well edge but it works only when the well is placed at the node of an element or near the center of an element. 
+When the well is placed near the edge of an element, there can be
+large difference in the size of neighboring subelements, see Figure \fig{fig:adapt_ref_a}. Although
 the integrand is computed precisely enough on the element with the well inside, the quadrature points on the
-neighboring elements (where the pressure head gradient can be still large) are placed very sparsely 
+neighboring elements (where the integrad has still large derivatives) are placed very sparsely 
 and the integration error is large.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
-  \subfloat[original refinement]{\label{fig:adapt_ref_a} 
+  \subfloat[refinement due to G. and C.]{\label{fig:adapt_ref_a} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_old.pdf} }
   \hspace{0pt}
   \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
@@ -600,47 +599,50 @@ and the integration error is large.
   }
   \label{fig:adapt_refinement}
 \end{figure}
+In order to overcome this instability of the adaptive quadrature, we have made an asymptotic analysis of the integration error presented 
+in the next section.
 
 \subsection{Estimate of quadrature error}
 
-Let us assume just one well of radius $\rho$ situated at the origin. The worst term to integrate is
+Let us assume only one well of radius $\rho$ situated at the origin. In the case of elliptic equation, the term with strongest singularity is 
 \begin{equation}
     \label{eq:term-of-interest}
     f(r)=(\nabla \log r )^2 \approx r^{-2}
 \end{equation}
-%
-independently of the particular variant of the PUM method. Consider a~square $S$ with a~side $\delta$ and 
-let us denote $r_{min}$ and $r_{max}$ the minimum and maximum distance to the origin respectively.
-We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ on the square $S$  
-by the error of 1D quadrature of the same order on $(r_{min}, r_{min}+\delta)$:
+which is also the worst term to integrate independently of the particular variant of the PU method.
+Consider a~subregion $S$ with a~side $\delta$ and 
+let us denote $r_{S}$ the distance of $S$ to the origin.
+We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
+$\Pi^n f$ the projection of integrant to the space of polynomials that are integrated exactly. Due to the radial natur of the integrand and its derivatives,
+we can estimate
 \[
-  E^n(S) \le \delta E^n((r_{min}, r_{min}+\delta)).
+  \abs{f-\Pi^n f}(x,y) \le \abs{f-\Pi^n f}(x,y_0), \quad \text{for } \abs{y_0} \le \abs{y},
 \]
-This is a conservative estimate, which is natural for elements near the main $x$ and $y$ axis, where the error is maximal.
-
-To guarantee prescribed tolerance $\epsilon$, we want to control the error density
-\begin{equation}
-    \label{eq:error-density}
-     E^n(S) \delta^{-2} \le \delta^{-1} E^n((r_{min}, r_{min}+\delta)) \le \epsilon. 
-\end{equation}
-
-Formula for the error of 1D Gauss quadrature of order $n$ ($n$ quadrature points). Quadrature error for $\int_r^{r+\delta} f$ is 
+and thus estimate the error by the error $E^n$ of 
+ 1D quadrature of the same order on $(r_{S}, r_{S}+\delta)$:
+\[
+  \int_S \abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
+\]
+The error of 1D Gauss quadrature of order $n$ ($n$ quadrature points) over an interval $(r,r+\delta)$ is 
 \[
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
-for some $\xi_n \in (r, r+\delta)$. 
-For the term of interest, i.e. \eqref{eq:term-of-interest}, we have 
+for some $\xi_n \in (r, r+\delta)$, see e.g. \cite{kahaner_numerical_1989}. 
+For our integrand, i.e. \eqref{eq:term-of-interest}, we have 
 \[
-  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)},
+  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}.
 \]
-then the convergence criterion following from \eqref{eq:error-density} reads:
+Finally, we get estimate for quadrature error on single subregion:
 \[
-  \delta^{-1}E_n = \alpha_n \left( \frac{\delta}{r_{min}} \right)^{2n} \frac{1}{r_{min}^2} \le \epsilon, 
-  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2
+    \int_S \abs{f-\Pi^n f} \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
+  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2.
 \]
+This estimate implies that we have to ensure $\delta < r_S$ in order to get decent quadrature error 
+an possibly employ higher order quadrature. 
+
 
 %JB%Derived criterion holds only on squares, where the integrated function is smooth.
-%JB%This is not the case for squares intersecting the boundary of the well, $r_{min} \le \rho \le r_{max}$, where we integrate 
+%JB%This is not the case for squares intersecting the boundary of the well, $r_{S} \le \rho \le r_{max}$, where we integrate 
 %JB%discontinuous function $\chi_{S \setminus W} f$. Using substitution, we can map $W$ to unit circle $B$
 %JB%\[
 %JB%  \int_{S} \chi_{S \setminus W} \frac{1}{r^2} \d \vc r= \int_{S'} \chi_{S' \setminus B} \frac{1}{r'^2} \d \vc {r'},
@@ -658,7 +660,8 @@ then the convergence criterion following from \eqref{eq:error-density} reads:
 %\noteJB{TODO: modify test of integration on unit disk for the function $1/r^2$.}
 
 \subsection{A priori adaptive quadrature rules}
-Based on the analysis presented above, we propose following rules for adaptive quadrature:
+Let us denote $r_{min}$ the minimum and $r_{max}$ the maximum distance to the center of a well from a subregion. 
+Based on the analysis presented above, we propose following adaptive quadrature rules:
 %JB%\begin{enumerate}
 %JB% \item If $r_{max} < \rho$ the square quadrature is zero.
 %JB% \item If $r_{min} < \rho < r_{max}$ (square cross the well boundary) we subdivide the square unless $\delta < 2^{-12}h$.
@@ -693,14 +696,17 @@ Based on the analysis presented above, we propose following rules for adaptive q
  \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
  \item If $r_{min} < \rho < r_{max}$ and $\delta > 2^{-10}h$, the square is refined.
  \item If $r_{min} < \rho < r_{max}$ and $\delta \le 2^{-10}h$, $3\times3$ Gauss quadrature is used.
- Values in quadrature points lying in the well are set to zero.
+ Values at quadrature points lying inside the well are set to zero.
  \item If $r_{min} > \rho$ and $\delta > r_{min} / 2$, square is refined.
  \item If $r_{min} > \rho$ and $\delta \le r_{min} / 2$, $3\times3$ quadrature is used.
 \end{enumerate}
 
-In this way, the elements in which the well does not lie are also refined as you can see in 
-\fig{fig:adapt_ref_b}. The quadrature points are then distributed more 'smoothly' around the well and the
-integrals with gradients can be computed more accurately. 
+
+These rules ensure $\delta < r_{min}/2$ out of the well's boundary, where the integrand is smooth. Subregions intersecting 
+the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we can not employ 
+estimates from the previous section. The maximum number of levels is choosen so that we get similar total number of quadrature points 
+as in the quadrature used by G. and C. in \cite{gracie}. Using proposed rules, the elements that does not contain the well are refined as well,
+see Figure \fig{fig:adapt_ref_b}. 
 
 
 In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
