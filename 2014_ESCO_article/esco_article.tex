@@ -871,8 +871,9 @@ To this end, we calculate $H^1$ error on a single square element $S_{h,r}$ with 
 Using parametrization $0<s,t<1$,  we get
 
 \begin{align*}
- (u_s - \Pi u_s)(s,t)&=\log\sqrt{(r+hs)^2+(ht)^2} -\Big[(1-s)(1-t)\log r + (1-s)t\log\sqrt{r^2+h^2}\\
- &\quad+ s(1-t) \log(r+h) + st\log\sqrt{(r+h)^2+h^2} \Big]\\
+ (u_s - \Pi u_s)(s,t)&=\log\sqrt{(r+hs)^2+(ht)^2} -\Big[(1-s)(1-t)\log r\\
+ &\quad+ (1-s)t\log\sqrt{r^2+h^2} + s(1-t) \log(r+h) \\
+ &\quad+ st\log\sqrt{(r+h)^2+h^2} \Big]\\
  &=\frac12 \frac{h^2}{r^2}\big(t^2-t - s^2 +s\big) + O(\frac{h^3}{r^3})
 \end{align*}
 and 
@@ -1038,7 +1039,8 @@ The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$
 In this section, we present the convergence results. We solve the \prob{1} and the \prob{2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 The linear algebraic system is always solved by conjugate gradients method (CG) with Jacobi preconditioning 
-and tolerance $10^{-9}$. The error of the approximation is computed in $L^2$ norm.
+and tolerance $10^{-9}$. The error of the approximation is computed in $L^2$ norm and so the convergence is
+considered in this norm.
 
 Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
 At first, we solve the problem by the standard FEM with the adaptive mesh refinement where 30\% of the elements
