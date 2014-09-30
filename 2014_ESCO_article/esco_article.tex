@@ -18,8 +18,8 @@
 %% with harvard style bibliographic references
 %% SP 2008/03/01
 
-\documentclass[preprint,12pt]{elsarticle}
-%\documentclass{elsarticle}
+%\documentclass[preprint,12pt]{elsarticle}
+\documentclass{elsarticle}
 %\documentclass[3p,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
@@ -272,24 +272,30 @@ values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal
 satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
 
 Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
-With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
-
-We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
-and is adjusted to the form
+The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
+to formulate additional equations
 \begin{equation} \label{eqn:well_balance_top}
-  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
+  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
 \end{equation}
-The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
-as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
+to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
+%With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
 
-The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
-well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
-later replaced by the average
-\begin{equation} \label{eqn:average}
-  \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
-\end{equation}
-which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
-amount is possible since our test cases are symmetric.
+% We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
+% and is adjusted to the form
+% \begin{equation} \label{eqn:well_balance_top}
+%   c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0.
+% \end{equation}
+% The pressure at the top of the well $H^{M+1}_w$ can be set as an input value or, if not set, is gained 
+% as part of the solution from the equation \eqref{eqn:well_balance_top}, an example of $H^4$ in \fig{fig:well_flows}.
+
+% The boundary term in \eqref{eqn:well_balance} with large $\sigma^m_w$ would force the pressure head along the 
+% well edge to be constant (equal $H^m_w$), which cannot be in general satisfied. Therefore it is weakened and 
+% later replaced by the average
+% \begin{equation} \label{eqn:average}
+%   \avg{h^m} = \frac{1}{\abs{\partial B^m_w}} \int\limits_{\partial B^m_w} h^m \dd s,
+% \end{equation}
+% which corresponds to \cite{gracie}. We use 200 points around the well edge for averaging but even smaller 
+% amount is possible since our test cases are symmetric.
 
 \subsection{Weak formulation}
 We define the trial and the test spaces
@@ -301,8 +307,8 @@ where $H^1$ and $H^1_0$ are standard Sobolev spaces and
 \[ H^1_0(\Omega^m)=\{\varphi\in H^1(\Omega^m); \varphi|_{\Gamma^m_D}=0\}. \]
 We can now introduce the weak solution $u$ and test functions $v$
 \begin{eqnarray} \label{eqn:solution}
-   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M+1}_W)\in V, \\
-   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M+1}_W)\in V_0.
+   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M}_W)\in V, \\
+   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M}_W)\in V_0.
 \end{eqnarray}
 
 To obtain the weak form we apply the standard Galerkin method. We multiply the equations \eqref{eqn:poisson} 
@@ -312,18 +318,35 @@ by test functions $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m
   + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
   = \int \limits_{\Omega^m} f^m\varphi^m% - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
+% We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
+% which results in
+% \begin{multline} \label{eqn:weak_form}
+%   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+%         + \sum \limits_{w\in \mathcal{W}} \sigma^m_w\left( \avg{h^m}-H^m_w\right)
+%           \left(\avg{\varphi^m}-\Phi^m_w\right) + \\
+%           + \sum\limits_{w\in\mathcal{W}} \Big[
+%           c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
+%   =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
+% \end{multline}
+% \noteJB{Consider sum over aquifers to get square term from communication on wells.
+% Boundary conditions on wells?}
 We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
-and use \eqref{eqn:average} which results in
+and sum up over $m$ which results in
 \begin{multline} \label{eqn:weak_form}
-  \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-        + \sum \limits_{w\in \mathcal{W}} \sigma^m_w\left( \avg{h^m}-H^m_w\right)
-          \left(\avg{\varphi^m}-\Phi^m_w\right) + \\
-          + \sum\limits_{w\in\mathcal{W}} \Big[
-          c_w^{m+1}\left( H^m_w-H_w^{m+1}\right)\Phi^m_w - c^m_w\left( H^{m-1}_w-H^m_w \right)\Phi^m_w \Big]= \\
-  =\int \limits_{\Omega^m} f^m\varphi^m \dd\bx \quad \forall m=1,\ldots,M.
+  \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+        + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)
+          \left(\varphi^m-\Phi^m_w\right) \dd\bx + \\
+          + \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}}
+          c_w^{m}\left( H^{m-1}_w-H_w^{m}\right)\left(\Phi^{m-1}_w - \Phi^m_w\right) = \\
+  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx -
+  \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}} c^{M+1}_w\left(H^M_w-H^{M+1}_w\right) \quad \forall m=1,\ldots,M.
 \end{multline}
-\noteJB{Consider sum over aquifers to get square term from communication on wells.
-Boundary conditions on wells?}
+% \noteJB{Consider sum over aquifers to get square term from communication on wells.
+% Boundary conditions on wells?}
+We can see in \eqref{eqn:weak_form} the elliptic character of the weak form. In fact, it is possible to proove
+the existence and the uniqueness using the Lax Milgram lemma. It is sufficient to have only one well pressure value 
+set on input so the unique solution exists. In that case, the Neumann boundary condition can be along the 
+whole outer boundary and uniqueness is still provided.
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
 % \begin{equation} \label{eqn:bilinear_form_a}
@@ -343,7 +366,7 @@ Boundary conditions on wells?}
 
 \section{Discretization}
 \label{sec:discretization}
-We can now proceed to the choice of the enrichment and discretized the system of equations
+We can now proceed to the choice of the enrichment and the discretized tsystem of equations
 \eqref{eqn:weak_form}.
 Let's imagine that we have only one aquifer so we can omit the upper index $m$ in this section.
 In fact, it is appropriate to do so in some notations of shape functions because we do consider the same 
@@ -404,7 +427,7 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 \end{figure}
 
 
-In contrast to global enrichment methods, XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
+In contrast to global enrichment methods, the XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
 to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
 nodes that are in some enrichment zone.
 \noteJB{$B_R$ is used in two different meanings, either as cylinder or as the disk (ball in $R^2$).}
@@ -414,7 +437,7 @@ nodes that are in some enrichment zone.
 \label{sec:pum_methods}
 Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linear finite element shape 
 functions associated with the node $\bx_\alpha$ of the triangulation. 
-In \textbf{standard XFEM}, we write the solution in the form
+In the \textbf{standard XFEM}, we write the solution in the form
 \begin{equation} \label{eqn:xfem_standard_form}
   h(\bx) = \sum \limits_{\alpha\in\mathcal{I}}a_\alpha N_\alpha(\bx)
     + \sum \limits_{w\in\mathcal{W}} \sum \limits_{\alpha\in\mathcal{I}^e_w} b_{\alpha w} \phi_{\alpha w}(\bx),
@@ -428,7 +451,6 @@ in the following way
     \phi_{\alpha w} = N_\alpha(\bx)L_{\alpha w}(\bx), \quad \alpha\in\mathcal{I}^e_w, w\in\mathcal{W},
 \end{equation}
 where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
-\notePE{TODO: define test functions, refer to the weak form}
 
 \subsubsection{Corrected XFEM}
 The corrected XFEM, introduced in  \cite{cxfem}, deals with the convergence problem on blending elements and 
@@ -566,13 +588,10 @@ There are two aspects which the integration must handle properly:
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in integration.
-%\notePE{TODO: better quadrature for log is not proper in our case as the function may be different according to hydrogeologist}
-One of the approaches to improve integration is an adaptive quadrature. This way we divide the element into 
-small pieces (squares) only to place more quadrature points inside but not to bring any more degrees of freedom 
-in the system. We will discuss the adaptivity criteria, suggest improvement and compare our solution
-with the original one in this subsection. 
-%JB%We will refer also some of the convergence results which will be 
-%JB%shown later in \ref{sec:results}.
+One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
+small pieces (squares on the reference element) only to place more quadrature points inside but not to bring 
+any more degrees of freedom in the system. We will discuss the adaptivity criteria, suggest improvement and 
+compare our solution with the original one in the following subsection. 
 
 \subsection{Instability of adaptive quadrature}
 \label{sec:refinement_element}
@@ -947,7 +966,6 @@ $\sigma_w$                  & $10^5$ \\
 $c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
 $U$                         & 8.0 \\
 $\omega$                    & 0.03 \\
-CG solver tolerance         & $10^-9$ \\
 \bottomrule
 \end{tabular}
 \caption{Input parameters for the numerical tests. Units are omitted.
@@ -957,51 +975,51 @@ CG solver tolerance         & $10^-9$ \\
 \end{table}
 %
 
-\subsection{Comparison of XFEM methods}
-\notePE{I would rather use PUM methods in the title.}
+\subsection{Comparison of PU methods} \label{sec:res_comparison}
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
+The linear system is always solved by conjugate gradients (CG) with Jacobi preconditioning 
+and tolerance set $10^{-9}$.
 
 Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
 The element size is then taken at the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
+well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27 in the $L^2$ norm.
 We see that a very fine mesh is needed to capture the singularity.
 On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
 with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
 also editing the mesh.
 
-The standard XFEM method pushes the error down by three orders. It has optimal convergence rate but the system
+The standard XFEM pushes the error down by three orders. It has optimal convergence rate but the system
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
-conditionality of the matrix still corrupts the computation.
+ill-conditioning of the matrix still corrupts the computation. We discuss the conditioning of the system more 
+in the next subsection \ref{sec:res_conditioning}.
 
-The shifted XFEM and SGFEM behave nearly the same way and give the best results. We only mention that SGFEM saves 
-small amount of degrees of freedom on blending elements in comparison with shifted and ramp function XFEM.
-What we observe is that the convergence trend stops at the error level close to 0.01. That is most probably
-the point where the adaptive quadrature with fixed level is not accurate enough thus the 
-refinement has no influence on the error.
+The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
+small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
+The convergence rate in $L^2$ norm closing to 2.0 is optimal.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence.pdf}
   \caption[Convergence graph \probref{def:test_case_1}]{Convergence graph of different methods on 
-  \probref{def:test_case_1}. }
+  \probref{def:test_case_1}. The error is computed in $L^2$ norm.}
   \label{fig:convergence}
 \end{figure}
 
-When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of 
-standard FEM on the problem with the well omitted as a reference in the graph, see the 'FEM sin(x)' with 
-convergence rate 2.0. The closer the PUM methods are to 'FEM sin(x)' the better the approximation of 
-the singularity is.
+When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of the
+standard FEM on the problem with the well omitted as a reference in the graph (finding only the regular part $u_r$), 
+see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PU methods are to 'FEM (ur)' the better 
+the approximation of the singularity is.
 
-In the case of standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+In case of the standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. 
 
-All the PUM methods have again nearly optimal convergence rate. The standard XFEM and ramp function XFEM
+All the PU methods have again nearly optimal convergence rate. The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 \notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
 by small level of quadrature refinement, by large constant for h/rho criterion (tried h/rho<=0.1). What should 
@@ -1012,19 +1030,21 @@ we blame except me?}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
   \caption[Convergence graph \probref{def:test_case_2}]{Convergence graph of different methods on 
-  \probref{def:test_case_2}. The 'FEM sin(x)'
+  \probref{def:test_case_2} in $L^2$ norm. The 'FEM (ur)'
   data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
 
-\subsection{Condition number}
-We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PUM methods. 
+\subsection{Conditioning of the system matrix} \label{sec:res_conditioning}
+We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PU methods. 
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
-for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of DOFs. With local preconditioning (Jacobi, 
-SOR, ILU) one can usually achieve number of iteration $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
+for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of degrees of freedom. 
+With local preconditioning (Jacobi, 
+SOR, ILU) one can usually achieve the number of iterations $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
-We observed the iteration counts needed by CG solver and gathered them in the graph in \fig{fig:iterations}.
-The Jacobi preconditioning was used each time. 
+Let us use the data from the numerical tests above in \ref{sec:res_comparison}.
+We observe the iteration count needed by CG solver and gather the values in the graph in \fig{fig:iterations}.
+The number of iterations of the standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1034,9 +1054,17 @@ The Jacobi preconditioning was used each time.
   number of degrees of freedom. Measured on both problems with no serious distinction observed.}
   \label{fig:iterations}
 \end{figure}
+%
+We can see clearly the enormous growth of the number of iterations in case of the standard XFEM and the ramp 
+function XFEM. These problems are generally known and are described for example in the overview of the XFEM in
+\cite{g_x_overview}. The usage of enrichment functions can make the approximation space almost linearly 
+dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
-
-
+Summarizing the theory in \cite{sgfem} we can say that the conditioning of the SGFEM system is not worse than the one of the 
+associated standard FEM system. We have only the number of iterations on the standard FEM system for comparison, 
+but we see from the graph in \fig{fig:iterations} that the results in case of the SGFEM are satisfying.
+CG used on the shifted XFEM system has similarly good results. This area of the problem would need deeper 
+investigation and we will look at it in a part of our following work.
 
 
 \subsection{Dependence on the enrichment radius}
@@ -1127,8 +1155,8 @@ on Figure \fig{fig:radius_conv_1}.
 %   \hspace{0pt}
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM sin(x)'
-  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
+  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM (ur)'
+  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence rate 2.0.}
   \label{fig:radius_conv_1}
 \end{figure}
 \begin{figure}[!htb]
@@ -1151,6 +1179,24 @@ on Figure \fig{fig:radius_conv_1}.
 
 \section{Summary}
 \label{sec:summary}
+
+We presented a study on the usage of several PU methods -- the XFEM, its corrected version with the ramp 
+function and the shiftment, and the SGFEM. The problem setting was inspired by the work \cite{gracie,craig} 
+of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
+rather than in computation of complex problems.
+
+We investigated the issue of a sub-optimal convergence rate addressed in \cite{gracie}. We revealed the problem
+in the adaptive quadrature and we suggested better adaptivity rules. The improvement was confirmed by the numerical
+tests in \ref{sec:res_comparison} where we obtained optimal convergence rates.
+
+All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM we saw that at 
+least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
+the SGFEM converged optimally and did not show any difference in the solution precision.
+
+The ill-conditioning of the system matrix was encountered when using the standard XFEM and the ramp function XFEM.
+The iteration count was measured.
+
+From the results in \ref{sec:res_comparison} we saw that the usage of the shifted XFEM or SGFEM 
 
 \section{Acknowledgement}
 This work was made under the sincere guidance and support of Mgr. Jan B{\v r}ezina, Ph.D.
