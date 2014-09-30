@@ -18,8 +18,8 @@
 %% with harvard style bibliographic references
 %% SP 2008/03/01
 
-%\documentclass[preprint,12pt]{elsarticle}
-\documentclass{elsarticle}
+\documentclass[preprint,12pt]{elsarticle}
+% \documentclass{elsarticle}
 %\documentclass[3p,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
@@ -1046,20 +1046,20 @@ and tolerance $10^{-9}$.
 
 Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
-with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
+with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library).
 The element size is then taken at the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
 well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27 in the $L^2$ norm.
-We see that a very fine mesh is needed to capture the singularity.
+We see that a very fine mesh is needed to capture the singularity but still the error is high.
 On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
-with the hanging nodes coming from the adaptive refinement. Although changing the position of the well means
-also editing the mesh.
+with the hanging nodes coming from the adaptive refinement. 
+%Although changing the position of the well means also editing the mesh.
 
-The standard XFEM pushes the error down by three orders. It has optimal convergence rate but the system
+The standard XFEM pushes the error down by three orders of magnitude. It has optimal convergence rate but the system
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
-ill-conditioning of the matrix still corrupts the computation. We discuss the conditioning of the system more 
-in the next subsection \ref{sec:res_conditioning}.
+ill-conditioning of the system matrix still corrupts the computation. We discuss the conditioning of the system 
+a little bit more in the next subsection \ref{sec:res_conditioning}.
 
 The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
@@ -1074,8 +1074,8 @@ The convergence rate in $L^2$ norm closing to 2.0 is optimal.
   \label{fig:convergence}
 \end{figure}
 
-When solving the \prob{2}, graph in \fig{fig:convergence_sin} we put the convergence of the
-standard FEM on the problem with the well omitted as a reference in the graph (finding only the regular part $u_r$), 
+When solving the \prob{2}, see \fig{fig:convergence_sin}, we plot the convergence graph of the
+standard FEM on the problem with the well omitted as a reference (finding only the regular part $u_r$), 
 see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PU methods are to 'FEM (ur)' the better 
 the approximation of the singularity is.
 
@@ -1084,9 +1084,12 @@ comes from the singular part of the solution.
 
 All the PU methods have again nearly optimal convergence rate. The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
-\notePE{the corrupted convergence of shifted XFEM and SGFEM  is most probably NOT caused
-by small level of quadrature refinement, by large constant for h/rho criterion (tried h/rho<=0.1). What should 
-we blame except me?}
+
+While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
+SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
+of refinement levels, using a higher order quadrature. We suspect a bug in our implementation of the well boundary 
+integral in \eqref{eqn:weak_form} because the lack of convergence appears right after the well starts to 
+intersect more than one element.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
