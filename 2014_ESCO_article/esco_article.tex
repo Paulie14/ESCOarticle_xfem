@@ -201,15 +201,13 @@ In addition, we suggest better choice of enrichment area based on a tolerance cr
 The implementation was done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library.
 which does not support any enrichment techniques at the moment.
 
-The paper is organised as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
-In section \ref{sec:discretization},  discretization and details of several PU methods are presented.
-
-After that we investigate the problem of integration in the enrichment area and suggest some 
-improvements in \ref{sec:integration}. The study on the proper choice of the enrichment area is presented in 
-section \ref{sec:enrichemnt_radius}. 
-Finally in section \ref{sec:results}, test problems are set and numerical results are shown; 
-in particular a set of experiments validating some of the theoretical results and convergence tests.
-Open questions are summarized and further research goals are pointed out at the end. 
+The paper is organized as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
+In Section \ref{sec:discretization}, discretization using different partition of unity methods are presented in detail.
+Analysis of the quadrature error and rules for a robust adaptive strategy are derived in In Section \ref{sec:integration}.
+Section \ref{sec:enrichemnt_radius} discuss optimal choice of the enrichment area.
+Section \ref{sec:results} specify data of the test problem and discuss numerical results
+in particular validation of convergence, behavior of the condition number a set of experiments validating some of the theoretical results and convergence tests.
+Finally, conclusions and open questions are summarized in Section \ref{sec:summary}.
 
 \section{Model}
 \label{sec:model}
