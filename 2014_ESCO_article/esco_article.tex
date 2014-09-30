@@ -70,9 +70,9 @@
 \journal{Applied Mathematics and Computation}
 
 %commands:
-\newcommand{\defref}[1]{\hyperref[#1]{Def.~\ref{#1}}}
+%\newcommand{\defref}[1]{\hyperref[#1]{Def.~\ref{#1}}}
 \newcommand{\prob}[1]{Problem~{#1}}
-\newcommand{\fig}[1]{\hyperref[#1]{Fig.\ref{#1}}}
+\newcommand{\fig}[1]{\hyperref[#1]{Figure \ref{#1}}}
 \newcommand{\figpath}{../graphics/}
 
 %math:
@@ -240,6 +240,7 @@ a Poisson equation for the pressure head in the $m$-th aquifer:
 which has to be supplied with boundary conditions
 \begin{align}
 h^m|_{\Gamma^m_D} &= h^m_D, \\
+\label{eq:interior_bc}
 \left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &= \sigma^m_w(h^m - H^m_w) \qquad \forall w\in\mathcal{W},
 \end{align}
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
@@ -1035,49 +1036,48 @@ and tolerance $10^{-9}$. The error of the approximation is computed in $L^2$ nor
 Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
 At first, we solve the problem by the standard FEM with the adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library).
-The element size is then taken at the smallest elements in the 
+The element size $h$ is determined as the size of the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
 well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
-We see that a very fine mesh is needed to capture the singularity but still the error is high.
-On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
-with the hanging nodes coming from the adaptive refinement. 
+We see that a very fine mesh is needed to capture the singularity but the error is still high.
+%On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
+%with the hanging nodes coming from the adaptive refinement. 
 %Although changing the position of the well means also editing the mesh.
 
 The standard XFEM pushes the error down by three orders of magnitude. It has the optimal convergence rate 2.0 but the system
-matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
+matrix condition number grows rapidly and for $h<2$ the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 ill-conditioning of the system matrix still corrupts the computation. We discuss the conditioning of the system 
 a little bit more in the next subsection \ref{sec:res_conditioning}.
 
 The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
-The convergence rate in $L^2$ norm closing to 2.0 is optimal.
+The convergence rate in $L^2$ norm close to 2.0 is optimal.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence.pdf}
-  \caption[Convergence graph \prob{1}]{Convergence graph of different methods on 
-  \prob{1}. The error is computed in $L^2$ norm.}
+  \caption[Convergence graph \prob{1}]{Convergence of the $L^2$ norm of the error for different methods and Problem 1.}
   \label{fig:convergence}
 \end{figure}
 
-When solving the \prob{2}, see \fig{fig:convergence_sin}, we plot the convergence graph of the
-standard FEM on the problem with the well omitted as a reference (finding only the regular part $u_r$), 
-see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PU methods are to 'FEM (ur)' the better 
-the approximation of the singularity is.
 
-In case of the standard FEM we see the same behavior as in \fig{fig:convergence}. The dominant error still 
-comes from the singular part of the solution. 
+The results of the convergence test for \prob{2} are presented on \fig{fig:convergence_sin}.
+For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
+It is labeled 'FEM (ur)' as it the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays optimal convergence rate 2.0.
 
-All the PU methods have again nearly optimal convergence rate. The standard XFEM and the ramp function XFEM
+In the case of the standard FEM, we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+comes from the singular part of the solution. All the PU methods have again nearly optimal convergence rate. 
+The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 
 While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
 SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
-of refinement levels, using a higher order quadrature. We suspect a bug in our implementation of the well boundary 
-integral in \eqref{eqn:weak_form} because the lack of convergence appears right after the well starts to 
-intersect more than one element.
+of refinement levels and using a higher order quadrature. Possible reason could be the boundary condition 
+on the interior boundary. In our formulation (c.f. \eqref{eq:interior_bc}), we allow non-constant flow around the boundary
+of the well, while the enrichment function assumes strictly radially symmetric flow. Using an averaged form of the boundary 
+condition similar to \eqref{eqn:a_average_derivation} both in the formulation and in the implementation may give better results.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1090,14 +1090,14 @@ intersect more than one element.
 \end{figure}
 
 \subsection{Conditioning of the system matrix} \label{sec:res_conditioning}
-We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PU methods. 
-Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
+We shall write here a brief note about the conditioning of the system.
+Condition number for matrices resulting from a conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
 for CG without preconditioning is $O(h^{-1})=O(\sqrt{n})$, where $n=1/h^2$ is number of degrees of freedom in case of linear finite elements. 
 With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve the number of iterations $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
 Let us use the data from the numerical tests above in \ref{sec:res_comparison}.
-We observe the iteration count needed by CG solver and gather the values in the graph in \fig{fig:iterations}.
+We observe the iteration count needed by CG solver in \fig{fig:iterations}.
 The number of iterations of the standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
 
 \begin{figure}[!htb]
@@ -1114,11 +1114,11 @@ function XFEM. These problems are generally known and are described for example 
 \cite{fries_xfem_overview_2010}. The usage of enrichment functions can make the approximation space almost linearly 
 dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
-Summarizing the theory in \cite{babuska_stable_2012} we can say that the conditioning of the SGFEM system is not worse than the one of the 
-associated standard FEM system. We have only the number of iterations on the standard FEM system for comparison, 
+Summarizing the theory in \cite{babuska_stable_2012}, we can say that the conditioning of the SGFEM system is not worse than that of the 
+standard FEM system. We have only the number of iterations on the standard FEM system for comparison, 
 but we see from the graph in \fig{fig:iterations} that the results in case of the SGFEM are satisfying.
-CG used on the shifted XFEM system has similarly good results. This area of the problem would need deeper 
-investigation and we will look at it in a part of our following work.
+Number of iterations needed by the shifted XFEM is similarly good. This area of the problem would need deeper 
+investigation.
 
 
 \subsection{Dependence on the enrichment radius}
@@ -1234,16 +1234,16 @@ on Figure \fig{fig:radius_conv_1}.
 \section{Summary}
 \label{sec:summary}
 
-We presented a study on the usage of several PU methods -- the XFEM, its corrected version with the ramp 
-function and the shift, and the SGFEM. The problem setting was inspired by the work \cite{gracie_modelling_2010,craig_using_2011} 
-of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
+We presented a study on the usage of four partition of unity methods -- the XFEM, its corrected version with the ramp 
+function, the shifted XFEM, and the SGFEM. The problem setting was inspired by the work \cite{gracie_modelling_2010,craig_using_2011} 
+of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding details of the PU methods and their comparison
 rather than in computation of complex problems.
 
 We investigated the issue of a sub-optimal convergence rate reported in \cite{gracie_modelling_2010}. We revealed the problem
-and we suggested better the adaptive quadrature rules. The improvement was confirmed by the numerical
+and we suggested a better strategy for the adaptive quadrature. The improvement was confirmed by the numerical
 tests in \ref{sec:res_comparison} where we obtained optimal convergence rates in $L^2$ norm.
 
-All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM we saw that at 
+All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM, we saw that at 
 least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
 the SGFEM converged optimally and did not show any difference in the solution precision.
 
@@ -1255,10 +1255,11 @@ radius was derived and it was numerically validated. Furthermore, the optimal en
 for the test problem and it corresponded with the computed data.
 
 \section{Acknowledgement}
-This work was made under the sincere guidance and support of Mgr. Jan B{\v r}ezina, Ph.D.
-
 This work was supported by the Ministry of Education of the Czech Republic within the SGS project 
-no. 21066/115 on the Technical University of Liberec.
+no. 21066/115 on the Technical University of Liberec. The paper was supported in part by the Project OP
+VaVpI Centre for Nanomaterials, Advanced Technologies  and Innovations
+CZ.1.05/2.1.00/01.0005.
+
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
