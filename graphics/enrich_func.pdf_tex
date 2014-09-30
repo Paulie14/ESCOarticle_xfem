@@ -53,7 +53,7 @@
     \scriptsize{
     \put(0.01066643,0.0){\makebox(0,0)[b]{\smash{-1}}}%
     \put(0.25652086,0.0){\makebox(0,0)[b]{\smash{-0.5}}}%
-    \put(0.50237528,0.0){\makebox(0,0)[b]{\smash{$\xi_w\equiv 0$}}}%
+    \put(0.50237528,0.0){\makebox(0,0)[b]{\smash{$\vc{x}_w\equiv 0$}}}%
     \put(0.74805233,0.0){\makebox(0,0)[b]{\smash{0.5}}}%
     \put(0.99390675,0.0){\makebox(0,0)[b]{\smash{1}}}%
     }
