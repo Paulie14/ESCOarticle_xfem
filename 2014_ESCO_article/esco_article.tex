@@ -148,7 +148,7 @@ developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
 In order to improve approximation of singularities near wells, the standard finite element space is enriched with
-an analytical solution to a Laplace problem with point source on the whole $\Real^2$ space. The optimal order of 
+an analytical solution to a Laplace problem with point source on the whole $\R^2$ space. The optimal order of 
 convergence in terms of $L^2$ norm of the error is demonstrated for PUM. The influence of adaptive quadrature 
 and choice of enrichment domain is analysed. New strategy for adaptive integration is proposed and impact of enrichment 
 radius on the error is demonstrated numerically.
@@ -590,31 +590,31 @@ Notice that there are no additional enriched nodes on blending elements, like in
 In order to compute the entries of the system matrix, %\eqref{eqn:s_entry} and \eqref{eqn:r_entry} 
 we need to integrate
 the expressions containing the enrichment functions. These of course can be non-polynomial, like they are 
-in our case. The standard quadrature rules are not appropriate any more, as they are constructed to integrate 
+in our case. The standard quadrature rules are not appropriate any more, for they are constructed to integrate 
 precisely polynomials up to a given degree. The higher requirements on integration precision
 are the price for using enrichment functions and a coarse mesh.
 
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of a well (the singularity),
-  \item the well edge (since the elements of the triangulation do not take the well into account)
+  \item the well edge geometry, since the elements of the triangulation do not take the well into account.
 \end{itemize}
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in integration.
 One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
-small pieces (squares on the reference element) only to place more quadrature points inside but not to bring 
+subregions (squares on the reference element) only to place more quadrature points inside but not to bring 
 any more degrees of freedom in the system. We will discuss the adaptivity criteria, suggest improvement and 
-compare our solution with the original one in the following subsection. 
+compare our solution with the original one (developed in \cite{gracie}) in the following subsection. 
 
 \subsection{Instability of adaptive quadrature}
 \label{sec:refinement_element}
 Gracie and Craig in \cite{gracie} refine only subregions that cross the boundary of the well, using at most 12 refinements.
 This catches nicely the well edge but it works only when the well is placed at the node of an element or near the center of an element. 
 When the well is placed near the edge of an element, there can be
-large difference in the size of neighboring subelements, see Figure \fig{fig:adapt_ref_a}. Although
+a large difference in the size of neighboring subregions, see Figure \fig{fig:adapt_ref_a}. Although
 the integrand is computed precisely enough on the element with the well inside, the quadrature points on the
-neighboring elements (where the integrad has still large derivatives) are placed very sparsely 
+neighboring elements (where the integrand has still large derivatives) are placed very sparsely 
 and the integration error is large.
 
 \begin{figure}[!htb]
@@ -627,7 +627,7 @@ and the integration error is large.
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_new.pdf} }
   \caption[Adaptive refinement comparison]
   {Comparison of the original and improved refinement techniques.
-   Black lines denote enriched element edges, red lines denote adaptive refinement (subelement edges) and the well
+   Black lines denote enriched elements edges, red lines denote adaptive refinement (subregions edges) and the well
    edge is blue.
   }
   \label{fig:adapt_refinement}
@@ -637,7 +637,7 @@ in the next section.
 
 \subsection{Estimate of quadrature error}
 
-Let us assume only one well of radius $\rho$ situated at the origin. In the case of elliptic equation, the term with strongest singularity is 
+Let us assume only one well of radius $\rho$ situated at the origin. In the case of elliptic equation, the term with the strongest singularity is 
 \begin{equation}
     \label{eq:term-of-interest}
     f(r)=(\nabla \log r )^2 \approx r^{-2}
@@ -646,7 +646,7 @@ which is also the worst term to integrate independently of the particular varian
 Consider a~subregion $S$ with a~side $\delta$ and 
 let us denote $r_{S}$ the distance of $S$ to the origin.
 We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
-$\Pi^n f$ the projection of integrant to the space of polynomials that are integrated exactly. Due to the radial natur of the integrand and its derivatives,
+$\Pi^n f$ the projection of an integrand to the space of polynomials that are integrated exactly. Due to the radial nature of the integrand and its derivatives,
 we can estimate
 \[
   \abs{f-\Pi^n f}(x,y) \le \abs{f-\Pi^n f}(x,y_0), \quad \text{for } \abs{y_0} \le \abs{y},
@@ -661,17 +661,17 @@ The error of 1D Gauss quadrature of order $n$ ($n$ quadrature points) over an in
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
 for some $\xi_n \in (r, r+\delta)$, see e.g. \cite{kahaner_numerical_1989}. 
-For our integrand, i.e. \eqref{eq:term-of-interest}, we have 
+Regarding the integrand \eqref{eq:term-of-interest}, we have 
 \[
   \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}.
 \]
-Finally, we get estimate for quadrature error on single subregion:
+Finally, we get an estimate for the quadrature error on a single subregion:
 \[
     \int_S \abs{f-\Pi^n f} \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
   \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2.
 \]
-This estimate implies that we have to ensure $\delta < r_S$ in order to get decent quadrature error 
-an possibly employ higher order quadrature. 
+This estimate implies that we have to ensure $\delta < r_S$ in order to get a decent quadrature error 
+and possibly to employ a higher order quadrature. 
 
 
 %JB%Derived criterion holds only on squares, where the integrated function is smooth.
@@ -726,43 +726,47 @@ Based on the analysis presented above, we propose following adaptive quadrature 
 %JB%Eventually, we do 10 levels of improved adaptive refinement with the following rules ($r_{max}$ is the maximal
 %JB%distance of a vertex of the subelement and the well center):
 \begin{enumerate}
- \item If $r_{max} < \rho$, the square is not refined and the quadrature is zero.
- \item If $r_{min} < \rho < r_{max}$ and $\delta > 2^{-10}h$, the square is refined.
+ \item If $r_{max} < \rho$, the subregion is not refined and the quadrature is zero.
+ \item If $r_{min} < \rho < r_{max}$ and $\delta > 2^{-10}h$, the subregion is refined.
  \item If $r_{min} < \rho < r_{max}$ and $\delta \le 2^{-10}h$, $3\times3$ Gauss quadrature is used.
  Values at quadrature points lying inside the well are set to zero.
- \item If $r_{min} > \rho$ and $\delta > r_{min} / 2$, square is refined.
+ \item If $r_{min} > \rho$ and $\delta > r_{min} / 2$, the subregion is refined.
  \item If $r_{min} > \rho$ and $\delta \le r_{min} / 2$, $3\times3$ quadrature is used.
 \end{enumerate}
 
 
-These rules ensure $\delta < r_{min}/2$ out of the well's boundary, where the integrand is smooth. Subregions intersecting 
-the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we can not employ 
-estimates from the previous section. The maximum number of levels is choosen so that we get similar total number of quadrature points 
-as in the quadrature used by G. and C. in \cite{gracie}. Using proposed rules, the elements that does not contain the well are refined as well,
-see Figure \fig{fig:adapt_ref_b}. 
+These rules ensure $\delta < r_{min}/2$ outside the well, where the integrand is smooth. Subregions intersecting 
+the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we cannot employ 
+estimates from the previous section. The maximum number of levels is chosen so that we get similar total number of quadrature points 
+as in the quadrature used by G. and C. in \cite{gracie}. Using the proposed rules, the elements that do not contain the well are refined as well,
+see \fig{fig:adapt_ref_b}. 
+
+Implementation of this approach allows the convergence rates of the used PU methods to close up to the optimum,
+as the results of the numerical tests will show in section \ref{sec:results}.
 
 
-In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
-The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
-on the enriched element with the well and $4\times4$ quadrature rules on the other enriched elements. 
-The improved adaptive quadrature is computed as described above. Notice the scale of the improved version -- 
-the error on elements is in small range and is not significantly concentrated anywhere. In contrast, 
-the original version shows out large error that is concentrated on the closest non-refined element to the well.
-
-%\notePE{TODO: add axis, remove legend label, try to sharpen}
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \subfloat[original]{\label{fig:adapt_ref_norm_a} 
-    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_old.pdf} }
-  \hspace{0pt}
-  \subfloat[improved]{\label{fig:adapt_ref_norm_b} 
-    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_new.pdf} }
-  \caption[Adaptive quadrature refinement comparison]
-  {Comparison of element-wise error in $L_2$ norm using original and improved adaptive quadrature.
-  }
-  \label{fig:adapt_refinement_norm}
-\end{figure}
+% In \fig{fig:adapt_refinement_norm} you can see the $L_2$ norms of the error on the enriched elements.
+% The first one is computed using the original adaptive quadrature where $3\times3$ quadrature rule is applied 
+% on the enriched element with the well and $4\times4$ quadrature rules on the other enriched elements. 
+% The improved adaptive quadrature is computed as described above. Notice the scale of the improved version -- 
+% the error on elements is in small range and is not significantly concentrated anywhere. In contrast, 
+% the original version shows out large error that is concentrated on the closest non-refined element to the well.
+% 
+% 
+% \begin{figure}[!htb]
+% %   \vspace{0pt}
+%   \centering    
+%   \subfloat[original]{\label{fig:adapt_ref_norm_a} 
+%     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_old.pdf} }
+%   \hspace{0pt}
+%   \subfloat[improved]{\label{fig:adapt_ref_norm_b} 
+%     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_extract_3_new.pdf} }
+%   \caption[Adaptive quadrature refinement comparison]
+%   {Comparison of element-wise error in $L_2$ norm using original and improved adaptive quadrature.
+%   \notePE{TODO: add axis, remove legend label, try to sharpen}
+%   }
+%   \label{fig:adapt_refinement_norm}
+% \end{figure}
 
 % \subsection{Circle integration experiment}
 % The approximation of the integration domain is also the source of the error. We decided to run 
@@ -805,9 +809,6 @@ the original version shows out large error that is concentrated on the closest n
 %   \caption[Adaptive refinement convergence]{Convergence of adaptive refinement of a circle cutoff.}
 %   \label{fig:adapt_ref_convergence}
 % \end{figure}
-
-\notePE{the original one can be improved by using higher order quadrature rules (6-6)\\
-}
 
 
 
