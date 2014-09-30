@@ -337,9 +337,10 @@ and sum up over $m$ which results in
         + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)
           \left(\varphi^m-\Phi^m_w\right) \dd\bx + \\
           + \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}}
-          c_w^{m}\left( H^{m-1}_w-H_w^{m}\right)\left(\Phi^{m-1}_w - \Phi^m_w\right) = \\
-  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx -
-  \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}} c^{M+1}_w\left(H^M_w-H^{M+1}_w\right) \quad \forall m=1,\ldots,M.
+          c_w^{m}\left( H^{m-1}_w-H_w^{m}\right)\left(\Phi^{m-1}_w - \Phi^m_w\right) 
+          + \sum\limits_{w\in\mathcal{W}} c^{M+1}_w H^{M}_w \Phi^M_w = \\
+  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx +
+   \sum\limits_{w\in\mathcal{W}} c^{M+1}_w H^{M+1}_w \Phi^M_w \quad \forall m=1,\ldots,M.
 \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
@@ -973,7 +974,7 @@ $\omega$                    & 0.03 \\
 In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 The linear system is always solved by conjugate gradients (CG) with Jacobi preconditioning 
-and tolerance set $10^{-9}$.
+and tolerance $10^{-9}$.
 
 Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
