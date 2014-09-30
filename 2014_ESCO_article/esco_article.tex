@@ -589,20 +589,20 @@ In order to compute the entries of the system matrix, %\eqref{eqn:s_entry} and \
 we need to integrate
 the expressions containing the enrichment functions. These of course can be non-polynomial, like they are 
 in our case. The standard quadrature rules are not appropriate any more, for they are constructed to integrate 
-precisely polynomials up to a given degree. The higher requirements on integration precision
+precisely polynomials up to a given degree. The higher requirements on the integration precision
 are the price for using enrichment functions and a coarse mesh.
 
 There are two aspects which the integration must handle properly:
 \begin{itemize}
-  \item the steep gradient of enrichment base functions in the vicinity of a well (the singularity),
+  \item the steep gradient of enrichment base functions in the vicinity of the well (the singularity),
   \item the well edge geometry, since the elements of the triangulation do not take the well into account.
 \end{itemize}
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
-can lead to large errors in integration.
+can lead to large errors in the integration.
 One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
 subregions (squares on the reference element) only to place more quadrature points inside but not to bring 
-any more degrees of freedom in the system. We will discuss the adaptivity criteria, suggest improvement and 
+any more degrees of freedom into the system. We will discuss the adaptivity rules, suggest improvement and 
 compare our solution with the original one (developed in \cite{gracie_modelling_2010}) in the following subsection. 
 
 \subsection{Instability of adaptive quadrature}
@@ -643,7 +643,7 @@ Let us assume only one well of radius $\rho$ situated at the origin. In the case
 which is also the worst term to integrate independently of the particular variant of the PU method.
 Consider a~subregion $S$ with a~side $\delta$ and 
 let us denote $r_{S}$ the distance of $S$ to the origin.
-We shall estimate the error of the 2D tensor product Gauss quadrature rule of the order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
+We shall estimate the error of the 2D tensor product Gauss quadrature rule of and order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
 $\Pi^n f$ the projection of an integrand to the space of polynomials that are integrated exactly. Due to the radial nature of the integrand and its derivatives,
 we can estimate
 \[
@@ -654,7 +654,7 @@ and thus estimate the error by the error $E^n$ of
 \[
   \int_S \abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
 \]
-The error of 1D Gauss quadrature of order $n$ ($n$ quadrature points) over an interval $(r,r+\delta)$ is 
+The error of 1D Gauss quadrature of an order $n$ ($n$ quadrature points) over an interval $(r,r+\delta)$ is 
 \[
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
@@ -727,15 +727,15 @@ Based on the analysis presented above, we propose following adaptive quadrature 
  \item If $r_{max} < \rho$, the subregion is not refined and the quadrature is zero.
  \item If $r_{min} < \rho < r_{max}$ and $\delta > 2^{-10}h$, the subregion is refined.
  \item If $r_{min} < \rho < r_{max}$ and $\delta \le 2^{-10}h$, $3\times3$ Gauss quadrature is used.
- Values at quadrature points lying inside the well are set to zero.
+ The values at quadrature points lying inside the well are set to zero.
  \item If $r_{min} > \rho$ and $\delta > r_{min} / 2$, the subregion is refined.
- \item If $r_{min} > \rho$ and $\delta \le r_{min} / 2$, $3\times3$ quadrature is used.
+ \item If $r_{min} > \rho$ and $\delta \le r_{min} / 2$, $3\times3$ Gauss quadrature is used.
 \end{enumerate}
 
 
 These rules ensure $\delta < r_{min}/2$ outside the well, where the integrand is smooth. Subregions intersecting 
 the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we cannot employ 
-estimates from the previous section. The maximum number of levels is chosen so that we get similar total number of quadrature points 
+estimates from the previous section. The maximum number of levels is chosen so that we get the similar total number of quadrature points 
 as in the quadrature used by G. and C. in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
 see \fig{fig:adapt_ref_b}. 
 
@@ -839,15 +839,15 @@ as the results of the numerical tests will show in section \ref{sec:results}.
 %JB%\end{figure}
 %JB%
 \section{Estimate the enrichment radius} \label{sec:enrichemnt_radius}
-In this section, we shall study dependence of the solution error on the enrichment radius $R$. First part is devoted to 
+In this section, we shall study the dependence of the solution error on the enrichment radius $R$. First part is devoted to 
 theoretical analysis the later part presents numerical results.
 Let us consider a general elliptic problem to find $u\in V$ satisfying
 \[
    a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
 \]
-where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \gamma \norm{v}_V^2$, $\gamma>0$, and $f$ an bounded linear form, $f\in V'$. 
+where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \gamma \norm{v}_V^2$, $\gamma>0$, and $f$ a bounded linear form, $f\in V'$. 
 Suppose, that the problem is to be solved on a domain $\Omega \subset \R^2$ with a single hole (well) of radius $\rho$ at the origin. 
-Let us assume, that the solution can be split to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
+Let us assume, that the solution can be split into the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
 Let $V^P_h$ be a polynomial finite element subspace of $V$ on a regular mesh of elements with a maximal diameter $h$
 and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enriched domain $Z_R$, i.e.
 \[
@@ -879,7 +879,7 @@ and
 \begin{equation}
  \nabla(u_s - \Pi u_s)(s,t) = \frac{h}{r^2} \Big( \frac12-s, t-\frac12 \Big) + O(\frac{h^2}{r^2}).
 \end{equation}
-Assuming $h<r$, we can neglect higher order terms. Then by direct integration
+Assuming $h<r$, we can neglect higher order terms. Then, we obtain by direct integration
 \begin{align*}
  \norm{u_s - \Pi u_s}^2_{L^2(S_{h,r})} \approx \frac14 \frac{h^6}{r^4}\int_0^1\int_0^1 (t^2-t-s^2+s)^2\,\d s\, \d t = \frac{1}{360}\frac{h^6}{r^4} 
 \end{align*}
@@ -899,7 +899,7 @@ which after integration over the unenriched domain gives final estimate:
 \end{equation}
 
 Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_H^1(\Omega)$, 
-which balance error in the regular and the singular part. In combination with an a posteriori error analysis this could give a rule for automatic
+which balance error in the regular and the singular part. In combination with an a posteriori error analysis, this could give a rule for an automatic
 determination of the enrichment radius.
 
 
@@ -938,14 +938,14 @@ of \eqref{eqn:poisson_problem}:
     \qquad \textrm{ where} \langle{h}\rangle = \fint \limits_{\partial B_w} h.
 \end{equation}
 The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
-$O(\omega^2 \rho_w)$. Finally we have
+$O(\omega^2 \rho_w)$. Finally, we have
 \begin{equation} \label{eqn:a_constant}
     a=\frac{\rho_w \sigma_w \big[H_w - U\sin(\omega x_w) - \frac{U\omega^2}{2\sigma_w}\sin(\omega x_w)\big]}
            {\rho_w \sigma_w \log\left(\frac{\rho_w}{R}\right) - 1}.
 \end{equation}
 The solution \eqref{eqn:poisson_solution} is then used to define the boundary function $h_D$.
 
-Let us now define the input data. $\Omega$ is a square $(-100,100)\times(-100,100)$ and the well is characterized by 
+Let us now define the input data. The domain $\Omega$ is a square $(-100,100)\times(-100,100)$ and the well is characterized by 
 $\vc{x}_w=[5.43,5.43]$,  $\rho_w=0.2$, $H_w=100$ and $\sigma_w=10^5$. The \prob{1} is to find solution $h$ of
 \eqref{eqn:poisson_problem} with $U=0.0$ which means that the right hand side of the Poisson equation vanishes.
 The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$ and $\omega=0.03$.
