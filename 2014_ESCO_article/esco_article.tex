@@ -265,11 +265,13 @@ The total flow from the well $w$ to aquitard $m$,
     Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
 \]
 satisfies simple balance equation on the well
-\begin{equation}
+\begin{align}
     \label{eq:well_flow}
-    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^m_w\left( H^{m-1}_w-H^m_w \right) - c_w^{m+1}\left( H^m_w-H_w^{m+1}\right), 
-\end{equation}
-
+    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^m_w\left( H^{m-1}_w-H^m_w \right) - c_w^{m+1}\left( H^m_w-H_w^{m+1}\right),&\\
+    \notag
+    \forall\,m=1,\dots,M\text{ and }\forall\,w\in\mathcal{W},&
+\end{align}
+%
 where $Q^m_{w,in}$ is flow from lower aquifer $m-1$, $Q^m_{w,out}$ is flow to the upper aquifer $m+1$, and 
 $c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment above the aquifer $m$.
 In \eqref{eq:well_flow}, we assume Darcy flow in the well for the simplicity. The bottom of the well $w$ is impermeable,
@@ -308,25 +310,27 @@ we set $c^0_w=0$, $H^0_w=H^1_w$, and on the top we prescribe given pressure $H^{
 % amount is possible since our test cases are symmetric.
 
 \subsection{Weak formulation}
-We define the trial and the test spaces
+We define the trial space $V$ and the test space $V_0$:
 \begin{eqnarray} \label{eqn:spaces}
-  V &=& \prod\limits_{m=1}^{M}\big(H^1(\Omega^m)\times\R^W\big), \\
-  V_0 &=& \prod\limits_{m=1}^{M}\big(H^1_0(\Omega^m)\times\R^W\big),
+  V &=& \left(H^1(\Omega^m)\right)^M\times\R^{W(M+1)}, \\
+  V_0 &=& \left(H^1_0(\Omega^m)\right)^M\times\R^{WM},
 \end{eqnarray}
-where $H^1$ and $H^1_0$ are standard Sobolev spaces and 
+where $H^1(\Omega^m)$ is the standard Sobolev space and 
 \[ H^1_0(\Omega^m)=\{\varphi\in H^1(\Omega^m); \varphi|_{\Gamma^m_D}=0\}. \]
-We can now introduce the weak solution $u$ and test functions $v$
+We can now introduce the weak solution $u$ and the test function $v$
 \begin{eqnarray} \label{eqn:solution}
-   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M}_W)\in V, \\
-   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^{M}_W)\in V_0.
+   u &=& (h^1,\ldots, h^M, H^1_1,\ldots,H^{M+1}_W)\in V, \\
+   v &=& (\varphi^1,\ldots, \varphi^M, \Phi^1_1,\ldots,\Phi^M_W)\in V_0.
 \end{eqnarray}
+We understand $V_0$ as a subspace of $V$ setting $\Phi^{M+1}_W=0$.
 
-To obtain the weak form we apply the standard Galerkin method. We multiply the equations \eqref{eqn:poisson} 
-by test functions $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
+To obtain the weak form, we apply the standard Galerkin method. We multiply the equation \eqref{eqn:poisson} 
+by a test function $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
 \begin{equation} \label{eqn:weak_form1}
   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
   + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
-  = \int \limits_{\Omega^m} f^m\varphi^m% - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
+  = \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.
+  % - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
 % We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
 % which results in
@@ -340,24 +344,21 @@ by test functions $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m
 % \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
-We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
+We then multiply \eqref{eq:well_flow} by $\Phi^m_w$, add it to \eqref{eqn:weak_form1} 
 and sum up over $m$ which results in
 \begin{multline} \label{eqn:weak_form}
   \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-        + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)
-          \left(\varphi^m-\Phi^m_w\right) \dd\bx + \\
-          + \sum \limits_{m=1}^M \sum\limits_{w\in\mathcal{W}}
-          c_w^{m}\left( H^{m-1}_w-H_w^{m}\right)\left(\Phi^{m-1}_w - \Phi^m_w\right) 
-          + \sum\limits_{w\in\mathcal{W}} c^{M+1}_w H^{M}_w \Phi^M_w = \\
-  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx +
-   \sum\limits_{w\in\mathcal{W}} c^{M+1}_w H^{M+1}_w \Phi^M_w \quad \forall m=1,\ldots,M.
+        + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; 
+           \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)\left(\varphi^m-\Phi^m_w\right) \dd\bx \\
+        + \sum \limits_{m=1}^{M+1} \sum\limits_{w\in\mathcal{W}}
+          c_w^{m}\left( H^{m}_w-H_w^{m-1}\right)\left(\Phi^{m}_w - \Phi^{m-1}_w\right)           
+  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.   
 \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
-We can see in \eqref{eqn:weak_form} the elliptic character of the weak form. In fact, it is possible to proove
-the existence and the uniqueness using the Lax Milgram lemma. It is sufficient to have only one well pressure value 
-set on input so the unique solution exists. In that case, the Neumann boundary condition can be along the 
-whole outer boundary and uniqueness is still provided.
+We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. Equation \eqref{eqn:weak_form} represents an elliptic
+problem, for which the existence and uniqueness of the solution can be shown via the Lax-Milgram lemma.
+
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
 % \begin{equation} \label{eqn:bilinear_form_a}
