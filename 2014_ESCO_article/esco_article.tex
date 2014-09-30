@@ -600,7 +600,7 @@ There are two aspects which the integration must handle properly:
 
 Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
 can lead to large errors in the integration.
-One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
+One of the approaches to improve integration is an adaptive quadrature. This way, the element is divided into 
 subregions (squares on the reference element) only to place more quadrature points inside but not to bring 
 any more degrees of freedom into the system. We will discuss the adaptivity rules, suggest improvement and 
 compare our solution with the original one (developed in \cite{gracie_modelling_2010}) in the following subsection. 
@@ -908,7 +908,7 @@ determination of the enrichment radius.
 \label{sec:results}
 
 \subsection{Test problems} \label{sec:test_cases}
-In this section we define problems that we solve in our numerical experiments. We restrict ourselves to 
+In this section, we define problems that we solve in our numerical experiments. We restrict ourselves to 
 single aquifer problems for the purpose of this article but our implementation enables multi-aquifer systems 
 as well. In order to measure convergence, it is desirable to have an analytic solution which will be also derived. 
 
@@ -1035,23 +1035,23 @@ The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$
 %
 
 \subsection{Comparison of PU methods} \label{sec:res_comparison}
-In this section we present the main results. We solve \prob{1} and \prob{2} 
+In this section, we present the convergence results. We solve the \prob{1} and the \prob{2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
-The linear system is always solved by conjugate gradients (CG) with Jacobi preconditioning 
-and tolerance $10^{-9}$.
+The linear algebraic system is always solved by conjugate gradients method (CG) with Jacobi preconditioning 
+and tolerance $10^{-9}$. The error of the approximation is computed in $L^2$ norm.
 
 Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
-At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
+At first, we solve the problem by the standard FEM with the adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library).
 The element size is then taken at the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27 in the $L^2$ norm.
+well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
 We see that a very fine mesh is needed to capture the singularity but still the error is high.
 On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
 with the hanging nodes coming from the adaptive refinement. 
 %Although changing the position of the well means also editing the mesh.
 
-The standard XFEM pushes the error down by three orders of magnitude. It has optimal convergence rate but the system
+The standard XFEM pushes the error down by three orders of magnitude. It has the optimal convergence rate 2.0 but the system
 matrix condition number grows rapidly and the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 ill-conditioning of the system matrix still corrupts the computation. We discuss the conditioning of the system 
