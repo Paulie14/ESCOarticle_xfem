@@ -18,8 +18,8 @@
 %% with harvard style bibliographic references
 %% SP 2008/03/01
 
-\documentclass[preprint,12pt]{elsarticle}
-% \documentclass{elsarticle}
+%\documentclass[preprint,12pt]{elsarticle}
+ \documentclass{elsarticle}
 %\documentclass[3p,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
@@ -190,7 +190,7 @@ an a priori known solution in the vicinity of the small scale feature.
 
 In this work we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
 cause singularities in the solution. We follow the work \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
-which up to our best knolwedge, is the first work using XFEM for the well problems.
+which up to our best knowledge, is the first work using XFEM for the well problems.
 Our primary aim is to compare different PU methods on the similar model. In particular, we use the XFEM 
 and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{fries_corrected_2008}, 
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
@@ -211,51 +211,44 @@ Finally, conclusions and open questions are summarized in Section \ref{sec:summa
 
 \section{Model}
 \label{sec:model}
-We consider a steady flow in a system of aquifers (2D horizontal layers of given thickness) which are separated by 
-impermeable layers (aquitards). The aquifers are connected by wells which act as sources
+We consider a steady groundwater flow in a system of aquifers (2D models of horizontal geological layers)
+separated by aquitards (impermeable layers). The aquifers are connected by wells which act as sources
 or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by a Dirichlet boundary 
 condition on the outer boundary of every aquifer.
 
 \subsection{Mathematical model}
 %We describe the wells as interior boundary condition therefore we need to define the computational domain
 %as the aquifer domain with wells cross-sections cut off. 
-Let $\Theta^m$ be the domain of the $m$-th aquifer,
-$m=1,\ldots M$, and $z_m$ be its vertical coordinate. The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
+Let $\Theta^m\subset \R^2$ be the domain of the $m$-th aquifer, $m=1,\ldots M$, and $z_m$ be its vertical coordinate.
+\noteJB{are $z_m$ necessary?}
+The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
 with center $\vc{x}_w$ and radius $\rho_w$.  We further denote 
 \[
  B^m_w = B_w \cap \Theta^m, \quad \text{and} \quad
  B^m=\bigcup\limits_{w\in \mathcal{W}}B^m_w,
 \]
 for any aquifer $m$ and well $w$.
-We can then define a domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
-consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
-$\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
-such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
+Actual computational domain of the aquifer $m$ is $\Omega^m = \Theta^m\setminus B^m$. The boundary $\partial\Omega^m$ of 
+the domain consists of the exterior part $\partial\Theta^m=\Gamma^m_D$ and the interior part $\partial B^m$.
 
-The distribution of pressure head in the $m$-th aquifer is described by Poisson equation and 
-boundary conditions
-\begin{eqnarray} \label{eqn:poisson}
-\nabla\cdot(-\mathbf{T}^m\nabla h^m) &=& f^m \qquad \textrm{on } \Omega^m\subset\R^2,\; \forall m=1,\dots,M, \\
-h^m|_{\Gamma^m_D} &=& h^m_D, \\
-\left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\Gamma^m_N} &=& 0, \\
-\left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &=& q^m_w \qquad \forall w\in\mathcal{W},
-\end{eqnarray}
-where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmisivity tensor,
+
+Combining the Darcy law and the continuity equation for incompressible fluid, we get
+Poisson equation for the pressure head in the $m$-th aquifer:
+\begin{equation} \label{eqn:poisson}
+\nabla\cdot(-\mathbf{T}^m\nabla h^m) = f^m \qquad \textrm{on } \Omega^m\subset\R^2,\; \forall m=1,\dots,M, \\
+\end{equation}
+which has to be completed with boundary conditions
+\begin{align}
+h^m|_{\Gamma^m_D} &= h^m_D, \\
+\left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &= \sigma^m_w(h^m - H^m_w) \qquad \forall w\in\mathcal{W},
+\end{align}
+where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
-$h^m\, [\textrm{m}]$ the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ source density,
-$\vc{n}$ unit normal vector on the boundary and
-$q^m_w = Q^m_w/|\partial B^m_w|$ is the density of the flow from the well to the aquifer over the well boundary 
-$\partial B^m_w$. Equation \eqref{eqn:poisson} is derived from the Darcy law and the continuity equation 
-for incompressible fluid.
-
-Presuming the aquitards to be fully impermeable, the communication between aquifers is possible only through 
-wells. We can prescribe the flow balance equation 
-\begin{eqnarray}
-  Q^m_w &=& Q^m_{w,in} - Q^m_{w,out}, \textrm{ where} \label{eqn:well_flows} \\
-  Q^m_w &\ldots& \textrm{flow into aquifer across the well boundary,} \nonumber\\
-  Q^m_{w,in} &\ldots& \textrm{flow from upper aquifer,} \nonumber\\
-  Q^m_{w,out} &\ldots& \textrm{flow into lower aquifer.} \nonumber
-\end{eqnarray}
+$h^m\, [\textrm{m}]$ is the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ stands for the source density,
+$\vc{n}$ is unit outer normal vector on the interior boundary,
+$\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
+$m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
+%
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: add arrow (flow) to the top
@@ -266,31 +259,35 @@ wells. We can prescribe the flow balance equation
   \caption{Flow balance in the well.}
   \label{fig:well_flows}
 \end{figure}
-
-\fig{fig:well_flows} presents the equation \eqref{eqn:well_flows} and denotes the flows $Q^m_{w,\cdot}$ by red arrows.
-We can look at the flows in the balance equation as 1D problems which are governed by a difference of pressure
-head and a transition coefficient. Using this idea, we can substitute the flows in the equation 
-\eqref{eqn:well_flows} and get
-\begin{eqnarray} 
-\int_{\partial B_w^m}\sigma_w^m \left(h^m - H_w^m\right) \dd s
-  = c_w^{m+1}\left( H^m_w-H_w^{m+1}\right) - c^m_w\left( H^{m-1}_w-H^m_w \right), \label{eqn:well_balance} \\
- \forall m=1,\dots,M \textrm{ and } \forall w\in\mathcal{W}, \nonumber
-\end{eqnarray}
-where $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
-$m$-th aquifer, $H_w^m$ the pressure head in the well $w$ at the level of $m$-th aquifer and finally 
-$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ through aquitard $m$.
-
-The problem is now to find set of functions $h^m\in C^2(\Omega^m)\cap{C}^1(\bar\Omega^m)$ and set of pressure 
-values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal{W}$ that
-satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
-
-Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
-The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
-to formulate additional equations
-\begin{equation} \label{eqn:well_balance_top}
-  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
+%
+The total flow from the well $w$ to aquitard $m$,
+\[
+    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
+\]
+satisfies simple balance equation on the well
+\begin{equation}
+    \label{eq:well_flow}
+    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^m_w\left( H^{m-1}_w-H^m_w \right) - c_w^{m+1}\left( H^m_w-H_w^{m+1}\right), 
 \end{equation}
-to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
+
+where $Q^m_{w,in}$ is flow from lower aquifer $m-1$, $Q^m_{w,out}$ is flow to the upper aquifer $m+1$, and 
+$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment above the aquifer $m$.
+In \eqref{eq:well_flow}, we assume Darcy flow in the well for the simplicity. The bottom of the well $w$ is impermeable,
+we set $c^0_w=0$, $H^0_w=H^1_w$, and on the top we prescribe given pressure $H^{M+1}_w$.
+
+
+
+%The problem is now to find set of functions $h^m\in C^2(\Omega^m)\cap{C}^1(\bar\Omega^m)$ and set of pressure 
+%values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal{W}$ that
+%satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
+
+%Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
+%The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
+%to formulate additional equations
+%\begin{equation} \label{eqn:well_balance_top}
+%  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
+%\end{equation}
+%to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
 %With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
 
 % We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
