@@ -192,7 +192,7 @@ In this work we use PUM on a steady two-dimensional aquifer model containing hyd
 cause singularities in the solution. We follow the work \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
 which up to our best knolwedge, is the first work using XFEM for the well problems.
 Our primary aim is to compare different PU methods on the similar model. In particular, we use the XFEM 
-and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{cxfem}, 
+and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{fries_corrected_2008}, 
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
 the convergence of pressure head in $L^2$ norm over the aquifer domain and we compare the used methods. 
 We also investigate the error of the adaptive integration on the enriched elements and proposed more robust adaptive strategy.
@@ -469,7 +469,7 @@ in the following way
 where simply the enrichment function $L_{\alpha w}(\bx) = s_w(\bx)$.
 
 \subsubsection{Corrected XFEM}
-The corrected XFEM, introduced in  \cite{cxfem}, deals with the convergence problem on blending elements and 
+The corrected XFEM, introduced in  \cite{fries_corrected_2008}, deals with the convergence problem on blending elements and 
 introduces the \textbf{ramp function}
 %\begin{equation} \label{eqn:ramp_function}
 \begin{eqnarray} \label{eqn:ramp_function}
@@ -497,7 +497,7 @@ The enrichment function changes into the form
 \end{equation}
 
 
-In the same work, i.e. \cite{cxfem}, authors further suggest the \textbf{shifted} enrichment functions in order 
+In the same work, i.e. \cite{fries_corrected_2008}, authors further suggest the \textbf{shifted} enrichment functions in order 
 to preserve the property of standard 
 FE approximation at nodes $h(\bx_\alpha)=a_\alpha$; the value at the node is equal the corresponding degree
 of freedom. The enrichment functions must be then zero at the nodes which is satisfied in the form
@@ -512,8 +512,8 @@ For the purpose of this article, let's call the two methods described above the 
 and the \textbf{shifted XFEM}, as we shall reference to them later.
 
 \subsubsection{SGFEM}
-Finally we present the \textbf{SGFEM}, according to \cite{sgfem,sgfem2013}. The enrichment function is defined
-as the subtraction of the global enrichment function and its interpolation 
+Finally we present the \textbf{SGFEM}, according to \cite{babuska_stable_2012,gupta_stable_2013}. 
+The enrichment function is defined as the subtraction of the global enrichment function and its interpolation 
 \begin{equation} \label{eqn:sgfem_enrich}
     L_{\alpha w} = \left[s_w(\bx) - \pi_\tau (s_w)(\bx)\right],
     \quad \textrm{ on } \tau,\; \alpha\in\mathcal{I}^e, w\in\mathcal{W}.
@@ -607,11 +607,11 @@ can lead to large errors in integration.
 One of the approaches to improve integration is an adaptive quadrature. This way the element is divided into 
 subregions (squares on the reference element) only to place more quadrature points inside but not to bring 
 any more degrees of freedom in the system. We will discuss the adaptivity criteria, suggest improvement and 
-compare our solution with the original one (developed in \cite{gracie}) in the following subsection. 
+compare our solution with the original one (developed in \cite{gracie_modelling_2010}) in the following subsection. 
 
 \subsection{Instability of adaptive quadrature}
 \label{sec:refinement_element}
-Gracie and Craig in \cite{gracie} refine only subregions that cross the boundary of the well, using at most 12 refinements.
+Gracie and Craig in \cite{gracie_modelling_2010} refine only subregions that cross the boundary of the well, using at most 12 refinements.
 This catches nicely the well edge but it works only when the well is placed at the node of an element or near the center of an element. 
 When the well is placed near the edge of an element, there can be
 a large difference in the size of neighboring subregions, see Figure \fig{fig:adapt_ref_a}. Although
@@ -740,7 +740,7 @@ Based on the analysis presented above, we propose following adaptive quadrature 
 These rules ensure $\delta < r_{min}/2$ outside the well, where the integrand is smooth. Subregions intersecting 
 the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we cannot employ 
 estimates from the previous section. The maximum number of levels is chosen so that we get similar total number of quadrature points 
-as in the quadrature used by G. and C. in \cite{gracie}. Using the proposed rules, the elements that do not contain the well are refined as well,
+as in the quadrature used by G. and C. in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
 see \fig{fig:adapt_ref_b}. 
 
 Implementation of this approach allows the convergence rates of the used PU methods to close up to the optimum,
@@ -1120,10 +1120,10 @@ The number of iterations of the standard FEM is corresponding to the classic res
 %
 We can see clearly the enormous growth of the number of iterations in case of the standard XFEM and the ramp 
 function XFEM. These problems are generally known and are described for example in the overview of the XFEM in
-\cite{g_x_overview}. The usage of enrichment functions can make the approximation space almost linearly 
+\cite{fries_xfem_overview_2010}. The usage of enrichment functions can make the approximation space almost linearly 
 dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
-Summarizing the theory in \cite{sgfem} we can say that the conditioning of the SGFEM system is not worse than the one of the 
+Summarizing the theory in \cite{babuska_stable_2012} we can say that the conditioning of the SGFEM system is not worse than the one of the 
 associated standard FEM system. We have only the number of iterations on the standard FEM system for comparison, 
 but we see from the graph in \fig{fig:iterations} that the results in case of the SGFEM are satisfying.
 CG used on the shifted XFEM system has similarly good results. This area of the problem would need deeper 
@@ -1244,11 +1244,11 @@ on Figure \fig{fig:radius_conv_1}.
 \label{sec:summary}
 
 We presented a study on the usage of several PU methods -- the XFEM, its corrected version with the ramp 
-function and the shiftment, and the SGFEM. The problem setting was inspired by the work \cite{gracie,craig} 
+function and the shiftment, and the SGFEM. The problem setting was inspired by the work \cite{gracie_modelling_2010,craig_using_2011} 
 of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
 rather than in computation of complex problems.
 
-We investigated the issue of a sub-optimal convergence rate addressed in \cite{gracie}. We revealed the problem
+We investigated the issue of a sub-optimal convergence rate addressed in \cite{gracie_modelling_2010}. We revealed the problem
 in the adaptive quadrature and we suggested better adaptivity rules. The improvement was confirmed by the numerical
 tests in \ref{sec:res_comparison} where we obtained optimal convergence rates.
 
