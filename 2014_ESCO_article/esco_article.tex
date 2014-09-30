@@ -914,7 +914,7 @@ Suppose we have the following problem
     \;\right\}
 \end{equation}
 where the pressure head $H_w$ at the well and $h_D$ on the boundary are given. 
-The domain $\Omega$ is a square with diagonal $2R$ with the well placed in the center $\vc{x}_w$.
+The domain $\Omega$ is a square with diagonal $R$ with the well placed at the point $\vc{x}_w$.
 Note that we neglected the influence of $c^2_w$ by eliminating the equation from the system (we consider 
 $H_w = H^1_w = H^2_w$). We further set $c^1_w=0$ and $T=1.0$. 
 
@@ -922,15 +922,15 @@ We will look for the solution $h$ of \eqref{eqn:poisson_problem} in the form
 \begin{equation} \label{eqn:poisson_solution}
   h=a\log\left(\frac{r_w}{R}\right)+U\sin(\omega x)
 \end{equation}
-which solves the Poisson equation in \eqref{eqn:poisson_problem}. 
+which solves the Poisson equation in \eqref{eqn:poisson_problem}. We also set $h_d=h$.
 To obtain $a$, we use the average pressure head along the well edge in the third equation 
 of \eqref{eqn:poisson_problem}:
 \begin{equation} \label{eqn:a_average_derivation}
-    \fint \limits_{\partial B_w} -\nabla h \cdot \vc{n} = \sigma_w\left(H_w - \langle{h}\rangle \right), 
-    \qquad \textrm{ where} \langle{h}\rangle = \fint \limits_{\partial B_w} h.
+     -\langle\nabla h \cdot \vc{n}\rangle = \sigma_w\left(H_w - \langle{h}\rangle \right), 
+    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f.
 \end{equation}
 The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
-$O(\omega^2 \rho_w)$. Finally we have
+$O(\omega^2 \rho_w)$. Finally, we have
 \begin{equation} \label{eqn:a_constant}
     a=\frac{\rho_w \sigma_w \big[H_w - U\sin(\omega x_w) - \frac{U\omega^2}{2\sigma_w}\sin(\omega x_w)\big]}
            {\rho_w \sigma_w \log\left(\frac{\rho_w}{R}\right) - 1}.
