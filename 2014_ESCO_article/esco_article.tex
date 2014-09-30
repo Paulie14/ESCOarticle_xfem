@@ -1132,6 +1132,29 @@ investigation and we will look at it in a part of our following work.
 
 
 \subsection{Dependence on the enrichment radius}
+The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
+the dependence of the error in $L^2$ norm on the enrichment radius numerically and compare it with \eqref{eq:singular_approx_error}.
+%
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{10}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{10}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{10}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{10}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{10}{128}$ & 1.00 (0.756)& 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Minimal and maximal values of the ratio \eqref{eqn:log_h1_estimate_ratio} for sequence of refined 
+meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate_on_square}.}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
 %
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1149,65 +1172,39 @@ investigation and we will look at it in a part of our following work.
   \label{fig:log_estimate}
 \end{figure}
 %
-\begin{table}
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-$h$    & min & max \\
-\midrule
-$\rfrac{14}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
-$\rfrac{14}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
-$\rfrac{14}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
-$\rfrac{14}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
-$\rfrac{14}{128}$ & 1.00 (0.756)& 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
-\bottomrule
-\end{tabular}
-\caption{Minimal and maximal values of the ratio \eqref{eqn:log_h1_estimate_ratio} for sequence of refined 
-meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate_on_square}.}
-\label{tab:log_h1_estimate}
-\end{center}
-\end{table}
-%
-The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
-numerically dependence of $L^2$ norm of the error on the enrichment radius and compare it with \eqref{eq:singular_approx_error}.
-
-Validity of the estimate \eqref{eq:grad_estimate_on_square} is verified by calculation of the ratio
+Validity of the estimate \eqref{eq:grad_estimate_on_square} is verified by a calculation of the ratio
 \begin{equation} \label{eqn:log_h1_estimate_ratio}
 \frac{h^{3/2} r^{-2} 12^{-1/2}}{\|u_s - \Pi u_s\|^2_{H^1(T)}},\quad u_s(\vc x) = \log \abs{\vc x}
 \end{equation}
-on every element $T$ of the sequence of refined meshes using a $5\times5$ Gaussian quadrature for estimation of the $H^1$ norm. Table 
-\ref{tab:log_h1_estimate} reports the minimum and the maximum value of the ratio over all elements of every mesh.
-The minimum value are close to 1 independently of $h$ which is in perfect agreement with \eqref{eq:grad_estimate_on_square}.
+on every element $T$ of the sequence of refined meshes using a $5\times5$ Gaussian quadrature for the estimation of the $H^1$ norm. Table 
+\ref{tab:log_h1_estimate} reports the minimum and the maximum values of the ratio over all elements of every mesh.
+The minimum values are close to 1 independently of $h$ which is in perfect agreement with \eqref{eq:grad_estimate_on_square}.
 Moreover, the minimum value is attained on the majority of
-elements, see Figure \fig{fig:log_estimate_b}. Both parts of Figure \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
-where the nonlinear term of the tensor product bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
+elements, see \fig{fig:log_estimate_b}. Both parts of \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
+where the nonlinear term of the bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
-Next, we study influence of the enrichment radius $R$ to the global $L^2$ error. To this end, we have run solution of Problem 2 with parameter $U=3$
-using shifted XFEM as described in the previous section for different mesh step and different values of $R$.
-Let us remind that $O(h^p)$ convergence of the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the $L^2$ norm 
+Next, we study influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
+using the shifted XFEM for different mesh steps and different values of $R$.
+Let us remind that $O(h^p)$ convergence of the solution in the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the solution in the $L^2$ norm 
 for the linear elliptic problems (c.f. \cite[Theorem 19.2]{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
 and \eqref{eq:singular_approx_error}, we expect $O(h^2)$ convergence of $L^2$ norm independently of the enrichment radius. This is 
-clearly demonstrated on Figure \fig{fig:radius_conv_1}. Lack of convergence under certain error threshold is probably due to 
-quadrature error as discussed in the previous section. For comparison, we plot also error of the regular part of the solution
+clearly demonstrated in \fig{fig:radius_conv_1}. For comparison, we plot also the error of the regular part of the solution
 \[
   u_r(x,y) = U \sin (\omega x)
 \]
-]
-resolved by unenriched FEM displaying $O(h^2)$ convergence. \noteJB{Is it really $u_r$ what is plotted, make it clear in caption.}
-As predicted the total error diminish with $R$ but can not 
-drop under the the error of $u_r$. By direct computation, we get
+solved by standard FEM showing the $O(h^2)$ convergence.
+As predicted, the total error diminishes with $R$ but cannot 
+drop under the error of $u_r$. By direct computation, we get
 \[
-  \norm{u_r - \Pi u_r}_{H^1(\Omega)} = \frac{1}{12}UHh\omega^2 + O(h^2)
+  \norm{u_r - \Pi u_r}_{H^1(\Omega)} = \frac{1}{12}UHh\omega^2 + O(h^2),
 \]
-where $H=100$ is domain side and $U=3$, $\omega=0.03$. Then according to \eqref{eq:singular_approx_error},
-we get critical value of the enrichment radius
+where $H=100$ is the domain side and $U=3$, $\omega=0.03$. Then according to \eqref{eq:singular_approx_error},
+we get the optimal value of the enrichment radius
 \[
-    R_c \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
+    R_o \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
 \]
-This value roughly match a breakpoint on plots of error in dependence of $R$ on 
-on Figure \fig{fig:radius_conv_1}.
+This value roughly match a breakpoint in the plots of the error as a function of $R$ in
+\fig{fig:radius_conv_1}.
 
 
 \begin{figure}[!htb]
