@@ -71,7 +71,7 @@
 
 %commands:
 \newcommand{\defref}[1]{\hyperref[#1]{Def.~\ref{#1}}}
-\newcommand{\probref}[1]{\hyperref[#1]{Problem~\ref{#1}}}
+\newcommand{\prob}[1]{Problem~{#1}}
 \newcommand{\fig}[1]{\hyperref[#1]{Fig.\ref{#1}}}
 \newcommand{\figpath}{../graphics/}
 
@@ -93,7 +93,6 @@
 \newcommand{\notePE}[1]{{\color{Orange} \textbf{PE: } \textit{#1}}}
 
 \newdefinition{mdef}{Definition}%[section]
-\newdefinition{prob}{Problem}%[section]
 
 \begin{document}
 
@@ -892,91 +891,137 @@ determination of the enrichment radius.
 \subsection{Test problems} \label{sec:test_cases}
 In this section we define problems that we solve in our numerical experiments. We restrict ourselves to 
 single aquifer problems for the purpose of this article but our implementation enables multi-aquifer systems 
-as well. In order to measure convergence it is desirable to have an analytic solution which is available
-in the two following cases. 
+as well. In order to measure convergence, it is desirable to have an analytic solution which will be also derived. 
 
-\begin{prob}[Laplace equation] \label{def:test_case_1}
-Find the solution $h$ of a single aquifer problem
-\begin{eqnarray*} \label{eqn:laplace_problem}
-    -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D \\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where the pressure $P_w$ at the well edge $B_w$ and the pressure $h_D$ at the boundary are given.
-The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
-\end{prob}
-We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the constant 
-pressure $P_D$ on the outer boundary. Let us remind the function $h=a\log(r_w)+b$ 
-(which we used in \eqref{eqn:solution_form} to define the enrichment function) 
-and use the boundary conditions to find the constants $a,b$  such that they satisfy
-\begin{eqnarray*}
-  a\log(\rho_w) + b = P_w, \\
-  a\log(R) + b = P_D,
-\end{eqnarray*}
-where $R$ is the radius of the circular domain and $\rho_w$ is the well radius.
-The solution is then
-\begin{equation} \label{eqn:laplace_solution}
-  h=a\log(r_w)+b \qquad \textrm{ with } a=\frac{P_w}{\log\left(\frac{\rho_w}{R}\right)}, \; b=-a\log R
+Suppose we have the following problem
+\begin{equation} \label{eqn:poisson_problem}
+\left.\begin{aligned}
+    -T \Delta h &= TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
+    h|_{\partial\Omega} &= h_D\\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &= \sigma_w\left(h - H_w\right) \\
+    \end{aligned}
+    \;\right\}
 \end{equation}
-The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
-\eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
-diagonal of the square.
+where the pressure head $H_w$ at the well and $h_D$ on the boundary are given. 
+The domain $\Omega$ is a square with diagonal $2R$ with the well placed in the center $\vc{x}_w$.
+Note that we neglected the influence of $c^2_w$ by eliminating the equation from the system (we consider 
+$H_w = H^1_w = H^2_w$). We further set $c^1_w=0$ and $T=1.0$. 
 
-\begin{prob}[Poisson equation] \label{def:test_case_2}
-Find the solution $h$ of a single aquifer problem with a source term
-\begin{eqnarray*} \label{eqn:poisson_problem}
-    -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
-    h|_{B_w} &=& P_w \\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
-\end{eqnarray*}
-where $U$ and $\omega$ are given.
-\end{prob}
-%where $U$ is the amplitude and $\omega$ is the angular frequency 
-The analytic solution of \probref{def:test_case_2}
+We will look for the solution $h$ of \eqref{eqn:poisson_problem} in the form
 \begin{equation} \label{eqn:poisson_solution}
-  h=a\log(r_w)+b+U\sin(\omega x),
+  h=a\log\left(\frac{r_w}{R}\right)+U\sin(\omega x)
 \end{equation}
-is obtained the same way as above, with $a,b$ from \eqref{eqn:laplace_solution}.
+which solves the Poisson equation in \eqref{eqn:poisson_problem}. 
+To obtain $a$, we use the average pressure head along the well edge in the third equation 
+of \eqref{eqn:poisson_problem}:
+\begin{equation} \label{eqn:a_average_derivation}
+    \fint \limits_{\partial B_w} -\nabla h \cdot \vc{n} = \sigma_w\left(H_w - \langle{h}\rangle \right), 
+    \qquad \textrm{ where} \langle{h}\rangle = \fint \limits_{\partial B_w} h.
+\end{equation}
+The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
+$O(\omega^2 \rho_w)$. Finally we have
+\begin{equation} \label{eqn:a_constant}
+    a=\frac{\rho_w \sigma_w \big[H_w - U\sin(\omega x_w) - \frac{U\omega^2}{2\sigma_w}\sin(\omega x_w)\big]}
+           {\rho_w \sigma_w \log\left(\frac{\rho_w}{R}\right) - 1}.
+\end{equation}
+The solution \eqref{eqn:poisson_solution} is then used to define the boundary function $h_D$.
 
-The input parameters for the numerical tests of \probref{def:test_case_1} and \probref{def:test_case_2} 
-are gathered in the table \ref{tab:parameters}.
+Let us now define the input data. $\Omega$ is a square $(-100,100)\times(-100,100)$ and the well is characterized by 
+$\vc{x}_w=[5.43,5.43]$,  $\rho_w=0.2$, $H_w=100$ and $\sigma_w=10^5$. The \prob{1} is to find solution $h$ of
+\eqref{eqn:poisson_problem} with $U=0.0$ which means that the right hand side of the Poisson equation vanishes.
+The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$ and $\omega=0.03$.
+
+
+% \begin{prob}[Laplace equation] \label{def:test_case_1}
+% Find the solution $h$ of a single aquifer problem
+% \begin{eqnarray*} \label{eqn:laplace_problem}
+%     -T \Delta h &=& 0 \qquad \textrm{on } \Omega \\
+%     h|_{\partial\Omega} &=& h_D \\
+%     H_w = H^2_w &=& P_w \\
+%     \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+% \end{eqnarray*}
+% where the pressure $P_w$ at the well and the pressure $h_D$ at the boundary are given.
+% The domain $\Omega$ is a square with a single well placed near the center in $\vc{x}_w$.
+% \end{prob}
+% We can find the analytic solution of \probref{def:test_case_1} but on a circular disk where we have the zero 
+% pressure on the outer boundary. The solution is considered in the form $h=a\log(\frac{r_w}{R})$ 
+% where $R$ is the radius of the circular domain. Transmisivity is further set $T=1.0$ for simplicity.
+% Now we can use the boundary condition to find the constant $a$ such that it satisfies
+% \begin{eqnarray*}
+%   -T\nabla h \cdot \vc{n} = \sigma_w(P_w - h),
+% \end{eqnarray*}
+% where $\rho_w$ is the well radius.
+% The solution is then
+% \begin{equation} \label{eqn:laplace_solution}
+%   h=a\log\left(\frac{r_w}{R}\right) \qquad \textrm{ with } 
+%     a=\frac{\rho_w \sigma_w P_w}{\rho_w \sigma_w \log\left(\frac{\rho_w}{R}\right) - 1}
+% \end{equation}
+% The function \eqref{eqn:laplace_solution} is just the analytic solution of \probref{def:test_case_1} when 
+% \eqref{eqn:laplace_solution} is used to compute $h_D$ on the square boundary, with $R$ being the half 
+% diagonal of the square.
+% 
+% \begin{prob}[Poisson equation] \label{def:test_case_2}
+% Find the solution $h$ of a single aquifer problem with a source term
+% \begin{eqnarray*}% \label{eqn:poisson_problem}
+%     -T \Delta h &=& TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
+%     h|_{\partial\Omega} &=& h_D + U\sin(\omega x)\\
+%     H_w = H^2_w &=& P_w \\
+%     \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &=& q_w \\
+% \end{eqnarray*}
+% where $U$ and $\omega$ are given.
+% \end{prob}
+% %where $U$ is the amplitude and $\omega$ is the angular frequency 
+% The analytic solution of \probref{def:test_case_2} we are looking for is in the form
+% \begin{equation} \label{eqn:poisson_solution}
+%   h=a\log\left(\frac{r_w}{R}\right)+U\sin(\omega x).
+% \end{equation}
+% Obtaining constant $a$ is now more difficult. We consider following approximation by averging of
+% pressure head around the well edge:
+% \begin{equation} \label{eqn:a_average_derivation}
+%     \fint \limits_{\partial B_w} h = \langle{h}\rangle, \qquad
+%     \fint \limits_{\partial B_w} -\nabla h \cdot \vc{n} = \sigma\left(P_w - \langle{h}\rangle \right).
+% \end{equation}
+% % \begin{eqnarray*} \label{eqn:a_average_derivation}
+% %     \fint \limits_{\partial B_w} h &=& \langle{h}\rangle, \\
+% %     \fint \limits_{\partial B_w} -\nabla h \cdot \vc{n} &=& \sigma\left(P_w - \langle{h}\rangle \right)
+% % \end{eqnarray*}
+
+% The input parameters for the numerical tests of \probref{def:test_case_1} and \probref{def:test_case_2} 
+% are gathered in the table \ref{tab:parameters}.
 %
-\begin{table}[!ht]
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-parameter    & value \\
-\midrule
-$\Omega$   & $(-100,100)\times(-100,100)$   \\
-$\vc{x}_w$  & $[5.43,5.43]$   \\
-transimisivity $T$          & 1.0   \\
-boundary pressure $P_D$     & 0.0   \\
-well pressure $P_w$         & 100.0 \\
-well radius $\rho_w$        & 0.2 \\
-$\sigma_w$                  & $10^5$ \\
-$c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
-$U$                         & 8.0 \\
-$\omega$                    & 0.03 \\
-\bottomrule
-\end{tabular}
-\caption{Input parameters for the numerical tests. Units are omitted.
-\notePE{TODO: Are the units necessary here?}}
-\label{tab:parameters}
-\end{center}
-\end{table}
+% \begin{table}[!ht]
+% \begin{center}
+% \begin{tabular}{crr}
+% \toprule
+% % \multicolumn{2}{c}{Item} \\
+% % \cmidrule(r){1-2}
+% parameter    & value \\
+% \midrule
+% $\Omega$   & $(-100,100)\times(-100,100)$   \\
+% $\vc{x}_w$  & $[5.43,5.43]$   \\
+% transimisivity $T$          & 1.0   \\
+% boundary pressure $P_D$     & 0.0   \\
+% well pressure $P_w$         & 100.0 \\
+% well radius $\rho_w$        & 0.2 \\
+% $\sigma_w$                  & $10^5$ \\
+% $c_w^0$, $c_w^1$            & 0.0, $10^{13}$ \\
+% $U$                         & 8.0 \\
+% $\omega$                    & 0.03 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Input parameters for the numerical tests. Units are omitted.
+% \label{tab:parameters}
+% \end{center}
+% \end{table}
 %
 
 \subsection{Comparison of PU methods} \label{sec:res_comparison}
-In this section we present the main results. We solve \probref{def:test_case_1} and \probref{def:test_case_2} 
+In this section we present the main results. We solve \prob{1} and \prob{2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 The linear system is always solved by conjugate gradients (CG) with Jacobi preconditioning 
 and tolerance $10^{-9}$.
 
-Let us start with the \probref{def:test_case_1} and look at the convergence graph in \fig{fig:convergence}.
+Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
 At first we solve the problem by standard FEM with adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library)
 The element size is then taken at the smallest elements in the 
@@ -1001,12 +1046,12 @@ The convergence rate in $L^2$ norm closing to 2.0 is optimal.
 %   \vspace{0pt}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence.pdf}
-  \caption[Convergence graph \probref{def:test_case_1}]{Convergence graph of different methods on 
-  \probref{def:test_case_1}. The error is computed in $L^2$ norm.}
+  \caption[Convergence graph \prob{1}]{Convergence graph of different methods on 
+  \prob{1}. The error is computed in $L^2$ norm.}
   \label{fig:convergence}
 \end{figure}
 
-When solving the \probref{def:test_case_2}, graph in \fig{fig:convergence_sin} we put the convergence of the
+When solving the \prob{2}, graph in \fig{fig:convergence_sin} we put the convergence of the
 standard FEM on the problem with the well omitted as a reference in the graph (finding only the regular part $u_r$), 
 see the 'FEM (ur)' with optimal convergence rate 2.0. The closer the PU methods are to 'FEM (ur)' the better 
 the approximation of the singularity is.
@@ -1024,8 +1069,8 @@ we blame except me?}
 %   \vspace{0pt}
   \centering    
   \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
-  \caption[Convergence graph \probref{def:test_case_2}]{Convergence graph of different methods on 
-  \probref{def:test_case_2} in $L^2$ norm. The 'FEM (ur)'
+  \caption[Convergence graph \prob{2}]{Convergence graph of different methods on 
+  \prob{2} in $L^2$ norm. The 'FEM (ur)'
   data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
