@@ -146,16 +146,30 @@ as point sources considering their small diameter in comparison with the vast si
 brings singularities into the solution. The extended and stable generalized finite element method 
 (XFEM and SGFEM) were implemented to solve the problem and a proper adaptive integration strategy was 
 developed to gain optimal convergence rates.
+
+Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
+In order to improve approximation of singularities near wells, the standard finite element space is enriched with
+an analytical solution to a Laplace problem with point source on the whole $\Real^2$ space. The optimal order of 
+convergence in terms of $L^2$ norm of the error is demonstrated for PUM. The influence of adaptive quadrature 
+and choice of enrichment domain is analysed. New strategy for adaptive integration is proposed and impact of enrichment 
+radius on the error is demonstrated numerically.
 \end{abstract}
 
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
-PUM \sep XFEM \sep SGFEM \sep adaptive integration \sep point sources
+Extended finite element method \sep 
+Groundwater flow \sep
+Adaptive integration \sep 
+Singular solution 
 
 %% PACS codes here, in the form: \PACS code \sep code
+\PACS 02.60.Lj \sep        %Ordinary and partial differential equations; boundary value problems
+\PACS 02.60.Jh             %Numerical differentiation and integration
 
 %% MSC codes here, in the form: \MSC code \sep code
 %% or \MSC[2008] code \sep code (2000 is the default)
+\MSC 65N30 \sep %    Finite elements, Rayleigh-Ritz and Galerkin methods, finite methods
+\MSC 35J05  %    Laplacian operator, reduced wave equation (Helmholtz equation), Poisson equation
 
 \end{keyword}
 
