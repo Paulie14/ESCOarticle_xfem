@@ -138,20 +138,21 @@
 
 \begin{abstract}
 %% Text of abstract
-In this work we demonstrate the usage of Partition of Unity (PU) methods to improve approximation of singularities 
-in the solution of the Poisson equation. Our model describes a steady flow of water in a system of aquifers
-which consist of porous media. The aquifers are perforated by wells and boreholes which are often represented
-as point sources considering their small diameter in comparison with the vast size of the aquifer. This 
-brings singularities into the solution. The extended and stable generalized finite element method 
-(XFEM and SGFEM) were implemented to solve the problem and a proper adaptive integration strategy was 
-developed to gain optimal convergence rates.
+% In this work we demonstrate the usage of Partition of Unity (PU) methods to improve approximation of singularities 
+% in the solution of the Poisson equation. Our model describes a steady flow of water in a system of aquifers
+% which consist of porous media. The aquifers are perforated by wells and boreholes which are often represented
+% as point sources considering their small diameter in comparison with the vast size of the aquifer. This 
+% brings singularities into the solution. The extended and stable generalized finite element method 
+% (XFEM and SGFEM) were implemented to solve the problem and a proper adaptive integration strategy was 
+% developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
-In order to improve approximation of singularities near wells, the standard finite element space is enriched with
-an analytical solution to a Laplace problem with point source on the whole $\R^2$ space. The optimal order of 
-convergence in terms of $L^2$ norm of the error is demonstrated for PUM. The influence of adaptive quadrature 
-and choice of enrichment domain is analysed. New strategy for adaptive integration is proposed and impact of enrichment 
-radius on the error is demonstrated numerically.
+In order to improve the approximation of a singular behaviour near the wells, the standard finite element space is enriched with
+an analytical solution to a Laplace problem with a point source on the whole $\R^2$ space. The optimal order of 
+convergence of PUM in terms of $L^2$ norm of the error is demonstrated. 
+The error of adaptive integration is analysed and a new adaptive strategy is proposed. The influence of the choice
+of the enriched domain is investigated and its impact on the error is demonstrated numerically.
+
 \end{abstract}
 
 \begin{keyword}
@@ -180,31 +181,31 @@ Singular solution
 \section{Introduction}
 \label{sec:introduction}
 
-Large scale mathematical models of the groundwater flow has to deal with the presence of small scale features like wells 
-and fractures that has significant impact on the whole solution. The standard finite element method can 
+Large scale mathematical models of the groundwater flow have to deal with the presence of small scale features like wells 
+and fractures that have a significant impact on the whole solution. The standard finite element method can 
 capture these features using $h$ and/or $p$ adaptivity techniques 
-which is payed of by greater number of degrees of freedom. One possible alternative is usage of 
-suitable partition of unity method (PUM) also known as extended finite element method (XFEM). The idea is to 
+which is payed of by a larger number of degrees of freedom. One possible alternative is the usage of 
+a suitable partition of unity method (PUM) also known as an extended finite element method (XFEM). The idea is to 
 augment the basis $\{\phi_n\}$ of the discrete finite element space with the functions $u_s \phi_n$, where $u_s$ is 
 an a priori known solution in the vicinity of the small scale feature. 
 
-In this work we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
-cause singularities in the solution. We follow the work \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
-which up to our best knowledge, is the first work using XFEM for the well problems.
-Our primary aim is to compare different PU methods on the similar model. In particular, we use the XFEM 
-and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{fries_corrected_2008}, 
+In this work, we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
+cause singularities in the solution. We follow the articles \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
+which are, up to our best knowledge, the first work using the XFEM on the well problems.
+Our primary aim is to compare different PU methods on a similar model. In particular, we use the XFEM 
+and its corrected version (including ramp function and shift), by Fries e.g. in~\cite{fries_corrected_2008}, 
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
 the convergence of pressure head in $L^2$ norm over the aquifer domain and we compare the used methods. 
-We also investigate the error of the adaptive integration on the enriched elements and proposed more robust adaptive strategy.
-In addition, we suggest better choice of enrichment area based on a tolerance criterion.
+We also investigate the error of the adaptive integration on the enriched elements and propose a more robust adaptive strategy.
+In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
 
-The implementation was done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library.
+The implementation is done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library,
 which does not support any enrichment techniques at the moment.
 
 The paper is organized as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
-In Section \ref{sec:discretization}, discretization using different partition of unity methods are presented in detail.
-Analysis of the quadrature error and rules for a robust adaptive strategy are derived in In Section \ref{sec:integration}.
-Section \ref{sec:enrichemnt_radius} discuss optimal choice of the enrichment area.
+In Section \ref{sec:discretization}, the discretization using different partition of unity methods is presented in detail.
+An analysis of the quadrature error and rules for a robust adaptive strategy are derived in In Section \ref{sec:integration}.
+Section \ref{sec:enrichemnt_radius} discusses the optimal choice of the enriched domain.
 Section \ref{sec:results} specify data of the test problem and discuss numerical results
 in particular validation of convergence, behavior of the condition number a set of experiments validating some of the theoretical results and convergence tests.
 Finally, conclusions and open questions are summarized in Section \ref{sec:summary}.
@@ -219,25 +220,24 @@ condition on the outer boundary of every aquifer.
 \subsection{Mathematical model}
 %We describe the wells as interior boundary condition therefore we need to define the computational domain
 %as the aquifer domain with wells cross-sections cut off. 
-Let $\Theta^m\subset \R^2$ be the domain of the $m$-th aquifer, $m=1,\ldots M$, and $z_m$ be its vertical coordinate.
-\noteJB{are $z_m$ necessary?}
+Let $\Theta^m\subset \R^2$ be the domain of the $m$-th aquifer, $m=1,\ldots M$.
 The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
 with center $\vc{x}_w$ and radius $\rho_w$.  We further denote 
 \[
  B^m_w = B_w \cap \Theta^m, \quad \text{and} \quad
  B^m=\bigcup\limits_{w\in \mathcal{W}}B^m_w,
 \]
-for any aquifer $m$ and well $w$.
-Actual computational domain of the aquifer $m$ is $\Omega^m = \Theta^m\setminus B^m$. The boundary $\partial\Omega^m$ of 
+for any aquifer $m$ and a well $w$.
+The actual computational domain of the aquifer $m$ is $\Omega^m = \Theta^m\setminus B^m$. The boundary $\partial\Omega^m$ of 
 the domain consists of the exterior part $\partial\Theta^m=\Gamma^m_D$ and the interior part $\partial B^m$.
 
 
 Combining the Darcy law and the continuity equation for incompressible fluid, we get
-Poisson equation for the pressure head in the $m$-th aquifer:
+a Poisson equation for the pressure head in the $m$-th aquifer:
 \begin{equation} \label{eqn:poisson}
 \nabla\cdot(-\mathbf{T}^m\nabla h^m) = f^m \qquad \textrm{on } \Omega^m\subset\R^2,\; \forall m=1,\dots,M, \\
 \end{equation}
-which has to be completed with boundary conditions
+which has to be supplied with boundary conditions
 \begin{align}
 h^m|_{\Gamma^m_D} &= h^m_D, \\
 \left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &= \sigma^m_w(h^m - H^m_w) \qquad \forall w\in\mathcal{W},
@@ -245,7 +245,7 @@ h^m|_{\Gamma^m_D} &= h^m_D, \\
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
 $h^m\, [\textrm{m}]$ is the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ stands for the source density,
-$\vc{n}$ is unit outer normal vector on the interior boundary,
+$\vc{n}$ is the unit outer normal vector on the interior boundary,
 $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
 $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
 %
@@ -264,16 +264,15 @@ The total flow from the well $w$ to aquitard $m$,
 \[
     Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
 \]
-satisfies simple balance equation on the well
+satisfies a simple balance equation on the well
 \begin{equation}
     \label{eq:well_flow}
-    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^m_w\left( H^{m-1}_w-H^m_w \right) - c_w^{m+1}\left( H^m_w-H_w^{m+1}\right), 
+    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^{m+1}_w\left( H^{m+1}_w-H^m_w \right) - c_w^m\left( H^m_w-H_w^{m-1}\right), 
 \end{equation}
-
-where $Q^m_{w,in}$ is flow from lower aquifer $m-1$, $Q^m_{w,out}$ is flow to the upper aquifer $m+1$, and 
-$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment above the aquifer $m$.
+where $Q^m_{w,in}$ is the flow from the upper aquifer $m+1$, $Q^m_{w,out}$ is the flow to the lower aquifer $m-1$, and 
+$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment below the aquifer $m$.
 In \eqref{eq:well_flow}, we assume Darcy flow in the well for the simplicity. The bottom of the well $w$ is impermeable,
-we set $c^0_w=0$, $H^0_w=H^1_w$, and on the top we prescribe given pressure $H^{M+1}_w$.
+we set $c^1_w=0$, $H^0_w=H^1_w$ there, and we prescribe given pressure $H^{M+1}_w$ at the top.
 
 
 
@@ -439,8 +438,8 @@ placed at the same positions throughout the aquifers (we consider only vertical 
 
 
 In contrast to global enrichment methods, the XFEM and SGFEM apply the enrichment functions only locally. Since the enrichment function is radial it is natural
-to consider the enrichment zone $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
-nodes that are in some enrichment zone.
+to consider the enriched domain $Z^w = B_{R^w}(\vc x_w)$ of a well $w$ given by the so called \emph{enrichment radius} $R^w$. Local enrichment methods enrich only 
+nodes that are in some enriched domain.
 \noteJB{$B_R$ is used in two different meanings, either as cylinder or as the disk (ball in $R^2$).}
 
     
@@ -848,7 +847,7 @@ where $a$ is bounded elliptic bilinear form: $\norm{a}\le M_a$, $a(v, v) \ge \ga
 Suppose, that the problem is to be solved on a domain $\Omega \subset \R^2$ with a single hole (well) of radius $\rho$ at the origin. 
 Let us assume, that the solution can be split to the singular part $u_s(\vc x)= \log |\vc x|$ and the regular part $u_r=u-u_s$.
 Let $V^P_h$ be a polynomial finite element subspace of $V$ on a regular mesh of elements with a maximal diameter $h$
-and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enrichment zone $Z_R$, i.e.
+and let $V_h$ be a such enriched space that $u_s$ can be approximated exactly on the enriched domain $Z_R$, i.e.
 \[
    \inf_{v\in V_h} \norm{u_s - v}_V = \inf_{v\in V^P_h} \norm{u_s|_{Z'_R} - v}_V, \quad Z'_R = \Omega\setminus Z_R.
 \]
@@ -1242,7 +1241,7 @@ on Figure \fig{fig:radius_conv_1}.
 \label{sec:summary}
 
 We presented a study on the usage of several PU methods -- the XFEM, its corrected version with the ramp 
-function and the shiftment, and the SGFEM. The problem setting was inspired by the work \cite{gracie_modelling_2010,craig_using_2011} 
+function and the shift, and the SGFEM. The problem setting was inspired by the work \cite{gracie_modelling_2010,craig_using_2011} 
 of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
 rather than in computation of complex problems.
 
