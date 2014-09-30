@@ -245,19 +245,10 @@ h^m|_{\Gamma^m_D} &= h^m_D, \\
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
 $h^m\, [\textrm{m}]$ is the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ stands for the source density,
-$\vc{n}$ is unit outer normal vector on the interior boundary and
-$q^m_w$ is the density of the flow from the well to the aquifer over the interior boundary $\partial B^m_w$. 
-The total flow $Q^m_w$ from the well $w$ to aquitard $m$ is given 
-
-
-Presuming the aquitards to be fully impermeable, the communication between aquifers is possible only through 
-the wells. We can prescribe the flow balance equation 
-\begin{eqnarray}
-  Q^m_w &=& Q^m_{w,in} - Q^m_{w,out}, \textrm{ where} \label{eqn:well_flows} \\
-  Q^m_w &\ldots& \textrm{flow into aquifer across the well boundary,} \nonumber\\
-  Q^m_{w,in} &\ldots& \textrm{flow from upper aquifer,} \nonumber\\
-  Q^m_{w,out} &\ldots& \textrm{flow into lower aquifer.} \nonumber
-\end{eqnarray}
+$\vc{n}$ is unit outer normal vector on the interior boundary,
+$\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
+$m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
+%
 \begin{figure}[!htb]
   %\vspace{-15pt}
   %TODO: add arrow (flow) to the top
@@ -268,31 +259,35 @@ the wells. We can prescribe the flow balance equation
   \caption{Flow balance in the well.}
   \label{fig:well_flows}
 \end{figure}
-
-\fig{fig:well_flows} presents the equation \eqref{eqn:well_flows} and denotes the flows $Q^m_{w,\cdot}$ by red arrows.
-We can look at the flows in the balance equation as 1D problems which are governed by a difference of pressure
-head and a transition coefficient. Using this idea, we can substitute the flows in the equation 
-\eqref{eqn:well_flows} and get
-\begin{eqnarray} 
-\int_{\partial B_w^m}\sigma_w^m \left(h^m - H_w^m\right) \dd s
-  = c_w^{m+1}\left( H^m_w-H_w^{m+1}\right) - c^m_w\left( H^{m-1}_w-H^m_w \right), \label{eqn:well_balance} \\
- \forall m=1,\dots,M \textrm{ and } \forall w\in\mathcal{W}, \nonumber
-\end{eqnarray}
-where $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
-$m$-th aquifer, $H_w^m$ the pressure head in the well $w$ at the level of $m$-th aquifer and finally 
-$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ through aquitard $m$.
-
-The problem is now to find set of functions $h^m\in C^2(\Omega^m)\cap{C}^1(\bar\Omega^m)$ and set of pressure 
-values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal{W}$ that
-satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
-
-Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
-The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
-to formulate additional equations
-\begin{equation} \label{eqn:well_balance_top}
-  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
+%
+The total flow from the well $w$ to aquitard $m$,
+\[
+    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
+\]
+satisfies simple balance equation on the well
+\begin{equation}
+    \label{eq:well_flow}
+    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^m_w\left( H^{m-1}_w-H^m_w \right) - c_w^{m+1}\left( H^m_w-H_w^{m+1}\right), 
 \end{equation}
-to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
+
+where $Q^m_{w,in}$ is flow from lower aquifer $m-1$, $Q^m_{w,out}$ is flow to the upper aquifer $m+1$, and 
+$c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment above the aquifer $m$.
+In \eqref{eq:well_flow}, we assume Darcy flow in the well for the simplicity. The bottom of the well $w$ is impermeable,
+we set $c^0_w=0$, $H^0_w=H^1_w$, and on the top we prescribe given pressure $H^{M+1}_w$.
+
+
+
+%The problem is now to find set of functions $h^m\in C^2(\Omega^m)\cap{C}^1(\bar\Omega^m)$ and set of pressure 
+%values in the wells $H^m_w\in\R$, for all $m\in\{1,\ldots,M\}$ and $w\in\mathcal{W}$ that
+%satisfy the equations \eqref{eqn:poisson} and \eqref{eqn:well_balance}.
+
+%Note that if the lower end of well is considered isolated from below, the coefficient must be set $c^1_w = 0$.
+%The values of pressure head at the top of the wells $H^{M+1}_w$ are to be set on input. It is also possible
+%to formulate additional equations
+%\begin{equation} \label{eqn:well_balance_top}
+%  c^M_w\left( H^{M}_w-H^{M+1}_w \right) = 0,
+%\end{equation}
+%to be able to set $H^{M+1}_w$ as unknowns, but we shall leave it simple at the moment.
 %With $c^m_w = 0$ we can also simulate the end of the well $w$ at the level of aquifer $m$.
 
 % We mention yet the equation \eqref{eqn:well_balance} for $m=M+1$ which is one level above the up most aquifer
