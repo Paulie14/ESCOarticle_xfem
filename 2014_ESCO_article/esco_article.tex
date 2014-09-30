@@ -267,7 +267,7 @@ The total flow from the well $w$ to aquitard $m$,
 satisfies a simple balance equation on the well
 \begin{align}
     \label{eq:well_flow}
-    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^{m+1}_w\left( H^{m+1}_w-H^m_w \right) - c_w^m\left( H^m_w-H_w^{m-1}\right), 
+    Q_w^m = Q^m_{w,in} - Q^m_{w,out} = c^{m+1}_w\left( H^{m+1}_w-H^m_w \right) - c_w^m\left( H^m_w-H_w^{m-1}\right),&\\
     \notag
     \forall\,m=1,\dots,M\text{ and }\forall\,w\in\mathcal{W},&
 \end{align}
@@ -378,9 +378,9 @@ problem, for which the existence and uniqueness of the solution can be shown via
 
 \section{Discretization}
 \label{sec:discretization}
-We can now proceed to the choice of the enrichment and the discretized tsystem of equations
+We can now proceed to the choice of the enrichment and discretization of the equation
 \eqref{eqn:weak_form}.
-Let's imagine that we have only one aquifer so we can omit the upper index $m$ in this section.
+In this section as well as in the rest of the paper, we consider only one aquifer so we omit the upper index $m$.
 In fact, it is appropriate to do so in some notations of shape functions because we do consider the same 
 triangulation for every aquifer in our implementation.
 
