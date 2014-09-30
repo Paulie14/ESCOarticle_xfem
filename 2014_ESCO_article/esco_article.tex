@@ -1104,7 +1104,7 @@ intersect more than one element.
 \subsection{Conditioning of the system matrix} \label{sec:res_conditioning}
 We shall write here a brief note about the conditioning of the system as we mentioned problems above when using some of the PU methods. 
 Condition number for matrices resulting from conforming FEM applied to Laplace equation is $O(h^{-2})$, so the iteration count 
-for CG without preconditioning is $O(h^{-1})=O(\sqrt(n))$, where $n=1/h^2$ is number of degrees of freedom. 
+for CG without preconditioning is $O(h^{-1})=O(\sqrt{n})$, where $n=1/h^2$ is number of degrees of freedom in case of linear finite elements. 
 With local preconditioning (Jacobi, 
 SOR, ILU) one can usually achieve the number of iterations $O(h^{-0.5})$, c.f. \cite{ern_evaluation_2006}.
 
@@ -1251,9 +1251,9 @@ function and the shiftment, and the SGFEM. The problem setting was inspired by t
 of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding of the PU methods and their comparison
 rather than in computation of complex problems.
 
-We investigated the issue of a sub-optimal convergence rate addressed in \cite{gracie_modelling_2010}. We revealed the problem
-in the adaptive quadrature and we suggested better adaptivity rules. The improvement was confirmed by the numerical
-tests in \ref{sec:res_comparison} where we obtained optimal convergence rates.
+We investigated the issue of a sub-optimal convergence rate reported in \cite{gracie_modelling_2010}. We revealed the problem
+and we suggested better the adaptive quadrature rules. The improvement was confirmed by the numerical
+tests in \ref{sec:res_comparison} where we obtained optimal convergence rates in $L^2$ norm.
 
 All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM we saw that at 
 least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
@@ -1262,7 +1262,9 @@ the SGFEM converged optimally and did not show any difference in the solution pr
 The ill-conditioning of the system matrix was encountered when using the standard XFEM and the ramp function XFEM.
 The iteration count was measured.
 
-From the results in \ref{sec:res_comparison} we saw that the usage of the shifted XFEM or SGFEM 
+Finally, the choice of the optimal enrichment radius was studied. The error estimate dependent on the enrichment
+radius was derived and it was numerically validated. Furthermore, the optimal enrichment radius was predicted 
+for the test problem and it corresponded with the computed data.
 
 \section{Acknowledgement}
 This work was made under the sincere guidance and support of Mgr. Jan B{\v r}ezina, Ph.D.
