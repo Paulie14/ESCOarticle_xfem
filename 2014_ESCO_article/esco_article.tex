@@ -149,7 +149,7 @@ developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
 In order to improve approximation of singularities near wells, the standard finite element space is enriched with
-an analytical solution to a Laplace problem with point source on the whole $\Real^2$ space. The optimal order of 
+an analytical solution to a Laplace problem with point source on the whole $\R^2$ space. The optimal order of 
 convergence in terms of $L^2$ norm of the error is demonstrated for PUM. The influence of adaptive quadrature 
 and choice of enrichment domain is analysed. New strategy for adaptive integration is proposed and impact of enrichment 
 radius on the error is demonstrated numerically.
@@ -168,8 +168,8 @@ Singular solution
 
 %% MSC codes here, in the form: \MSC code \sep code
 %% or \MSC[2008] code \sep code (2000 is the default)
-\MSC 65N30 \sep %    Finite elements, Rayleigh-Ritz and Galerkin methods, finite methods
-\MSC 35J05  %    Laplacian operator, reduced wave equation (Helmholtz equation), Poisson equation
+\MSC[2010] 65N30 \sep %    Finite elements, Rayleigh-Ritz and Galerkin methods, finite methods
+\MSC[2010] 35J05  %    Laplacian operator, reduced wave equation (Helmholtz equation), Poisson equation
 
 \end{keyword}
 
@@ -181,33 +181,31 @@ Singular solution
 \section{Introduction}
 \label{sec:introduction}
 
-People often consider in their models of flow in porous media very large areas which can contain various 
-phenomena of a very small scale compared with the size of the areas. These can be some disruptions of the porous 
-medium, e.g. cracks and wells, or material inhomogeneities that cause large gradients in pressure head and 
-velocity or even their discontinuities.
+Large scale mathematical models of the groundwater flow has to deal with the presence of small scale features like wells 
+and fractures that has significant impact on the whole solution. The standard finite element method can 
+capture these features using $h$ and/or $p$ adaptivity techniques 
+which is payed of by greater number of degrees of freedom. One possible alternative is usage of 
+suitable partition of unity method (PUM) also known as extended finite element method (XFEM). The idea is to 
+augment the basis $\{\phi_n\}$ of the discrete finite element space with the functions $u_s \phi_n$, where $u_s$ is 
+an a priori known solution in the vicinity of the small scale feature. 
 
-Using the standard finite element method (FEM) we are unable to properly approximate quantities in the 
-vicinity of these disturbances, unless we introduce elements of the same scale in the mesh. This leads to 
-higher requirements on mesh processing (refinement) and increase of computational costs due to growing number  
-of degrees of freedom.
-
-In this work we use PU (Partition of Unity) methods to overcome these problems and demonstrate it on a steady 
-%quasi-three-dimensional model of multi-aquifer system 
-two-dimensional aquifer model containing hydro-geological wells which cause singularities in the solution. 
-We follow the work \cite{gracie,craig} of Gracie and Craig who have already used the XFEM (eXtended FEM) 
-on a~similar model. However, we focus mainly on the study of the PU methods. In particular, we use the XFEM 
+In this work we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
+cause singularities in the solution. We follow the work \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
+which up to our best knolwedge, is the first work using XFEM for the well problems.
+Our primary aim is to compare different PU methods on the similar model. In particular, we use the XFEM 
 and its corrected version (including ramp function and shift), e.g. by Fries in~\cite{cxfem}, 
-and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{sgfem,sgfem2013}. We measure 
+and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
 the convergence of pressure head in $L^2$ norm over the aquifer domain and we compare the used methods. 
-We also investigate the error of the adaptive integration on the enriched elements and introduce improvement. 
+We also investigate the error of the adaptive integration on the enriched elements and proposed more robust adaptive strategy.
 In addition, we suggest better choice of enrichment area based on a tolerance criterion.
 
-The implementation was done in C++ language using the Deal II library~\cite{deal}, the finite element library.
+The implementation was done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library.
 which does not support any enrichment techniques at the moment.
 
-We describe the model in the beginning of the article in \ref{sec:model}, set the problem and derivate its weak formulation. 
-In section \ref{sec:discretization} we discretize the problem and go through the PU methods 
-in details. After that we investigate the problem of integration in the enrichment area and suggest some 
+The paper is organised as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
+In section \ref{sec:discretization},  discretization and details of several PU methods are presented.
+
+After that we investigate the problem of integration in the enrichment area and suggest some 
 improvements in \ref{sec:integration}. The study on the proper choice of the enrichment area is presented in 
 section \ref{sec:enrichemnt_radius}. 
 Finally in section \ref{sec:results}, test problems are set and numerical results are shown; 
@@ -218,17 +216,21 @@ Open questions are summarized and further research goals are pointed out at the 
 \label{sec:model}
 We consider a steady flow in a system of aquifers (2D horizontal layers of given thickness) which are separated by 
 impermeable layers (aquitards). The aquifers are connected by wells which act as sources
-or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by the boundary 
-condition of the aquifers which can be of Dirichlet type or homogeneous of Neumann type.
+or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by a Dirichlet boundary 
+condition on the outer boundary of every aquifer.
 
 \subsection{Mathematical model}
-We describe the wells as interior boundary condition therefore we need to define the computational domain
-as the aquifer domain with wells cross-sections cut off. Let the $\Theta^m$ be the domain on $m$-th aquifer,
-$m=1,\ldots M$, and $z_m$ be its vertical coordinate. The well $w$ is defined by a cylinder $B_w$
-with the base center $\vc{x}_w$, radius $\rho_w$ and height $|z_1-z_M|$.  We further denote 
-$B^m_w = B_w \cap \Theta^m$ the cross-section of the aquifer $m$ and the well $w\in\mathcal{W}=\{1,\ldots,W\}$
-and the union $B^m=\bigcup\limits_{w}B^m_w$. 
-We can then define domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
+%We describe the wells as interior boundary condition therefore we need to define the computational domain
+%as the aquifer domain with wells cross-sections cut off. 
+Let $\Theta^m$ be the domain of the $m$-th aquifer,
+$m=1,\ldots M$, and $z_m$ be its vertical coordinate. The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
+with center $\vc{x}_w$ and radius $\rho_w$.  We further denote 
+\[
+ B^m_w = B_w \cap \Theta^m, \quad \text{and} \quad
+ B^m=\bigcup\limits_{w\in \mathcal{W}}B^m_w,
+\]
+for any aquifer $m$ and well $w$.
+We can then define a domain $\Omega^m = \Theta^m\setminus B^m$ with an exterior boundary 
 consisting of exclusive parts $\partial\Theta^m=\Gamma^m_D\cup\Gamma^m_N$ and an interior boundary 
 $\partial B^m=\bigcup\limits_{w}\partial B^m_w$, 
 such that $\partial\Omega^m=\partial\Theta^m\cup\partial B^m$.
