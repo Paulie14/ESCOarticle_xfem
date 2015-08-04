@@ -329,7 +329,7 @@ To obtain the weak form, we apply the standard Galerkin method. We multiply the 
 by a test function $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
 \begin{equation} \label{eqn:weak_form1}
   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-  + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
+  + \sum \limits_{w\in \mathcal{W}} \int \limits_{\partial B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
   = \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.
   % - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
@@ -892,7 +892,7 @@ which after integration over the unenriched domain gives final estimate:
     \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}. 
 \end{equation}
 
-Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_H^1(\Omega)$, 
+Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_{H^1(\Omega)}$, 
 which balance error in the regular and the singular part. In combination with an a posteriori error analysis, this could give a rule for an automatic
 determination of the enrichment radius.
 
@@ -910,7 +910,7 @@ Suppose we have the following problem
 \begin{equation} \label{eqn:poisson_problem}
 \left.\begin{aligned}
     -T \Delta h &= TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &= h_D\\
+    h|_{\Gamma_D} &= h_D\\
     \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &= \sigma_w\left(h - H_w\right) \\
     \end{aligned}
     \;\right\}
@@ -1065,7 +1065,7 @@ The convergence rate in $L^2$ norm close to 2.0 is optimal.
 \end{figure}
 
 
-The results of the convergence test for \prob{2} are presented on \fig{fig:convergence_sin}.
+The results of the convergence test for \prob{2} are presented in \fig{fig:convergence_sin}.
 For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
 It is labeled 'FEM (ur)' as it the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays optimal convergence rate 2.0.
 
@@ -1175,7 +1175,7 @@ Moreover, the minimum value is attained on the majority of
 elements, see \fig{fig:log_estimate_b}. Both parts of \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
 where the nonlinear term of the bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
-Next, we study influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
+Next, we study the influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
 using the shifted XFEM for different mesh steps and different values of $R$.
 Let us remind that $O(h^p)$ convergence of the solution in the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the solution in the $L^2$ norm 
 for the linear elliptic problems (c.f. \cite[Theorem 19.2]{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
@@ -1195,7 +1195,7 @@ we get the optimal value of the enrichment radius
 \[
     R_o \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
 \]
-This value roughly match a breakpoint in the plots of the error as a function of $R$ in
+This value roughly matches a breakpoint in the plots of the error as a function of $R$ in
 \fig{fig:radius_conv_1}.
 
 
@@ -1288,7 +1288,7 @@ CZ.1.05/2.1.00/01.0005.
  %\bibliographystyle{elsarticle-harv} 
  %\bibliographystyle{elsarticle-num-names} 
  \bibliographystyle{elsarticle-num} 
- \bibliography{../citace.bib}
+ \bibliography{citace.bib}
 \end{document}
 
 
