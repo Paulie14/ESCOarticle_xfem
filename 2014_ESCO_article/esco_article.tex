@@ -204,7 +204,7 @@ which does not support any enrichment techniques at the moment.
 
 The paper is organized as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
 In Section \ref{sec:discretization}, the discretization using different partition of unity methods is presented in detail.
-An analysis of the quadrature error and rules for a robust adaptive strategy are derived in In Section \ref{sec:integration}.
+An analysis of the quadrature error and rules for a robust adaptive strategy are derived in Section \ref{sec:integration}.
 Section \ref{sec:enrichemnt_radius} discusses the optimal choice of the enriched domain.
 Section \ref{sec:results} specify data of the test problem and discuss numerical results
 in particular validation of convergence, behavior of the condition number a set of experiments validating some of the theoretical results and convergence tests.
@@ -263,7 +263,7 @@ $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the 
 %
 The total flow from the well $w$ to aquitard $m$,
 \[
-    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
+    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)  \dd\bx
 \]
 satisfies a simple balance equation on the well
 \begin{align}
@@ -611,7 +611,7 @@ and the integration error is large.
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
-  \subfloat[refinement due to G. and C.]{\label{fig:adapt_ref_a} 
+  \subfloat[refinement due to Gracie and Craig]{\label{fig:adapt_ref_a} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_old.pdf} }
   \hspace{0pt}
   \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
@@ -636,7 +636,7 @@ Let us assume only one well of radius $\rho$ situated at the origin. In the case
 which is also the worst term to integrate independently of the particular variant of the PU method.
 Consider a~subregion $S$ with a~side $\delta$ and 
 let us denote $r_{S}$ the distance of $S$ to the origin.
-We shall estimate the error of the 2D tensor product Gauss quadrature rule of and order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
+We shall estimate the error of the 2D tensor product Gauss quadrature rule of order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
 $\Pi^n f$ the projection of an integrand to the space of polynomials that are integrated exactly. Due to the radial nature of the integrand and its derivatives,
 we can estimate
 \[
@@ -645,20 +645,21 @@ we can estimate
 and thus estimate the error by the error $E^n$ of 
  1D quadrature of the same order on $(r_{S}, r_{S}+\delta)$:
 \[
-  \int_S \abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
+  \int_S \abs{f-\Pi^n f} \dd\bx \le \delta E^n((r_{S}, r_{S}+\delta)).
 \]
 The error of 1D Gauss quadrature of an order $n$ ($n$ quadrature points) over an interval $(r,r+\delta)$ is 
 \[
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
 for some $\xi_n \in (r, r+\delta)$, see e.g. \cite{kahaner_numerical_1989}. 
+The expression $f^{(2n)}$ denotes a derivative of order $2n$ of a function $f$.
 Regarding the integrand \eqref{eq:term-of-interest}, we have 
 \[
   \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}.
 \]
 Finally, we get an estimate for the quadrature error on a single subregion:
 \[
-    \int_S \abs{f-\Pi^n f} \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
+    \int_S \abs{f-\Pi^n f}  \dd\bx \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
   \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2.
 \]
 This estimate implies that we have to ensure $\delta < r_S$ in order to get a decent quadrature error 
@@ -729,7 +730,7 @@ Based on the analysis presented above, we propose following adaptive quadrature 
 These rules ensure $\delta < r_{min}/2$ outside the well, where the integrand is smooth. Subregions intersecting 
 the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we cannot employ 
 estimates from the previous section. The maximum number of levels is chosen so that we get the similar total number of quadrature points 
-as in the quadrature used by G. and C. in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
+as in the quadrature used by Gracie and Craig in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
 see \fig{fig:adapt_ref_b}. 
 
 Implementation of this approach allows the convergence rates of the used PU methods to close up to the optimum,
@@ -929,7 +930,7 @@ To obtain $a$, we use the average pressure head along the well edge in the third
 of \eqref{eqn:poisson_problem}:
 \begin{equation} \label{eqn:a_average_derivation}
      -\langle\nabla h \cdot \vc{n}\rangle = \sigma_w\left(H_w - \langle{h}\rangle \right), 
-    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f.
+    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f  \dd\bx.
 \end{equation}
 The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
 $O(\omega^2 \rho_w)$. Finally, we have
@@ -1196,7 +1197,7 @@ we get the optimal value of the enrichment radius
     R_o \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
 \]
 This value roughly matches a breakpoint in the plots of the error as a function of $R$ in
-\fig{fig:radius_conv_1}.
+\fig{fig:radius_conv_2}.
 
 
 \begin{figure}[!htb]
