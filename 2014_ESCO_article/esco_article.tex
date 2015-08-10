@@ -213,10 +213,17 @@ Finally, conclusions and open questions are summarized in Section \ref{sec:summa
 
 \section{Model}
 \label{sec:model}
-We consider a steady groundwater flow in a system of aquifers (2D models of horizontal geological layers)
-separated by aquitards (impermeable layers). The aquifers are connected by wells which act as sources
-or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by a Dirichlet boundary 
-condition on the outer boundary of every aquifer.
+We consider a steady groundwater 
+flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
+In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable but we add a general source term, 
+as we do not put stress on a real-world application of the model in this article. The aquifers are then connected only by wells 
+which act as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
+by a Dirichlet boundary condition on the outer boundary of every aquifer.
+
+The model is defined as a complex multi-aquifer system following Gracie and Craig,
+although later, we will deal mostly with one aquifer model.
+We find it proper because one can see the differences we made, our code implements the multi-aquifer model and
+the derived weak form gives an insight on solvability.
 
 \subsection{Mathematical model}
 %We describe the wells as interior boundary condition therefore we need to define the computational domain
@@ -358,8 +365,10 @@ and sum up over $m$ which results in
 \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
-We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. Equation \eqref{eqn:weak_form} represents an elliptic
-problem, for which the existence and uniqueness of the solution can be shown via the Lax-Milgram lemma.
+We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. 
+Putting $h^m=\varphi^m$ and $H^m_w=\Phi^m_w$, we can clearly see the elliptic character of all terms on the 
+left hand side of the weak form \eqref{eqn:weak_form}. The existence and uniqueness of the solution can be shown 
+via the Lax-Milgram lemma due to ellipticity and boundedness of the problem.
 
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
@@ -380,11 +389,12 @@ problem, for which the existence and uniqueness of the solution can be shown via
 
 \section{Discretization}
 \label{sec:discretization}
-We can now proceed to the choice of the enrichment and discretization of the equation
-\eqref{eqn:weak_form}.
-In this section as well as in the rest of the paper, we consider only one aquifer so we omit the upper index $m$.
-In fact, it is appropriate to do so in the notations of shape functions because we do consider the same 
-triangulation for every aquifer in our implementation. In particular, we use regular square grid.
+We can now proceed to the choice of the enrichment and discretization of the equation \eqref{eqn:weak_form}.
+In this section as well as in the rest of the paper, we consider only one aquifer for the sake of simplicity
+so we can omit the upper index $m$. 
+In fact, it is appropriate to do so especially in the notations of shape functions 
+because we do consider the same triangulation for every aquifer in our implementation. 
+In particular, we use regular square grid. Assuming the above, discretization in case of multi-aquifer system is straightforward.
 
 \subsection{Enrichment function}
 The enrichment function can be obtained from the solution of a local problem on the neighborhood of the well $w$.
