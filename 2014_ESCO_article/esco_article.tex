@@ -1086,6 +1086,11 @@ comes from the singular part of the solution. All the PU methods have again near
 The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 
+Regarding the convergence rate (1.8) presented by Gracie and Craig \cite{gracie_modelling_2010}, we obtained similar convergence rate 
+around 1.7-1.8 in our experiments using the original adaptive quadrature. Although, the rate could be worse 
+depending on the position of the well to the nodes of the mesh. We do not experience this behaviour with our adaptive
+quadrature and the convergence rates are always closing to optimum 2.0.
+
 While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
 SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
 of refinement levels and using a higher order quadrature. Possible reason could be the boundary condition 
