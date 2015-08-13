@@ -233,7 +233,7 @@ The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical
 with center $\vc{x}_w$ and radius $\rho_w$.  We further denote 
 \[
  B^m_w = B_w \cap \Theta^m, \quad \text{and} \quad
- B^m=\bigcup\limits_{w\in \mathcal{W}}B^m_w,
+ B^m=\bigcup_{w\in \mathcal{W}}B^m_w,
 \]
 for any aquifer $m$ and a well $w$.
 The actual computational domain of the aquifer $m$ is $\Omega^m = \Theta^m\setminus B^m$. The boundary $\partial\Omega^m$ of 
@@ -336,9 +336,9 @@ We understand $V_0$ as a subspace of $V$ setting $\Phi^{M+1}_W=0$.
 To obtain the weak form, we apply the standard Galerkin method. We multiply the equation \eqref{eqn:poisson} 
 by a test function $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
 \begin{equation} \label{eqn:weak_form1}
-  \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-  + \sum \limits_{w\in \mathcal{W}} \int \limits_{\partial B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
-  = \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.
+  \int_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+  + \sum_{w\in \mathcal{W}} \int_{\partial B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
+  = \int_{\Omega^m} f^m\varphi^m \dd\bx.
   % - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
 % We then multiply \eqref{eqn:well_balance} by $\Phi^m_w$, subtract it from \eqref{eqn:weak_form1} 
@@ -356,12 +356,12 @@ by a test function $\varphi^m$ and integrate by parts over $\Omega^m$, for all $
 We then multiply \eqref{eq:well_flow} by $\Phi^m_w$, add it to \eqref{eqn:weak_form1} 
 and sum up over $m$ which results in
 \begin{multline} \label{eqn:weak_form}
-  \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-        + \sum \limits_{m=1}^M \sum \limits_{w\in \mathcal{W}} \; 
-           \int \limits_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)\left(\varphi^m-\Phi^m_w\right) \dd\bx \\
-        + \sum \limits_{m=1}^{M+1} \sum\limits_{w\in\mathcal{W}}
+  \sum_{m=1}^M \; \int_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
+        + \sum_{m=1}^M \sum_{w\in \mathcal{W}} \; 
+           \int_{\partial B^m_w} \sigma^m_w\left(h^m-H^m_w\right)\left(\varphi^m-\Phi^m_w\right) \dd\bx \\
+        + \sum_{m=1}^{M+1} \sum_{w\in\mathcal{W}}
           c_w^{m}\left( H^{m}_w-H_w^{m-1}\right)\left(\Phi^{m}_w - \Phi^{m-1}_w\right)           
-  = \sum \limits_{m=1}^M \; \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.   
+  = \sum_{m=1}^M \; \int_{\Omega^m} f^m\varphi^m \dd\bx.   
 \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
@@ -457,8 +457,8 @@ Let $N_\alpha(\bx)$, $\alpha\in\mathcal{I}=\{1,\ldots,N\}$ be the standard linea
 functions associated with the node $\bx_\alpha$ of the triangulation. 
 In the \textbf{standard XFEM}, we write the solution in the form
 \begin{equation} \label{eqn:xfem_standard_form}
-  h(\bx) = \sum \limits_{\alpha\in\mathcal{I}}a_\alpha N_\alpha(\bx)
-    + \sum \limits_{w\in\mathcal{W}} \sum \limits_{\alpha\in\mathcal{I}^e_w} b_{\alpha w} \phi_{\alpha w}(\bx),
+  h(\bx) = \sum_{\alpha\in\mathcal{I}}a_\alpha N_\alpha(\bx)
+    + \sum_{w\in\mathcal{W}} \sum_{\alpha\in\mathcal{I}^e_w} b_{\alpha w} \phi_{\alpha w}(\bx),
 \end{equation}
 where $a_\alpha$ are the standard FE degrees of freedom and $b_{\alpha w}$ are the degrees of freedom coming from
 the enrichment of the well $w$. The index set $\mathcal{I}^e_w$ includes all nodes enriched by the well $w$; on the other hand, 
@@ -476,7 +476,7 @@ which are elements on the boundary of the enriched zone that contains both enric
 The corrected XFEM introduces the \textbf{ramp function}
 %\begin{equation} \label{eqn:ramp_function}
 \begin{eqnarray} \label{eqn:ramp_function}
-  G_w(\bx) &=& \sum \limits_{\alpha\in\mathcal{I}_w^e} N_\alpha(\bx)    \\
+  G_w(\bx) &=& \sum_{\alpha\in\mathcal{I}_w^e} N_\alpha(\bx)    \\
   &=& 
   \begin{cases}
     0 & \textrm{ on unenriched elements,}    \\
@@ -524,7 +524,7 @@ for any element $\tau$ of the mesh that have at least one enriched node.
 The interpolation $\pi_\tau$ is built using the finite element shape functions
 associated with nodes $\mathcal{I}(\tau)$ of the element $\tau$
 \begin{equation} \label{eqn:sgfem_interpolation}
-    \pi_\tau (s_w)(\bx) = \sum\limits_{\beta\in\mathcal{I}(\tau)} s_w(\bx_\beta) N_\beta(\bx).
+    \pi_\tau (s_w)(\bx) = \sum_{\beta\in\mathcal{I}(\tau)} s_w(\bx_\beta) N_\beta(\bx).
     %\quad \textrm{ on } \tau,\; \alpha\in\mathcal{I}^e, w\in\mathcal{W}.
 \end{equation}
 Notice that there are no additional enriched nodes on blending elements, like in $\mathcal{J}^e$ in 
@@ -944,7 +944,7 @@ To obtain $a$, we use the average pressure head along the well edge in the third
 of \eqref{eqn:poisson_problem}:
 \begin{equation} \label{eqn:a_average_derivation}
      -\langle\nabla h \cdot \vc{n}\rangle = \sigma_w\left(H_w - \langle{h}\rangle \right), 
-    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f  \dd\bx.
+    \qquad \textrm{ where } \langle{f}\rangle = \fint_{\partial B_w} f  \dd\bx.
 \end{equation}
 The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
 $O(\omega^2 \rho_w)$. Finally, we have
