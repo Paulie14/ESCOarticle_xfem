@@ -199,23 +199,31 @@ the convergence of pressure head in $L^2$ norm over the aquifer domain and we co
 We also investigate the error of the adaptive integration on the enriched elements and propose a more robust adaptive strategy.
 In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
 
-The implementation is done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library,
-which does not support any enrichment techniques at the moment.
+The implementation is done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library
+not supporting any enrichment techniques at the moment. 
+Our experimental code is available on GitHub repository: \url{https://github.com/Paulie14/xfem_project}.
 
 The paper is organized as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
 In Section \ref{sec:discretization}, the discretization using different partition of unity methods is presented in detail.
-An analysis of the quadrature error and rules for a robust adaptive strategy are derived in In Section \ref{sec:integration}.
+An analysis of the quadrature error and rules for a robust adaptive strategy are derived in Section \ref{sec:integration}.
 Section \ref{sec:enrichemnt_radius} discusses the optimal choice of the enriched domain.
-Section \ref{sec:results} specify data of the test problem and discuss numerical results
-in particular validation of convergence, behavior of the condition number a set of experiments validating some of the theoretical results and convergence tests.
+Section \ref{sec:results} specifies data of the test problem and discusses numerical results,
+in particular validation of convergence, behavior of the condition number, a set of experiments validating some of the theoretical results and convergence tests.
 Finally, conclusions and open questions are summarized in Section \ref{sec:summary}.
 
 \section{Model}
 \label{sec:model}
-We consider a steady groundwater flow in a system of aquifers (2D models of horizontal geological layers)
-separated by aquitards (impermeable layers). The aquifers are connected by wells which act as sources
-or sinks in the domain of each aquifer. The pressure in the aquifers is further governed by a Dirichlet boundary 
-condition on the outer boundary of every aquifer.
+We consider a steady groundwater 
+flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
+In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable but we add a general source term, 
+as we do not put stress on a real-world application of the model in this article. The aquifers are then connected only by wells 
+which act as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
+by a Dirichlet boundary condition on the outer boundary of every aquifer.
+
+The model is defined as a complex multi-aquifer system following Gracie and Craig,
+although later, we will deal mostly with one aquifer model.
+We find it proper because one can see the differences we made, our code implements the multi-aquifer model and
+the derived weak form gives an insight on solvability.
 
 \subsection{Mathematical model}
 %We describe the wells as interior boundary condition therefore we need to define the computational domain
@@ -263,7 +271,7 @@ $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the 
 %
 The total flow from the well $w$ to aquitard $m$,
 \[
-    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)
+    Q^m_w =-\int_{\prtl B^m_w} \sigma^m_w(h^m - H^m_w)  \dd\bx
 \]
 satisfies a simple balance equation on the well
 \begin{align}
@@ -329,7 +337,7 @@ To obtain the weak form, we apply the standard Galerkin method. We multiply the 
 by a test function $\varphi^m$ and integrate by parts over $\Omega^m$, for all $m=1,\ldots,M$, to get
 \begin{equation} \label{eqn:weak_form1}
   \int \limits_{\Omega^m} T^m \nabla h^m \cdot \nabla \varphi^m \dd\bx
-  + \sum \limits_{w\in \mathcal{W}} \int \limits_{B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
+  + \sum \limits_{w\in \mathcal{W}} \int \limits_{\partial B^m_w} \sigma^m_w (h^m - H_w^m) \varphi^m \dd\bx
   = \int \limits_{\Omega^m} f^m\varphi^m \dd\bx.
   % - \int \limits_{\Omega^m} T^m \nabla h^m_D \nabla v^m \dd\mathbf{x},
 \end{equation}
@@ -357,8 +365,10 @@ and sum up over $m$ which results in
 \end{multline}
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
-We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. Equation \eqref{eqn:weak_form} represents an elliptic
-problem, for which the existence and uniqueness of the solution can be shown via the Lax-Milgram lemma.
+We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. 
+Putting $h^m=\varphi^m$ and $H^m_w=\Phi^m_w$, we can clearly see the elliptic character of all terms on the 
+left hand side of the weak form \eqref{eqn:weak_form}. The existence and uniqueness of the solution can be shown 
+via the Lax-Milgram lemma due to ellipticity and boundedness of the problem.
 
 
 % Denoting $a^m(\cdot, \cdot)$ a bilinear form 
@@ -379,11 +389,12 @@ problem, for which the existence and uniqueness of the solution can be shown via
 
 \section{Discretization}
 \label{sec:discretization}
-We can now proceed to the choice of the enrichment and discretization of the equation
-\eqref{eqn:weak_form}.
-In this section as well as in the rest of the paper, we consider only one aquifer so we omit the upper index $m$.
-In fact, it is appropriate to do so in the notations of shape functions because we do consider the same 
-triangulation for every aquifer in our implementation. In particular, we use regular square grid.
+We can now proceed to the choice of the enrichment and discretization of the equation \eqref{eqn:weak_form}.
+In this section as well as in the rest of the paper, we consider only one aquifer for the sake of simplicity
+so we can omit the upper index $m$. 
+In fact, it is appropriate to do so especially in the notations of shape functions 
+because we do consider the same triangulation for every aquifer in our implementation. 
+In particular, we use regular square grid. Assuming the above, discretization in case of multi-aquifer system is straightforward.
 
 \subsection{Enrichment function}
 The enrichment function can be obtained from the solution of a local problem on the neighborhood of the well $w$.
@@ -611,7 +622,7 @@ and the integration error is large.
 \begin{figure}[!htb]
 %   \vspace{0pt}
   \centering    
-  \subfloat[refinement due to G. and C.]{\label{fig:adapt_ref_a} 
+  \subfloat[refinement due to Gracie and Craig]{\label{fig:adapt_ref_a} 
     \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_old.pdf} }
   \hspace{0pt}
   \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
@@ -648,20 +659,21 @@ a 2D quadrature effectively enhance its order to $2n$ in the radial (diagonal) d
 we can estimate the quadrature error on the square $S$ by the error on the square $S'$ with the same $r_S$ laying on the axis, then we can 
 neglect $y$ monomials and use the error estimates for the 1D quadrature:
 \[
-  \int_S \abs{f-\Pi^n f} \le \int_{S'}\abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
+  \int_S \abs{f-\Pi^n f} \dd\bx \le \int_{S'}\abs{f-\Pi^n f} \dd\bx \le \delta E^n((r_{S}, r_{S}+\delta)).
 \]
 The $E_n$ is the error of 1D Gauss quadrature of the order $n$ ($n$ quadrature points) over the interval $(r,r+\delta)$
 \[
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
 for some $\xi_n \in (r, r+\delta)$, see e.g. \cite{kahaner_numerical_1989}. 
+The expression $f^{(2n)}$ denotes a derivative of order $2n$ of a function $f$.
 Regarding the integrand \eqref{eq:term-of-interest}, we have 
 \[
   \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}.
 \]
 Finally, we get an estimate for the quadrature error on a single subregion:
 \[
-    \int_S \abs{f-\Pi^n f} \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
+    \int_S \abs{f-\Pi^n f}  \dd\bx \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
   \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2.
 \]
 This estimate implies that we have to ensure $\delta < r_S$ in order to get a decent quadrature error 
@@ -732,7 +744,7 @@ Based on the analysis presented above, we propose following adaptive quadrature 
 These rules ensure $\delta < r_{min}/2$ outside the well, where the integrand is smooth. Subregions intersecting 
 the well's boundary are refined using at most $10$ refinement levels, since the integrand is discontinuous there and we cannot employ 
 estimates from the previous section. The maximum number of levels is chosen so that we get the similar total number of quadrature points 
-as in the quadrature used by G. and C. in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
+as in the quadrature used by Gracie and Craig in \cite{gracie_modelling_2010}. Using the proposed rules, the elements that do not contain the well are refined as well,
 see \fig{fig:adapt_ref_b}. 
 
 Implementation of this approach allows the convergence rates of the used PU methods to close up to the optimum,
@@ -895,7 +907,7 @@ which after integration over the unenriched domain gives final estimate:
     \norm{u_s - \Pi u_s}_{H^1(Z'_R)} \le \left[\int_0^{2\pi} \int_R^\infty \frac{h^2} {6r^4} r \,\d r\, \d \phi\right]^{1/2} = \sqrt\frac{\pi}{6}\frac{h}{R}. 
 \end{equation}
 
-Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_H^1(\Omega)$, 
+Recalling the estimate \eqref{eq:std_err_estimate}, we can conclude that optimal choice of the enrichment radius is $h/R\approx \norm{u_r-\Pi u_r}_{H^1(\Omega)}$, 
 which balance error in the regular and the singular part. In combination with an a posteriori error analysis, this could give a rule for an automatic
 determination of the enrichment radius.
 
@@ -913,7 +925,7 @@ Suppose we have the following problem
 \begin{equation} \label{eqn:poisson_problem}
 \left.\begin{aligned}
     -T \Delta h &= TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\partial\Omega} &= h_D\\
+    h|_{\Gamma_D} &= h_D\\
     \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &= \sigma_w\left(h - H_w\right) \\
     \end{aligned}
     \;\right\}
@@ -932,7 +944,7 @@ To obtain $a$, we use the average pressure head along the well edge in the third
 of \eqref{eqn:poisson_problem}:
 \begin{equation} \label{eqn:a_average_derivation}
      -\langle\nabla h \cdot \vc{n}\rangle = \sigma_w\left(H_w - \langle{h}\rangle \right), 
-    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f.
+    \qquad \textrm{ where } \langle{f}\rangle = \fint \limits_{\partial B_w} f  \dd\bx.
 \end{equation}
 The integral in \eqref{eqn:a_average_derivation} cannot be calculated precisely therefore it is approximated with error 
 $O(\omega^2 \rho_w)$. Finally, we have
@@ -1068,7 +1080,7 @@ The convergence rate in $L^2$ norm close to 2.0 is optimal.
 \end{figure}
 
 
-The results of the convergence test for \prob{2} are presented on \fig{fig:convergence_sin}.
+The results of the convergence test for \prob{2} are presented in \fig{fig:convergence_sin}.
 For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
 It is labeled 'FEM (ur)' as it the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays optimal convergence rate 2.0.
 
@@ -1076,6 +1088,11 @@ In the case of the standard FEM, we see the same behavior as in \fig{fig:converg
 comes from the singular part of the solution. All the PU methods have again nearly optimal convergence rate. 
 The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
+
+Regarding the convergence rate (1.8) presented by Gracie and Craig \cite{gracie_modelling_2010}, we obtained similar convergence rate 
+around 1.7-1.8 in our experiments using the original adaptive quadrature. Although, the rate could be worse 
+depending on the position of the well to the nodes of the mesh. We do not experience this behaviour with our adaptive
+quadrature and the convergence rates are always closing to optimum 2.0.
 
 While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
 SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
@@ -1178,7 +1195,7 @@ Moreover, the minimum value is attained on the majority of
 elements, see \fig{fig:log_estimate_b}. Both parts of \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
 where the nonlinear term of the bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
-Next, we study influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
+Next, we study the influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
 using the shifted XFEM for different mesh steps and different values of $R$.
 Let us remind that $O(h^p)$ convergence of the solution in the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the solution in the $L^2$ norm 
 for the linear elliptic problems (c.f. \cite[Theorem 19.2]{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
@@ -1198,8 +1215,8 @@ we get the optimal value of the enrichment radius
 \[
     R_o \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
 \]
-This value roughly match a breakpoint in the plots of the error as a function of $R$ in
-\fig{fig:radius_conv_1}.
+This value roughly matches a breakpoint in the plots of the error as a function of $R$ in
+\fig{fig:radius_conv_2}.
 
 
 \begin{figure}[!htb]
@@ -1291,7 +1308,7 @@ CZ.1.05/2.1.00/01.0005.
  %\bibliographystyle{elsarticle-harv} 
  %\bibliographystyle{elsarticle-num-names} 
  \bibliographystyle{elsarticle-num} 
- \bibliography{../citace.bib}
+ \bibliography{citace.bib}
 \end{document}
 
 
