@@ -634,20 +634,23 @@ Let us assume only one well of radius $\rho$ situated at the origin. In the case
     f(r)=(\nabla \log r )^2 \approx r^{-2}
 \end{equation}
 which is also the worst term to integrate independently of the particular variant of the PU method.
-Consider a~subregion $S$ with a~side $\delta$ and 
-let us denote $r_{S}$ the distance of $S$ to the origin.
-We shall estimate the error of the 2D tensor product Gauss quadrature rule of and order $n$ ($n$ times $n$ points) on the square $S$. Let us denote 
-$\Pi^n f$ the projection of an integrand to the space of polynomials that are integrated exactly. Due to the radial nature of the integrand and its derivatives,
-we can estimate
+Consider a~square subregion $S$ with a~side $\delta$ and 
+let us denote $r_{S}$ its distance from the origin.
+We want to estimate the error of the 2D tensor product Gauss quadrature rule of order $n$ ($n$ times $n$ points) on the square $S$. 
+Let us denote 
+$\Pi^n f$ the projection of the integrand $f$ to the space of polynomials that are integrated exactly.
+We were not able to find error estimates for 2D quadratures in the literature and deriving them would be extremely technical,  
+however we can make an observation that among the squares of the same $r_{S}$ the quadrature error is the highest for squares laying on one of the axis.
+Without loose of generality, let us assume a square on the $X$-axis. Since $\abs{y}<\delta \ll \abs{x}$ the monomials of $\Pi^n f$ containing $y$ 
+are negligible and we get the quadrature
+of order $n$ in the radial ($X$-axis) direction. On the other hand, for the square on the diagonal the bilinear terms of 
+a 2D quadrature effectively enhance its order to $2n$ in the radial (diagonal) direction. Due to the radial nature of the integrand,
+we can estimate the quadrature error on the square $S$ by the error on the square $S'$ with the same $r_S$ laying on the axis, then we can 
+neglect $y$ monomials and use the error estimates for the 1D quadrature:
 \[
-  \abs{f-\Pi^n f}(x,y) \le \abs{f-\Pi^n f}(x,y_0), \quad \text{for } \abs{y_0} \le \abs{y},
+  \int_S \abs{f-\Pi^n f} \le \int_{S'}\abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
 \]
-and thus estimate the error by the error $E^n$ of 
- 1D quadrature of the same order on $(r_{S}, r_{S}+\delta)$:
-\[
-  \int_S \abs{f-\Pi^n f} \le \delta E^n((r_{S}, r_{S}+\delta)).
-\]
-The error of 1D Gauss quadrature of an order $n$ ($n$ quadrature points) over an interval $(r,r+\delta)$ is 
+The $E_n$ is the error of 1D Gauss quadrature of the order $n$ ($n$ quadrature points) over the interval $(r,r+\delta)$
 \[
   E_n = \frac{\delta^{2n+1} (n!)^4}{(2n+1)((2n)!)^3} f^{(2n)}(\xi_n) 
 \]
