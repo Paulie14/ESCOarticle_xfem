@@ -127,7 +127,7 @@
 
 \author[adr]{Pavel Exner\corref{cor1}}
 \ead{pavel.exner@tul.cz}
-\ead[url]{https://github.com/Paulie14/xfem\_project}
+%\ead[url]{https://github.com/Paulie14/xfem\_project}
 \cortext[cor1]{Corresponding author.}
 
 \author[adr]{Jan B{\v r}ezina}
@@ -215,19 +215,18 @@ Finally, conclusions and open questions are summarized in Section \ref{sec:summa
 \label{sec:model}
 We consider a steady groundwater 
 flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
-In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable but we add \noteJB{a general source term}, 
-as we do not put stress on a real-world application of the model in this article. \noteJB{not cleat what is 'general source term' and how it is related
-to 'not put stress on real-world application.} The aquifers are then connected only by wells 
+In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable 
+but we add a more general volume source term. This allows us later to prescribe a specific source term and 
+a corresponding solution since we are mainly interested in the analysis of the numerical method rather than
+solving a real-world model in this article. 
+
+The aquifers are then connected only by wells 
 which act as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
 by a Dirichlet boundary condition on the outer boundary of every aquifer.
 
-The model is defined as a complex multi-aquifer system following Gracie and Craig,
-although later, we will deal mostly with one aquifer model.
-We find it proper because one can see the differences we made, our code implements the multi-aquifer model and
-the derived weak form gives an insight on \noteJB{solvability}. \noteJB{Too defensive, sounds like response to reviewer.}
+The model is defined as a complex multi-aquifer system to follow our implementation and to see the differences
+we made in comparison to Gracie and Craig. Although later, we will deal mostly with one aquifer model.
 
-%We describe the wells as interior boundary condition therefore we need to define the computational domain
-%as the aquifer domain with wells cross-sections cut off. 
 Let $\Theta^m\subset \R^2$ be the domain of the $m$-th aquifer, $m=1,\ldots M$.
 The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
 with center $\vc{x}_w$ and radius $\rho_w$.  We further denote 
@@ -366,9 +365,8 @@ and sum up over $m$ which results in
 % \noteJB{Consider sum over aquifers to get square term from communication on wells.
 % Boundary conditions on wells?}
 We say that $u\in V$ is a weak solution if it satisfies \eqref{eqn:weak_form} for all $v\in V_0$. 
-Putting $h^m=\varphi^m$ and $H^m_w=\Phi^m_w$ \noteJB{This substitution (or rather the reverse one) is clear anyway, 
-I would rather emphasize that it is ellipticity on whole test space $V_0$}, we can clearly see the elliptic character of all terms on the 
-left hand side of the weak form \eqref{eqn:weak_form}. The existence and uniqueness of the solution can be shown 
+Putting $h^m=\varphi^m$ and $H^m_w=\Phi^m_w$, we can clearly see the elliptic character of all terms on the 
+left hand side of the weak form \eqref{eqn:weak_form} in the whole test space $V_0$. The existence and uniqueness of the solution can be shown 
 via the Lax-Milgram lemma due to ellipticity and boundedness of the problem.
 
 
@@ -1217,8 +1215,8 @@ we get the optimal value of the enrichment radius
 \[
     R_o \sim \sqrt{\frac{\pi}{6}} h/\norm{u_r - \Pi u_r}_{H^1(\Omega)} \sim 9.2
 \]
-This value roughly matches a breakpoint in the plots of the error as a function of $R$ in
-\fig{fig:radius_conv_2}.
+This value roughly matches a point in the plots of the error as a function of $R$ in
+\fig{fig:radius_conv_2}, from which the error is not decreasing anymore.
 
 
 \begin{figure}[!htb]
