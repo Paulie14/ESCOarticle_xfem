@@ -954,10 +954,27 @@ $O(\omega^2 \rho_w)$. Finally, we have
 \end{equation}
 The solution \eqref{eqn:poisson_solution} is then used to define the boundary function $h_D$.
 
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[geometry of both problems]{\label{fig:geometry} 
+%     \begin{center}         
+      \def\svgwidth{0.325\textwidth}
+      \input{results/geometry.pdf_tex}
+%     \end{center} 
+      }
+  \hspace{5pt}
+  \subfloat[solution of Problem 2]{\label{fig:solution} 
+    \includegraphics[width=0.58\textwidth]{results/solution_final.pdf} }
+  \caption[]
+  {Geometry and solution of the problem.}
+%   \label{fig:adapt_refinement}
+\end{figure}
+
 Let us now define the input data. The domain $\Omega$ is a square $(-100,100)\times(-100,100)$ and the well is characterized by 
-$\vc{x}_w=[5.43,5.43]$,  $\rho_w=0.2$, $H_w=100$ and $\sigma_w=10^5$. The \prob{1} is to find solution $h$ of
+$\vc{x}_w=[5.43,5.43]$,  $\rho_w=0.2$, $H_w=100$ and $\sigma_w=10^5$, see geometry in \fig{fig:geometry}. The \prob{1} is to find solution $h$ of
 \eqref{eqn:poisson_problem} with $U=0.0$ which means that the right hand side of the Poisson equation vanishes.
-The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$ and $\omega=0.03$.
+The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$ and $\omega=0.03$, see \fig{fig:solution}.
 
 
 % \begin{prob}[Laplace equation] \label{def:test_case_1}
@@ -1095,9 +1112,10 @@ depending on the position of the well to the nodes of the mesh. We do not experi
 quadrature and the convergence order is always close to the optimum of 2.0.
 
 While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
-SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
-of refinement levels and using a higher order quadrature. Possible reason could be the boundary condition 
-on the interior boundary. In our formulation (c.f. \eqref{eq:interior_bc}), we allow non-constant flow around the boundary
+SGFEM solution. We believe the adaptive quadrature has nothing to do with this matter after running several tests 
+-- the error is not lower when increasing the number
+of refinement levels or using a~higher order quadrature. Possible reason could be the boundary condition 
+on the interior boundary. In our formulation (c.f. \eqref{eq:interior_bc}), we allow a non-constant flow around the boundary
 of the well, while the enrichment function assumes strictly radially symmetric flow. Using an averaged form of the boundary 
 condition similar to \eqref{eqn:a_average_derivation} both in the formulation and in the implementation may give better results.
 
