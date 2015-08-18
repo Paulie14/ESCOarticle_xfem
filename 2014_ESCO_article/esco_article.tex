@@ -1057,13 +1057,13 @@ At first, we solve the problem by the standard FEM with the adaptive mesh refine
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library).
 The element size $h$ is determined as the size of the smallest elements in the 
 vicinity of the well. We see that the convergence is slow until the size of elements reaches the scale of the
-well. Therefore we divide the graph in two parts with convergence rates 0.56 and 1.27.
+well. Therefore we divide the graph in two parts with convergence orders 0.56 and 1.27.
 We see that a very fine mesh is needed to capture the singularity but the error is still high.
 %On the other hand the adaptive refinement can save us a lot of degrees of freedom and it is simple to deal 
 %with the hanging nodes coming from the adaptive refinement. 
 %Although changing the position of the well means also editing the mesh.
 
-The standard XFEM pushes the error down by three orders of magnitude. It has the optimal convergence rate 2.0 but the system
+The standard XFEM pushes the error down by three orders of magnitude. It has the optimal convergence rate with order 2.0 but the system
 matrix condition number grows rapidly and for $h<2$ the CG solver does not converge even in 10000 iterations. The same
 problem rises up using the ramp function XFEM. It deals better with the error on blending elements but the
 ill-conditioning of the system matrix still corrupts the computation. We discuss the conditioning of the system 
@@ -1071,7 +1071,7 @@ a little bit more in the next subsection \ref{sec:res_conditioning}.
 
 The shifted XFEM and the SGFEM behave nearly the same way and give the best results. We only mention that the SGFEM saves 
 small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
-The convergence rate in $L^2$ norm close to 2.0 is optimal.
+The order of convergence in $L^2$ norm closing to 2.0 is optimal.
 
 \begin{figure}[!htb]
 %   \vspace{0pt}
@@ -1084,18 +1084,17 @@ The convergence rate in $L^2$ norm close to 2.0 is optimal.
 
 The results of the convergence test for \prob{2} are presented in \fig{fig:convergence_sin}.
 For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
-It is labeled 'FEM (ur)' as it the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays optimal convergence rate 2.0.
+It is labeled 'FEM (ur)' since the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays the optimal convergence order 2.0.
 
 In the case of the standard FEM, we see the same behavior as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. All the PU methods have again nearly optimal convergence rate. 
 The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
 
-Regarding the convergence rate (1.8) presented by Gracie and Craig \cite{gracie_modelling_2010}, we obtained similar convergence rate 
-around 1.7-1.8 in our experiments using the original adaptive quadrature. Although, the rate could be worse 
+Regarding the order convergence 1.8 presented by Gracie and Craig \cite{gracie_modelling_2010}, we obtained similar convergence order 
+around 1.7-1.8 in our experiments using the original adaptive quadrature. Although, the order could be lower 
 depending on the position of the well to the nodes of the mesh. We do not experience this behaviour with our adaptive
-quadrature and the convergence rates are always close to the optimum 2.0. \noteJB{Here and in whole paper: I'm not sure that 2.0 is 
-'rate of convergence' I would rather talk about 'order of convergence'. Just check the difference on web.}
+quadrature and the convergence order is always close to the optimum of 2.0.
 
 While decreasing the element size under 1.0, we engage some new kind of error in the shifted XFEM and the 
 SGFEM solution. We denied any problems in the adaptive quadrature after several tests -- increasing the number
@@ -1110,7 +1109,7 @@ condition similar to \eqref{eqn:a_average_derivation} both in the formulation an
   \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
   \caption[Convergence graph \prob{2}]{Convergence graph of different methods on 
   \prob{2} in $L^2$ norm. The 'FEM (ur)'
-  data comes from the problem without well solved by classical FEM and with optimal convergence rate 2.0.}
+  data comes from the problem without well solved by classical FEM and with optimal convergence order 2.0.}
   \label{fig:convergence_sin}
 \end{figure}
 
@@ -1232,7 +1231,7 @@ This value roughly matches a breakpoint in the plots of the error as a function 
 %   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
 %     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
   \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM (ur)'
-  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence rate 2.0.}
+  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence order 2.0.}
   \label{fig:radius_conv_1}
 \end{figure}
 \begin{figure}[!htb]
@@ -1261,9 +1260,9 @@ function, the shifted XFEM, and the SGFEM. The problem setting was inspired by t
 of R.~Gracie and J.R.~Craig but our effort was aimed more in understanding details of the PU methods and their comparison
 rather than in computation of complex problems.
 
-We investigated the issue of a sub-optimal convergence rate reported in \cite{gracie_modelling_2010}. We revealed the problem
+We investigated the issue of a sub-optimal convergence order reported in \cite{gracie_modelling_2010}. We revealed the problem
 and we suggested a better strategy for the adaptive quadrature. The improvement was confirmed by the numerical
-tests in \ref{sec:res_comparison} where we obtained optimal convergence rates in $L^2$ norm.
+tests in \ref{sec:res_comparison} where we obtained the optimal order of convergence in $L^2$ norm.
 
 All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM, we saw that at 
 least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
