@@ -199,7 +199,14 @@ the convergence of pressure head in $L^2$ norm over the aquifer domain and we co
 We also investigate the error of the adaptive integration on the enriched elements and propose a more robust adaptive strategy.
 In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
 
-The implementation\footnote{\url{https://github.com/Paulie14/xfem_project}}  is done in C++ language using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library
+Recently, a work of Ladubec, Gracie and Craig \cite{ladubec_extended_2014} was published, 
+where a~time dependent two phase problem of $\rm{CO}_2$ sequestration is solved. 
+It is focused at the coupling of a Poisson-type equation for pressure, discretized using the XFEM approach, 
+and a saturation equation. A numerical example with a~geometry 
+setting analogous to our single aquifer test case is presented there.
+
+The implementation\footnote{\url{https://github.com/Paulie14/xfem_project}}  is done in C++ language 
+using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library
 not supporting any enrichment techniques at the moment. 
 
 
@@ -1151,7 +1158,7 @@ The number of iterations of the standard FEM is corresponding to the classic res
 %
 We can see clearly the enormous growth of the number of iterations in case of the standard XFEM and the ramp 
 function XFEM. These problems are generally known and are described for example in the overview of the XFEM in
-\cite{fries_xfem_overview_2010}. The usage of enrichment functions can make the approximation space almost linearly 
+\cite{fries_extended/generalized_2010}. The usage of enrichment functions can make the approximation space almost linearly 
 dependent from which the ill-conditioning of the system arises. That is exactly what the SGFEM was developed to deal with.
 
 Summarizing the theory in \cite{babuska_stable_2012}, we can say that the conditioning of the SGFEM system is not worse than that of the 
