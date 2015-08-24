@@ -264,16 +264,6 @@ $\vc{n}$ is the unit outer normal vector on the interior boundary,
 $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
 $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
 %
-\begin{figure}[!htb]
-  %\vspace{-15pt}
-  %TODO: add arrow (flow) to the top
-  \begin{center}         
-    \def\svgwidth{0.5\textwidth}
-    \input{\figpath well_communcation.pdf_tex}
-  \end{center}
-  \caption{Flow balance in the well.}
-  \label{fig:well_flows}
-\end{figure}
 %
 The total flow from the well $w$ to aquitard $m$,
 \[
@@ -441,16 +431,6 @@ It is natural to use the same $s_w$ on each aquifer since it depends only on $r_
 % \end{equation}
 
 %\notePE{DONE: do not forget to replace the notation of the enrichment function}
-\begin{figure}[!htb]
-  %\vspace{-15pt}
-  %TODO: do not forget to replace the notation of the enrichment function
-  \begin{center}         
-    \def\svgwidth{0.5\textwidth}
-    \input{\figpath enrich_func.pdf_tex}
-  \end{center}
-  \caption{The enrichment function.}
-  \label{fig:enrich_func}
-\end{figure}
 
 
 In contrast to global enrichment methods, the XFEM and the SGFEM apply the enrichment functions only locally. 
@@ -626,21 +606,6 @@ the integrand is computed precisely enough on the element with the well inside, 
 neighboring elements (where the integrand has still large derivatives) are placed very sparsely 
 and the integration error is large.
 
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \subfloat[refinement due to Gracie and Craig]{\label{fig:adapt_ref_a} 
-    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_old.pdf} }
-  \hspace{0pt}
-  \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
-    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_new.pdf} }
-  \caption[Adaptive refinement comparison]
-  {Comparison of the original and improved refinement techniques.
-   Black lines denote enriched elements edges, red lines denote adaptive refinement (subregions edges) and the well
-   edge is blue.
-  }
-  \label{fig:adapt_refinement}
-\end{figure}
 In order to overcome this instability of the adaptive quadrature, we have made an asymptotic analysis of the integration error presented 
 in the next section.
 
@@ -961,22 +926,6 @@ $O(\omega^2 \rho_w)$. Finally, we have
 \end{equation}
 The solution \eqref{eqn:poisson_solution} is then used to define the boundary function $h_D$.
 
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \subfloat[geometry of both problems]{\label{fig:geometry} 
-%     \begin{center}         
-      \def\svgwidth{0.325\textwidth}
-      \input{results/geometry.pdf_tex}
-%     \end{center} 
-      }
-  \hspace{5pt}
-  \subfloat[solution of Problem 2]{\label{fig:solution} 
-    \includegraphics[width=0.58\textwidth]{results/solution_final.pdf} }
-  \caption[]
-  {Geometry and solution of the problem.}
-%   \label{fig:adapt_refinement}
-\end{figure}
 
 Let us now define the input data. The domain $\Omega$ is a square $(-100,100)\times(-100,100)$ and the well is characterized by 
 $\vc{x}_w=[5.43,5.43]$,  $\rho_w=0.2$, $H_w=100$ and $\sigma_w=10^5$, see geometry in \fig{fig:geometry}. The \prob{1} is to find solution $h$ of
@@ -1095,14 +1044,6 @@ The shifted XFEM and the SGFEM behave nearly the same way and give the best resu
 small amount of degrees of freedom on blending elements in comparison with the shifted and the ramp function XFEM.
 The order of convergence in $L^2$ norm closing to 2.0 is optimal.
 
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=\textwidth]{results/convergence.pdf}
-  \caption[Convergence graph \prob{1}]{Convergence of the $L^2$ norm of the error for different methods and Problem 1.}
-  \label{fig:convergence}
-\end{figure}
-
 
 The results of the convergence test for \prob{2} are presented in \fig{fig:convergence_sin}.
 For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
@@ -1126,15 +1067,6 @@ on the interior boundary. In our formulation (c.f. \eqref{eq:interior_bc}), we a
 of the well, while the enrichment function assumes strictly radially symmetric flow. Using an averaged form of the boundary 
 condition similar to \eqref{eqn:a_average_derivation} both in the formulation and in the implementation may give better results.
 
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
-  \caption[Convergence graph \prob{2}]{Convergence graph of different methods on 
-  \prob{2} in $L^2$ norm. The 'FEM (ur)'
-  data comes from the problem without well solved by classical FEM and with optimal convergence order 2.0.}
-  \label{fig:convergence_sin}
-\end{figure}
 
 \subsection{Conditioning of the system matrix} \label{sec:res_conditioning}
 We shall write here a brief note about the conditioning of the system.
@@ -1147,14 +1079,6 @@ Let us use the data from the numerical tests above in \ref{sec:res_comparison}.
 We observe the iteration count needed by CG solver in \fig{fig:iterations}.
 The number of iterations of the standard FEM is corresponding to the classic results as mentioned in the paragraph above. 
 
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=\textwidth]{results/iterations.pdf}
-  \caption[Iterations graph]{Graph of dependence of the CG iteration count on the 
-  number of degrees of freedom. Measured on both problems with no serious distinction observed.}
-  \label{fig:iterations}
-\end{figure}
 %
 We can see clearly the enormous growth of the number of iterations in case of the standard XFEM and the ramp 
 function XFEM. These problems are generally known and are described for example in the overview of the XFEM in
@@ -1172,42 +1096,7 @@ investigation.
 The aim of this section is twofold: we first validate the estimate \eqref{eq:grad_estimate_on_square}, secondly we study 
 the dependence of the error in $L^2$ norm on the enrichment radius numerically and compare it with \eqref{eq:singular_approx_error}.
 %
-\begin{table}
-\begin{center}
-\begin{tabular}{crr}
-\toprule
-% \multicolumn{2}{c}{Item} \\
-% \cmidrule(r){1-2}
-$h$    & min & max \\
-\midrule
-$\rfrac{10}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
-$\rfrac{10}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
-$\rfrac{10}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
-$\rfrac{10}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
-$\rfrac{10}{128}$ & 1.00 (0.756)& 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
-\bottomrule
-\end{tabular}
-\caption{Minimal and maximal values of the ratio \eqref{eqn:log_h1_estimate_ratio} for sequence of refined 
-meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate_on_square}.}
-\label{tab:log_h1_estimate}
-\end{center}
-\end{table}
 %
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
-    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
-  \hspace{0pt}
-  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
-    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
-  \caption[Log error estimate.]
-  {
-  Results of the numerical validation of the estimate \eqref{eq:grad_estimate_on_square}. The elements are left out 
-  in the center where the $\log$ singularity is situated and where the function is cut off.
-  }
-  \label{fig:log_estimate}
-\end{figure}
 %
 Validity of the estimate \eqref{eq:grad_estimate_on_square} is verified by a calculation of the ratio
 \begin{equation} \label{eqn:log_h1_estimate_ratio}
@@ -1242,34 +1131,6 @@ we get the optimal value of the enrichment radius
 \]
 This value roughly matches a point in the plots of the error as a function of $R$ in
 \fig{fig:radius_conv_2}, from which the error is not decreasing anymore.
-
-
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=0.9\textwidth]{results/radius_conv_1.pdf}
-%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
-%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
-%   \hspace{0pt}
-%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
-%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM (ur)'
-  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence order 2.0.}
-  \label{fig:radius_conv_1}
-\end{figure}
-\begin{figure}[!htb]
-%   \vspace{0pt}
-  \centering    
-  \includegraphics[width=0.9\textwidth]{results/radius_conv_2.pdf}
-%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
-%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
-%   \hspace{0pt}
-%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
-%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
-  \caption[Enrichment radius choice.]{Dependence of the error on the enrichment radius for different
-  element sizes.}
-  \label{fig:radius_conv_2}
-\end{figure}
 
 
 
@@ -1334,6 +1195,166 @@ CZ.1.05/2.1.00/01.0005.
  %\bibliographystyle{elsarticle-num-names} 
  \bibliographystyle{elsarticle-num} 
  \bibliography{citace.bib}
+ 
+ 
+ \newpage
+ \begin{figure}[!htb]
+  %\vspace{-15pt}
+  %TODO: add arrow (flow) to the top
+  \begin{center}         
+    \def\svgwidth{0.5\textwidth}
+    \input{\figpath well_communcation.pdf_tex}
+  \end{center}
+  \caption{Flow balance in the well.}
+  \label{fig:well_flows}
+\end{figure}
+
+
+\begin{figure}[!htb]
+  %\vspace{-15pt}
+  %TODO: do not forget to replace the notation of the enrichment function
+  \begin{center}         
+    \def\svgwidth{0.5\textwidth}
+    \input{\figpath enrich_func.pdf_tex}
+  \end{center}
+  \caption{The enrichment function.}
+  \label{fig:enrich_func}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[refinement due to Gracie and Craig]{\label{fig:adapt_ref_a} 
+    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_old.pdf} }
+  \hspace{0pt}
+  \subfloat[improved refinement]{\label{fig:adapt_ref_b} 
+    \includegraphics[width=0.45\textwidth]{results/adaptive_refinement_3_new.pdf} }
+  \caption[Adaptive refinement comparison]
+  {Comparison of the original and improved refinement techniques.
+   Black lines denote enriched elements edges, red lines denote adaptive refinement (subregions edges) and the well
+   edge is blue.
+  }
+  \label{fig:adapt_refinement}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[geometry of both problems]{\label{fig:geometry} 
+%     \begin{center}         
+      \def\svgwidth{0.325\textwidth}
+      \input{results/geometry.pdf_tex}
+%     \end{center} 
+      }
+  \hspace{5pt}
+  \subfloat[solution of Problem 2]{\label{fig:solution} 
+    \includegraphics[width=0.58\textwidth]{results/solution_final.pdf} }
+  \caption[]
+  {Geometry and solution of the problem.}
+%   \label{fig:adapt_refinement}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/convergence.pdf}
+  \caption[Convergence graph \prob{1}]{Convergence of the $L^2$ norm of the error for different methods and Problem 1.}
+  \label{fig:convergence}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/convergence_sin.pdf}
+  \caption[Convergence graph \prob{2}]{Convergence graph of different methods on 
+  \prob{2} in $L^2$ norm. The 'FEM (ur)'
+  data comes from the problem without well solved by classical FEM and with optimal convergence order 2.0.}
+  \label{fig:convergence_sin}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=\textwidth]{results/iterations.pdf}
+  \caption[Iterations graph]{Graph of dependence of the CG iteration count on the 
+  number of degrees of freedom. Measured on both problems with no serious distinction observed.}
+  \label{fig:iterations}
+\end{figure}
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{crr}
+\toprule
+% \multicolumn{2}{c}{Item} \\
+% \cmidrule(r){1-2}
+$h$    & min & max \\
+\midrule
+$\rfrac{10}{8}$   & 0.97 & 7.1  \\% & 1.38 & 10.0  \\ %& 0.7 & 5.3   \\
+$\rfrac{10}{16}$  & 0.99 & 16.4  \\% & 1.40 & 23.1  \\ %& 1.0 & 17.4  \\
+$\rfrac{10}{32}$  & 1.00 & 34.4  \\% & 1.41 & 48.7  \\ %& 1.5 & 51.8  \\
+$\rfrac{10}{64}$  & 1.00 & 70.3  \\% & 1.41 & 99.5  \\ %& 2.1 & 150   \\
+$\rfrac{10}{128}$ & 1.00 (0.756)& 142.0   \\% & 1.41 & 201   \\ %& 3.0 & 427   \\
+\bottomrule
+\end{tabular}
+\caption{Minimal and maximal values of the ratio \eqref{eqn:log_h1_estimate_ratio} for sequence of refined 
+meshes with element size $h$. Validation of the estimate \eqref{eq:grad_estimate_on_square}.}
+\label{tab:log_h1_estimate}
+\end{center}
+\end{table}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \subfloat[$\|\log \vc x - u_h\|^2_{H^1(T)}$ in log scale]{\label{fig:log_estimate_a} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_h1.pdf} }
+  \hspace{0pt}
+  \subfloat[the ratio \eqref{eqn:log_h1_estimate_ratio}]{\label{fig:log_estimate_b} 
+    \includegraphics[width=0.47\textwidth]{results/log_estimate_ratio.pdf} }
+  \caption[Log error estimate.]
+  {
+  Results of the numerical validation of the estimate \eqref{eq:grad_estimate_on_square}. The elements are left out 
+  in the center where the $\log$ singularity is situated and where the function is cut off.
+  }
+  \label{fig:log_estimate}
+\end{figure}
+
+
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=0.9\textwidth]{results/radius_conv_1.pdf}
+%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
+%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
+%   \hspace{0pt}
+%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
+%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
+  \caption[Enrichment radius choice.]{Convergence graph for different enrichment radii. The 'FEM (ur)'
+  data comes from the problem without well solved by the standard FEM -- it has the optimal convergence order 2.0.}
+  \label{fig:radius_conv_1}
+\end{figure}
+\begin{figure}[!htb]
+%   \vspace{0pt}
+  \centering    
+  \includegraphics[width=0.9\textwidth]{results/radius_conv_2.pdf}
+%   \subfloat[rozdìlený element s vrtem]{\label{fig:adapt_ref_a} 
+%     \includegraphics[width=70mm]{\figpath adaptive_ref.pdf} }
+%   \hspace{0pt}
+%   \subfloat[detail hranice vrtu]{\label{fig:adapt_ref_b} 
+%     \includegraphics[width=72mm]{\figpath adaptive_ref_detail.pdf} }
+  \caption[Enrichment radius choice.]{Dependence of the error on the enrichment radius for different
+  element sizes.}
+  \label{fig:radius_conv_2}
+\end{figure}
+
+
+
 \end{document}
 
 
