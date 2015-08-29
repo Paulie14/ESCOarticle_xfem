@@ -147,9 +147,9 @@
 % developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
-In order to improve the approximation of a singular behaviour near the wells, the standard finite element space is enriched with
-an analytical solution to a Laplace problem with a point source on the whole $\R^2$ space. The optimal order of 
-convergence of PUM in terms of $L^2$ norm of the error is demonstrated. 
+In order to improve the approximation of a singular behaviour of the pressure near the wells, the standard finite element space is enriched with
+the cut-off fundamental solution to the Laplace problem. The optimal order of 
+convergence in terms of $L^2$ norm of the error is demonstrated for some of the compared methods.
 The error of adaptive integration is analysed and a new adaptive strategy is proposed. The influence of the choice
 of the enriched domain is investigated and its impact on the error is demonstrated numerically.
 
@@ -184,31 +184,32 @@ Singular solution
 Large scale mathematical models of the groundwater flow have to deal with the presence of small scale features like wells 
 and fractures that have a significant impact on the whole solution. The standard finite element method can 
 capture these features using $h$ and/or $p$ adaptivity techniques 
-which is payed of by a larger number of degrees of freedom. One possible alternative is the usage of 
+which is payed of by significantly larger number of degrees of freedom. One possible alternative is the usage of 
 a suitable partition of unity method (PUM) also known as an extended finite element method (XFEM). The idea is to 
 augment the basis $\{\phi_n\}$ of the discrete finite element space with the functions $u_s \phi_n$, where $u_s$ is 
 an a priori known solution in the vicinity of the small scale feature. 
 
 In this work, we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
 cause singularities in the solution. We follow the articles \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
-which are, up to our best knowledge, the first work using the XFEM on the well problems.
-Our primary aim is to compare different PU methods on a similar model. In particular, we use the XFEM 
+which are, up to our best knowledge, the first works using the XFEM on the well problems. 
+Recently, a work of Ladubec, Gracie and Craig \cite{ladubec_extended_2014} was published, 
+where a~time dependent two phase problem of $\rm{CO}_2$ sequestration is solved with usage of XFEM approach. 
+A numerical example with a~geometry setting analogous to our single aquifer test case is presented there.
+
+Our primary aim is to compare different partition of unity methods on a similar model. In particular, we use the XFEM 
 and its corrected version (including ramp function and shift), by Fries e.g. in~\cite{fries_corrected_2008}, 
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
-the convergence of pressure head in $L^2$ norm over the aquifer domain and we compare the used methods. 
-We also investigate the error of the adaptive integration on the enriched elements and propose a more robust adaptive strategy.
+the convergence of the pressure head in $L^2$ norm over the aquifer domain and we compare the convergence rate of used methods. 
+In contrast to the classical finite element method, the XFEM have to employ an adaptive integration scheme 
+for asembly of the linear system on the enriched elements
+in order to keep quadrature error small enough.
+We derive an estimate for the quadrature error and propose a robust adaptive strategy based on the apriori knowledge 
+of the character of the integrand.
 In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
 
-Recently, a work of Ladubec, Gracie and Craig \cite{ladubec_extended_2014} was published, 
-where a~time dependent two phase problem of $\rm{CO}_2$ sequestration is solved. 
-It is focused at the coupling of a Poisson-type equation for pressure, discretized using the XFEM approach, 
-and a saturation equation. A numerical example with a~geometry 
-setting analogous to our single aquifer test case is presented there.
-
-The implementation\footnote{\url{https://github.com/Paulie14/xfem_project}}  is done in C++ language 
+The implementation\footnote{\url{https://github.com/Paulie14/xfem_project}} of the compared methods is done in C++ language 
 using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library
 not supporting any enrichment techniques at the moment. 
-
 
 The paper is organized as follows. The model and its weak formulation are introduced in Section \ref{sec:model}.
 In Section \ref{sec:discretization}, the discretization using different partition of unity methods is presented in detail.
@@ -223,16 +224,15 @@ Finally, conclusions and open questions are summarized in Section \ref{sec:summa
 We consider a steady groundwater 
 flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
 In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable 
-but we add a more general volume source term. This allows us later to prescribe a specific source term and 
-a corresponding solution since we are mainly interested in the analysis of the numerical method rather than
-solving a real-world model in this article. 
+however we add an artificial volume source term. This allows us to better study impact of 
+the prescribed source on the solution which is better suited to the numerical experimants we are focused on. 
 
-The aquifers are then connected only by wells 
-which act as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
+The aquifers are then connected only through the wells 
+which acts as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
 by a Dirichlet boundary condition on the outer boundary of every aquifer.
 
 The model is defined as a complex multi-aquifer system to follow our implementation and to see the differences
-we made in comparison to Gracie and Craig. Although later, we will deal mostly with one aquifer model.
+we made in comparison to Gracie and Craig. Although later, we consider mostly just single aquifer.
 
 Let $\Theta^m\subset \R^2$ be the domain of the $m$-th aquifer, $m=1,\ldots M$.
 The well $w\in\mathcal{W}=\{1,\ldots,W\}$ is represented by an infinite vertical cylinder $B_w$
@@ -257,10 +257,15 @@ h^m|_{\Gamma^m_D} &= h^m_D, \\
 \label{eq:interior_bc}
 \left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &= \sigma^m_w(h^m - H^m_w) \qquad \forall w\in\mathcal{W},
 \end{align}
+
+\noteJB{Na vrtu by mel byt predepsany konstantni tok dany prumerem tlaku, tj.pomoci $Q_w^m$. 
+Pak se nam objevi prumery i v nekterych dalsich rovnicich. Jde, jde o to s jakou implementaci to bylo pocitane. To bych tam nechal bez ohledu na to ze
+spravne je nektera z moznych formulaci s prumerama.
+}
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
 $h^m\, [\textrm{m}]$ is the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ stands for the source density,
-$\vc{n}$ is the unit outer normal vector on the interior boundary,
+$\vc{n}$ is the unit outer normal vector of the interior boundary (i.e. pointing to the center of wells),
 $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
 $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
 %
@@ -288,6 +293,7 @@ satisfies a simple balance equation on the well
 \end{align}
 where $Q^m_{w,in}$ is the flow from the upper aquifer $m+1$, $Q^m_{w,out}$ is the flow to the lower aquifer $m-1$, and 
 $c^m_w\, [\textrm{m}^2\textrm{s}^{-1}]$ is the permeability of the well $w$ in the segment below the aquifer $m$.
+
 %
 In \eqref{eq:well_flow}, we assume Darcy flow in the well for the simplicity. The bottom of the well $w$ is impermeable,
 we set $c^1_w=0$, $H^0_w=H^1_w$ there, and we prescribe given pressure $H^{M+1}_w$ at the top.
@@ -600,21 +606,19 @@ In order to compute the entries of the system matrix, %\eqref{eqn:s_entry} and \
 we need to integrate
 the expressions containing the enrichment functions. These of course can be non-polynomial, like they are 
 in our case. The standard quadrature rules are not appropriate any more, for they are constructed to integrate 
-precisely polynomials up to a given degree. The higher requirements on the integration precision
+precisely only polynomials up to a given degree. The higher requirements on the integration precision
 are the price for using enrichment functions and a coarse mesh.
 
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of the well (the singularity),
-  \item the well edge geometry, since the elements of the triangulation do not take the well into account.
+  \item the well edge geometry, since we have to integrate only outsid of the well.
 \end{itemize}
 
-Since the integrated functions can be very large near the singularity, even small changes in the domain shape 
-can lead to large errors in the integration.
-One of the approaches to improve integration is an adaptive quadrature. This way, the element is divided into 
+One of the approaches to deal with these requirements is an adaptive quadrature. The element is divided into 
 subregions (squares on the reference element) only to place more quadrature points inside but not to bring 
-any more degrees of freedom into the system. We will discuss the adaptivity rules, suggest improvement and 
-compare our solution with the original one (developed in \cite{gracie_modelling_2010}) in the following subsection. 
+any more degrees of freedom into the system. In this section we will discuss the adaptivity rules, 
+suggest an improvement and compare our strategy to the original one (developed in \cite{gracie_modelling_2010}).
 
 \subsection{Instability of adaptive quadrature}
 \label{sec:refinement_element}
@@ -642,7 +646,7 @@ and the integration error is large.
   \label{fig:adapt_refinement}
 \end{figure}
 In order to overcome this instability of the adaptive quadrature, we have made an asymptotic analysis of the integration error presented 
-in the next section.
+in the next subsection.
 
 \subsection{Estimate of quadrature error}
 
@@ -1068,13 +1072,13 @@ The \prob{2} is to find solution $h$ of \eqref{eqn:poisson_problem} with $U=8.0$
 %
 
 \subsection{Comparison of PU methods} \label{sec:res_comparison}
-In this section, we present the convergence results. We solve the \prob{1} and the \prob{2} 
+In this section, we present the convergence results. We solve \prob{1} and \prob{2} 
 defined in section \ref{sec:test_cases} with the methods described in \ref{sec:pum_methods} and compare them.
 The linear algebraic system is always solved by conjugate gradients method (CG) with Jacobi preconditioning 
 and tolerance $10^{-9}$. The error of the approximation is computed in $L^2$ norm and so the convergence is
 considered in this norm.
 
-Let us start with the \prob{1} and look at the convergence graph in \fig{fig:convergence}.
+Let us start with \prob{1} and look at the convergence graph in \fig{fig:convergence}.
 At first, we solve the problem by the standard FEM with the adaptive mesh refinement where 30\% of the elements
 with the highest error estimate are refined (we use the Kelly's error estimator built in the Deal II library).
 The element size $h$ is determined as the size of the smallest elements in the 
@@ -1220,7 +1224,7 @@ Moreover, the minimum value is attained on the majority of
 elements, see \fig{fig:log_estimate_b}. Both parts of \fig{fig:log_estimate} demonstrate also higher convergence rate on diagonal elements
 where the nonlinear term of the bilinear finite elements allows better approximation of the saddle shaped logarithmic surface.
 
-Next, we study the influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve the \prob{2} with parameter $U=3$
+Next, we study the influence of the enrichment radius $R$ on the global $L^2$ error. To this end, we solve \prob{2} with parameter $U=3$
 using the shifted XFEM for different mesh steps and different values of $R$.
 Let us remind that $O(h^p)$ convergence of the solution in the $H^1$ norm translates to the $O(h^{p+1})$ convergence of the solution in the $L^2$ norm 
 for the linear elliptic problems (c.f. \cite[Theorem 19.2]{ciarlet_basic_1991}). According to the estimates \eqref{eq:std_err_estimate}
@@ -1288,7 +1292,7 @@ and we suggested a better strategy for the adaptive quadrature. The improvement 
 tests in \ref{sec:res_comparison} where we obtained the optimal order of convergence in $L^2$ norm.
 
 All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM, we saw that at 
-least the ramp function must be used in order to obtain optimal convergence. The shifted XFEM and 
+least the ramp function must be used in order to obtain optimal convergence. \noteJB{Ale vyse piseme, ze XFEM konverguje stejne dobre i bez rampy.} The shifted XFEM and 
 the SGFEM converged optimally and did not show any difference in the solution precision.
 
 The ill-conditioning of the system matrix was encountered when using the standard XFEM and the ramp function XFEM.
