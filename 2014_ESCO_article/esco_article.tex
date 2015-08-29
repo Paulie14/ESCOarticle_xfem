@@ -184,7 +184,7 @@ Singular solution
 Large scale mathematical models of the groundwater flow have to deal with the presence of small scale features like wells 
 and fractures that have a significant impact on the whole solution. The standard finite element method can 
 capture these features using $h$ and/or $p$ adaptivity techniques 
-which is payed of by a larger number of degrees of freedom. One possible alternative is the usage of 
+which is payed of by a~larger number of degrees of freedom. One possible alternative is the usage of 
 a suitable partition of unity method (PUM) also known as an extended finite element method (XFEM). The idea is to 
 augment the basis $\{\phi_n\}$ of the discrete finite element space with the functions $u_s \phi_n$, where $u_s$ is 
 an a priori known solution in the vicinity of the small scale feature. 
@@ -205,7 +205,7 @@ It is focused at the coupling of a Poisson-type equation for pressure, discretiz
 and a saturation equation. A numerical example with a~geometry 
 setting analogous to our single aquifer test case is presented there.
 
-The implementation\footnote{\url{https://github.com/Paulie14/xfem_project}}  is done in C++ language 
+Our implementation\footnote{\url{https://github.com/Paulie14/xfem_project}}  is done in C++ language 
 using the Deal II~\cite{bangerth_deal.ii_2007}, the finite element library
 not supporting any enrichment techniques at the moment. 
 
@@ -497,8 +497,11 @@ of freedom. The enrichment functions must be then zero at the nodes which is sat
 The property of the shifted formulation enables us to prescribe Dirichlet boundary condition such that
 $a_\alpha = h_D(\bx_\alpha)$.
 
-For the purpose of this article, let's call the two methods described above the \textbf{ramp function XFEM}  
-and the \textbf{shifted XFEM}, as we shall reference to them later.
+It has been also shown in many cases that both ramp function and shifting are needed to obtain optimal convergence rate.
+In \cite{ventura_fast_2009}, authors analyse a more general form of a ramp function (calling the method a weighted XFEM)
+and compare different alternatives of shifting on crack and dislocation problems. The methods described above can be then seen
+as special types of the weighted XFEM. Let us call them the \textbf{ramp function XFEM}  
+and the \textbf{shifted XFEM} for the purpose of this article, as we shall reference to them later.
 
 \subsubsection{SGFEM}
 Finally, we present the \textbf{SGFEM}, according to \cite{babuska_stable_2012,gupta_stable_2013}. 
@@ -629,7 +632,7 @@ are negligible and we get the quadrature
 of order $n$ in the radial ($X$-axis) direction. On the other hand for the square on the diagonal, the bilinear terms of 
 a 2D quadrature effectively enhance its order to $2n$ in the radial (diagonal) direction. Due to the radial nature of the integrand,
 we can estimate the quadrature error on the square $S$ by the error on the square $S'$ with the same $r_S$ laying on the $X$-axis, then we can 
-neglect $y$ monomials and use the error estimates for the 1D quadrature:
+neglect $y$~monomials and use the error estimates for the 1D quadrature:
 \[
   \int_S \abs{f-\Pi^n f} \dd\bx \le \int_{S'}\abs{f-\Pi^n f} \dd\bx \le \delta E^n((r_{S}, r_{S}+\delta)).
 \]
@@ -820,7 +823,7 @@ as the results of the numerical tests will show in section \ref{sec:results}.
 %JB%
 \section{Estimate of the enrichment radius} \label{sec:enrichemnt_radius}
 In this section, we shall study the dependence of the solution error on the enrichment radius $R$. First part is devoted to 
-theoretical analysis the later part presents numerical results.
+theoretical analysis, the later part presents numerical results.
 Let us consider a general elliptic problem to find $u\in V$ satisfying
 \[
    a(u, \phi) = \langle f, \phi \rangle, \text{ for } \phi \in V,
@@ -896,9 +899,9 @@ as well. In order to measure convergence, it is desirable to have an analytic so
 Suppose we have the following problem
 \begin{equation} \label{eqn:poisson_problem}
 \left.\begin{aligned}
-    -T \Delta h &= TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega \\
-    h|_{\Gamma_D} &= h_D\\
-    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &= \sigma_w\left(h - H_w\right) \\
+    -T \Delta h &= TU\omega^2\sin(\omega x) \qquad \textrm{on } \Omega, \\
+    h|_{\Gamma_D} &= h_D,\\
+    \left(-T\nabla h\cdot\vc{n}\right)|_{\partial B_w} &= \sigma_w\left(h - H_w\right), \\
     \end{aligned}
     \;\right\}
 \end{equation}
@@ -909,7 +912,7 @@ $H_w = H^1_w = H^2_w$). We further set $c^1_w=0$ and $T=1.0$.
 
 We will look for the solution $h$ of \eqref{eqn:poisson_problem} in the form
 \begin{equation} \label{eqn:poisson_solution}
-  h=a\log\left(\frac{r_w}{D}\right)+U\sin(\omega x)
+  h=a\log\left(\frac{r_w}{D}\right)+U\sin(\omega x),
 \end{equation}
 which solves the Poisson equation in \eqref{eqn:poisson_problem}. We also set $h_d=h$.
 To obtain $a$, we use the average pressure head along the well edge in the third equation 
