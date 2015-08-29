@@ -39,7 +39,6 @@
     issn = {1097-0207},
     url = {http://onlinelibrary.wiley.com/doi/10.1002/nme.4737/abstract},
     doi = {10.1002/nme.4737},
-    abstract = {A two-phase flow eXtended Finite Element Method (XFEM) model is presented to analyse the injection and sequestration of carbon dioxide (CO2) in deep saline aquifers. XFEM is introduced to accurately approximate near-injection well pressure behaviour with elements significantly larger than the injection well diameter. We present a vertically averaged multiphase flow model that combines XFEM to approximate the pressure field, with a Streamline Upwind/Finite Element Method/Finite Difference Method (SU-FEM-FDM) to approximate the distribution of CO2 in the aquifer. Near-well enrichment functions are presented along with the solution procedure for the coupled problem. Two examples are presented: in the first, CO2 injection into a perfectly horizontal aquifer is modelled with both XFEM and FEM-based methods. The results suggest that XFEM is able to provide low relative errors in the pressure near the well at a reduced computational cost compared with FEM. The impact and selection of the stabilization coefficient of the SU-FEM-FDM is also discussed. In the second example, the XFEM and SU-FEM-FDM model is applied to a more realistic problem of an inclined aquifer to demonstrate the ability of the model to capture the buoyancy-driven migration of CO2 in a deep saline aquifer. Copyright © 2014 John Wiley \& Sons, Ltd.},
     language = {en},
     number = {3-4},
     urldate = {2015-08-19},
@@ -77,7 +76,6 @@
     shorttitle = {The extended/generalized finite element method},
     url = {http://onlinelibrary.wiley.com/doi/10.1002/nme.2914/abstract},
     doi = {10.1002/nme.2914},
-    abstract = {An overview of the extended/generalized finite element method (GEFM/XFEM) with emphasis on methodological issues is presented. This method enables the accurate approximation of solutions that involve jumps, kinks, singularities, and other locally non-smooth features within elements. This is achieved by enriching the polynomial approximation space of the classical finite element method. The GEFM/XFEM has shown its potential in a variety of applications that involve non-smooth solutions near interfaces: Among them are the simulation of cracks, shear bands, dislocations, solidification, and multi-field problems. Copyright © 2010 John Wiley \& Sons, Ltd.},
     language = {en},
     number = {3},
     urldate = {2015-08-19},
@@ -87,6 +85,24 @@
     year = {2010},
     keywords = {extended finite element method, generalized finite element method, GFEM, partition of unity method, PUM, review, XFEM},
     pages = {253--304},
+}
+
+@article{ventura_fast_2009,
+        title = {Fast integration and weight function blending in the extended finite element method},
+        volume = {77},
+        copyright = {Copyright © 2008 John Wiley \& Sons, Ltd.},
+        issn = {1097-0207},
+        url = {http://onlinelibrary.wiley.com/doi/10.1002/nme.2387/abstract},
+        doi = {10.1002/nme.2387},
+        language = {en},
+        number = {1},
+        urldate = {2015-03-25},
+        journal = {International Journal for Numerical Methods in Engineering},
+        author = {Ventura, Giulio and Gracie, Robert and Belytschko, Ted},
+        month = jan,
+        year = {2009},
+        keywords = {blending, enriched finite elements, numerical integration, partition of unity},
+        pages = {1--29}
 }
 
 @article{babuska_stable_2012,
@@ -121,26 +137,6 @@
         keywords = {Blending elements, Condition number, Enrichment, Extended {FEM}, Fracture, Generalized {FEM}},
         pages = {23--39},
 }   
-
-@article{ventura_fast_2009,
-    title = {Fast integration and weight function blending in the extended finite element method},
-    volume = {77},
-    copyright = {Copyright © 2008 John Wiley \& Sons, Ltd.},
-    issn = {1097-0207},
-    url = {http://onlinelibrary.wiley.com/doi/10.1002/nme.2387/abstract},
-    doi = {10.1002/nme.2387},
-    abstract = {Two issues in the extended finite element method (XFEM) are addressed: efficient numerical integration of the weak form when the enrichment function is self-equilibrating and blending of the enrichment. The integration is based on transforming the domain integrals in the weak form into equivalent contour integrals. It is shown that the contour form is computationally more efficient than the domain form, especially when the enrichment function is singular and/or discontinuous. A method for alleviating the errors in the blending elements is also studied. In this method, the enrichment function is pre-multiplied by a smooth weight function with compact support to allow for a completely smooth transition between enriched and unenriched subdomains. A method for blending step function enrichment with singular enrichments is described. It is also shown that if the enrichment is not shifted properly, the weighted enrichment is equivalent to the standard enrichment. An edge dislocation and a crack problem are used to benchmark the technique; the influence of the variables that parameterize the weight function is analyzed. The resulting method shows both improved accuracy and optimum convergence rates and is easily implemented into existing XFEM codes. Copyright © 2008 John Wiley \& Sons, Ltd.},
-    language = {en},
-    number = {1},
-    urldate = {2015-03-25},
-    journal = {International Journal for Numerical Methods in Engineering},
-    author = {Ventura, Giulio and Gracie, Robert and Belytschko, Ted},
-    month = jan,
-    year = {2009},
-    keywords = {blending, enriched finite elements, numerical integration, partition of unity},
-    pages = {1--29},
-    file = {Full Text PDF:/home/pavel/.mozilla/firefox/jrkbxnp0.default/zotero/storage/IBCPUCFP/Ventura et al. - 2009 - Fast integration and weight function blending in t.pdf:application/pdf;Snapshot:/home/pavel/.mozilla/firefox/jrkbxnp0.default/zotero/storage/UNRRIU9B/abstract.html:text/html}
-}
 
 
 @BOOK{rek1,
