@@ -147,10 +147,10 @@
 % developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
-In order to improve the approximation of a singular behaviour of the pressure near the wells, the standard finite element space is enriched with
+In order to improve the approximation of a singular behavior of the pressure near the wells, the standard finite element space is enriched with
 the cut-off fundamental solution to the Laplace problem. The optimal order of 
 convergence in terms of $L^2$ norm of the error is demonstrated for some of the compared methods.
-The error of adaptive integration is analysed and a new adaptive strategy is proposed. The influence of the choice
+The error of adaptive integration is analyzed and a new adaptive strategy is proposed. The influence of the choice
 of the enriched domain is investigated and its impact on the error is demonstrated numerically.
 
 \end{abstract}
@@ -201,9 +201,9 @@ and its corrected version (including ramp function and shift), by Fries e.g. in~
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
 the convergence of the pressure head in $L^2$ norm over the aquifer domain and we compare the convergence rate of used methods. 
 In contrast to the classical finite element method, the XFEM have to employ an adaptive integration scheme 
-for asembly of the linear system on the enriched elements
+for assembly of the linear system on the enriched elements
 in order to keep quadrature error small enough.
-We derive an estimate for the quadrature error and propose a robust adaptive strategy based on the apriori knowledge 
+We derive an estimate for the quadrature error and propose a robust adaptive strategy based on the a priori knowledge 
 of the character of the integrand.
 In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
 
@@ -225,7 +225,7 @@ We consider a steady groundwater
 flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
 In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable 
 however we add an artificial volume source term. This allows us to better study impact of 
-the prescribed source on the solution which is better suited to the numerical experimants we are focused on. 
+the prescribed source on the solution which is better suited to the numerical experiments we are focused on. 
 
 The aquifers are then connected only through the wells 
 which acts as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
@@ -524,7 +524,7 @@ The property of the shifted formulation enables us to prescribe Dirichlet bounda
 $a_\alpha = h_D(\bx_\alpha)$.
 
 It has been also shown in many cases that both ramp function and shifting are needed to obtain optimal convergence rate.
-In \cite{ventura_fast_2009}, authors analyse a more general form of a ramp function (calling the method a weighted XFEM)
+In \cite{ventura_fast_2009}, authors analyze a more general form of a ramp function (calling the method a weighted XFEM)
 and compare different alternatives of shifting on crack and dislocation problems. The methods described above can be then seen
 as special types of the weighted XFEM. Let us call them the \textbf{ramp function XFEM}  
 and the \textbf{shifted XFEM} for the purpose of this article, as we shall reference to them later.
@@ -615,7 +615,7 @@ are the price for using enrichment functions and a coarse mesh.
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of the well (the singularity),
-  \item the well edge geometry, since we have to integrate only outsid of the well.
+  \item the well edge geometry, since we have to integrate only outside of the well.
 \end{itemize}
 
 One of the approaches to deal with these requirements is an adaptive quadrature. The element is divided into 
