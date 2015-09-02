@@ -682,12 +682,12 @@ for some $\xi_n \in (r, r+\delta)$, see e.g. \cite{kahaner_numerical_1989}.
 The expression $f^{(2n)}$ denotes a derivative of order $2n$ of a function $f$.
 Regarding the integrand \eqref{eq:term-of-interest}, we have 
 \[
-  \abs{f^{(2n)}(r)} = (2n+2)! r^{-(2n+2)}.
+  \abs{f^{(2n)}(r)} = (2n+1)! r^{-(2n+2)}.
 \]
 Finally, we get an estimate for the quadrature error on a single subregion:
 \[
     \int_S \abs{f-\Pi^n f}  \dd\bx \le  \alpha_n \left( \frac{\delta}{r_{S}} \right)^{2n+2}, 
-  \qquad \alpha_n = (2n+2)\left( \frac{(n!)^2}{(2n)!} \right)^2.
+  \qquad \alpha_n = \left( \frac{(n!)^2}{(2n)!} \right)^2.
 \]
 This estimate implies that we have to ensure $\delta < r_S$ in order to get a decent quadrature error 
 and possibly to employ a higher order quadrature. 
