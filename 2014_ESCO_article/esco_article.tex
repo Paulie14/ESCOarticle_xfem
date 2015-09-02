@@ -147,10 +147,10 @@
 % developed to gain optimal convergence rates.
 
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
-In order to improve the approximation of a singular behavior of the pressure near the wells, the standard finite element space is enriched with
+In order to improve the approximation of a singular behaviour of the pressure near the wells, the standard finite element space is enriched with
 the cut-off fundamental solution to the Laplace problem. The optimal order of 
 convergence of PUM in terms of $L^2$ norm of the error is demonstrated.
-The error of adaptive integration is analyzed and a~new adaptive strategy is proposed. The influence of the choice
+The error of adaptive integration is analysed and a~new adaptive strategy is proposed. The influence of the choice
 of the enriched domain is investigated and its impact on the error is demonstrated numerically.
 
 \end{abstract}
@@ -215,7 +215,7 @@ In Section \ref{sec:discretization}, the discretization using different partitio
 An analysis of the quadrature error and rules for a robust adaptive strategy are derived in Section \ref{sec:integration}.
 Section \ref{sec:enrichemnt_radius} discusses the optimal choice of the enriched domain.
 Section \ref{sec:results} specifies data of the test problem and discusses numerical results,
-in particular validation of convergence, behavior of the condition number, a set of experiments validating some of the theoretical results and convergence tests.
+in particular validation of convergence, behaviour of the condition number, a set of experiments validating some of the theoretical results and convergence tests.
 Finally, conclusions and open questions are summarized in Section \ref{sec:summary}.
 
 \section{Model}
@@ -523,7 +523,7 @@ The property of the shifted formulation enables us to prescribe Dirichlet bounda
 $a_\alpha = h_D(\bx_\alpha)$.
 
 It has been also shown in many cases that both ramp function and shifting are needed to obtain optimal convergence rate.
-In \cite{ventura_fast_2009}, authors analyze a more general form of a ramp function (calling the method a weighted XFEM)
+In \cite{ventura_fast_2009}, authors analyse a more general form of a ramp function (calling the method a weighted XFEM)
 and compare different alternatives of shifting on crack and dislocation problems. The methods described above can be then seen
 as special types of the weighted XFEM. Let us call them the \textbf{ramp function XFEM}  
 and the \textbf{shifted XFEM} for the purpose of this article, as we shall reference to them later.
@@ -1114,7 +1114,7 @@ The results of the convergence test for \prob{2} are presented in \fig{fig:conve
 For the comparison, we also plot the error of the standard FEM approximation of the problem with the well omitted (the regular part $u_r$), 
 It is labeled 'FEM (ur)' since the solution corresponds to the regular part $u_r$ of the solution to \prob{2} and displays the optimal convergence order 2.0.
 
-In the case of the standard FEM, we see the same behavior as in \fig{fig:convergence}. The dominant error still 
+In the case of the standard FEM, we see the same behaviour as in \fig{fig:convergence}. The dominant error still 
 comes from the singular part of the solution. All the PU methods have again nearly optimal convergence rate. 
 The standard XFEM and the ramp function XFEM
 are stopped at element size close to 1.0 due to the growth of the condition number of the system matrix.
