@@ -149,8 +149,8 @@
 Several partition of unity methods (PUM) are compared on the problem of steady water flow in an aquifer-well system. 
 In order to improve the approximation of a singular behavior of the pressure near the wells, the standard finite element space is enriched with
 the cut-off fundamental solution to the Laplace problem. The optimal order of 
-convergence in terms of $L^2$ norm of the error is demonstrated for some of the compared methods.
-The error of adaptive integration is analyzed and a new adaptive strategy is proposed. The influence of the choice
+convergence of PUM in terms of $L^2$ norm of the error is demonstrated.
+The error of adaptive integration is analyzed and a~new adaptive strategy is proposed. The influence of the choice
 of the enriched domain is investigated and its impact on the error is demonstrated numerically.
 
 \end{abstract}
@@ -184,15 +184,15 @@ Singular solution
 Large scale mathematical models of the groundwater flow have to deal with the presence of small scale features like wells 
 and fractures that have a significant impact on the whole solution. The standard finite element method can 
 capture these features using $h$ and/or $p$ adaptivity techniques 
-which is payed of by significantly larger number of degrees of freedom. One possible alternative is the usage of 
+which is payed of by a~significantly larger number of degrees of freedom. One possible alternative is the usage of 
 a suitable partition of unity method (PUM) also known as an extended finite element method (XFEM). The idea is to 
 augment the basis $\{\phi_n\}$ of the discrete finite element space with the functions $u_s \phi_n$, where $u_s$ is 
-an a priori known solution in the vicinity of the small scale feature. 
+an a~priori known solution in the vicinity of the small scale feature. 
 
 In this work, we use PUM on a steady two-dimensional aquifer model containing hydro-geological wells which
 cause singularities in the solution. We follow the articles \cite{gracie_modelling_2010, craig_using_2011} due to Gracie and Craig,
 which are, up to our best knowledge, the first works using the XFEM on the well problems. 
-Recently, a work of Ladubec, Gracie and Craig \cite{ladubec_extended_2014} was published, 
+Recently, a~work of Ladubec, Gracie and Craig \cite{ladubec_extended_2014} was published, 
 where a~time dependent two phase problem of $\rm{CO}_2$ sequestration is solved with usage of XFEM approach. 
 A numerical example with a~geometry setting analogous to our single aquifer test case is presented there.
 
@@ -200,9 +200,8 @@ Our primary aim is to compare different partition of unity methods on a similar 
 and its corrected version (including ramp function and shift), by Fries e.g. in~\cite{fries_corrected_2008}, 
 and the SGFEM introduced by Babu{\v s}ka and Banerjee in \cite{babuska_stable_2012, gupta_stable_2013}. We measure 
 the convergence of the pressure head in $L^2$ norm over the aquifer domain and we compare the convergence rate of used methods. 
-In contrast to the classical finite element method, the XFEM have to employ an adaptive integration scheme 
-for assembly of the linear system on the enriched elements
-in order to keep quadrature error small enough.
+In contrast to the classical finite element method, the XFEM has to cautiously employ a proper integration scheme
+for the assembly of the linear system on the enriched elements in order to keep the integration error small enough.
 We derive an estimate for the quadrature error and propose a robust adaptive strategy based on the a priori knowledge 
 of the character of the integrand.
 In addition, we suggest a better choice of the enriched domain based on a tolerance criterion.
@@ -223,12 +222,12 @@ Finally, conclusions and open questions are summarized in Section \ref{sec:summa
 \label{sec:model}
 We consider a steady groundwater 
 flow in a system of aquifers (2D models of horizontal geological layers) separated by aquitards. 
-In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable 
-however we add an artificial volume source term. This allows us to better study impact of 
+In contrast to Gracie and Craig \cite{gracie_modelling_2010}, we suppose the aquitards to be impermeable, 
+however we add an artificial volume source term. This allows us to better study the impact of 
 the prescribed source on the solution which is better suited to the numerical experiments we are focused on. 
 
 The aquifers are then connected only through the wells 
-which acts as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
+which act as sources or sinks in the domain of each aquifer. The pressure in the aquifers is further governed 
 by a Dirichlet boundary condition on the outer boundary of every aquifer.
 
 The model is defined as a complex multi-aquifer system to follow our implementation and to see the differences
@@ -257,15 +256,15 @@ h^m|_{\Gamma^m_D} &= h^m_D, \\
 \label{eq:interior_bc}
 \left(-\mathbf{T}^m\nabla h^m\cdot\vc{n}\right)|_{\partial B^m_w} &= \sigma^m_w(h^m - H^m_w) \qquad \forall w\in\mathcal{W},
 \end{align}
-
-\noteJB{Na vrtu by mel byt predepsany konstantni tok dany prumerem tlaku, tj.pomoci $Q_w^m$. 
-Pak se nam objevi prumery i v nekterych dalsich rovnicich. Jde, jde o to s jakou implementaci to bylo pocitane. To bych tam nechal bez ohledu na to ze
-spravne je nektera z moznych formulaci s prumerama.
-}
+%
+% \noteJB{Na vrtu by mel byt predepsany konstantni tok dany prumerem tlaku, tj.pomoci $Q_w^m$. 
+% Pak se nam objevi prumery i v nekterych dalsich rovnicich. Jde, jde o to s jakou implementaci to bylo pocitane. To bych tam nechal bez ohledu na to ze
+% spravne je nektera z moznych formulaci s prumerama.
+% }
 where $\mathbf{T}^m\, [\textrm{m}^2\textrm{s}^{-1}]$ denotes the transmissivity tensor,
 %(we will further consider only scalar $T^m$ for simplicity), 
 $h^m\, [\textrm{m}]$ is the pressure head, $f^m\, [\textrm{m}\textrm{s}^{-1}]$ stands for the source density,
-$\vc{n}$ is the unit outer normal vector of the interior boundary (i.e. pointing to the center of wells),
+$\vc{n}$ is the unit outer normal vector of the interior boundary (i.e. pointing to the centers of wells),
 $\sigma^m_w\, [\textrm{m}\textrm{s}^{-1}]$ denotes the permeability coefficient between $w$-th well and 
 $m$-th aquifer, and finally $H_w^m$ is the pressure head in the well $w$ at the level of $m$-th aquifer.
 %
@@ -615,7 +614,7 @@ are the price for using enrichment functions and a coarse mesh.
 There are two aspects which the integration must handle properly:
 \begin{itemize}
   \item the steep gradient of enrichment base functions in the vicinity of the well (the singularity),
-  \item the well edge geometry, since we have to integrate only outside of the well.
+  \item the well edge geometry, since we need to integrate only outside of the well.
 \end{itemize}
 
 One of the approaches to deal with these requirements is an adaptive quadrature. The element is divided into 
@@ -649,7 +648,7 @@ and the integration error is large.
   \label{fig:adapt_refinement}
 \end{figure}
 In order to overcome this instability of the adaptive quadrature, we have made an asymptotic analysis of the integration error presented 
-in the next subsection.
+in the next section.
 
 \subsection{Estimate of quadrature error}
 
@@ -1295,8 +1294,8 @@ and we suggested a better strategy for the adaptive quadrature. The improvement 
 tests in \ref{sec:res_comparison} where we obtained the optimal order of convergence in $L^2$ norm.
 
 All the implemented methods were compared in \ref{sec:res_comparison}. Regarding the XFEM, we saw that at 
-least the ramp function must be used in order to obtain optimal convergence. \noteJB{Ale vyse piseme, ze XFEM konverguje stejne dobre i bez rampy.} The shifted XFEM and 
-the SGFEM converged optimally and did not show any difference in the solution precision.
+least the ramp function must be used in order to optimze the error on the blending elements. 
+The shifted XFEM and the SGFEM converged optimally and did not show any difference in the solution precision.
 
 The ill-conditioning of the system matrix was encountered when using the standard XFEM and the ramp function XFEM.
 The iteration count was measured.
